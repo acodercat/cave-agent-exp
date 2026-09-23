@@ -53,11 +53,6 @@ dmypy.json
 *.egg
 *.whl
 
-# Claude code
-.claude/
-
-# Local recovery snapshots (not source)
-recovered/
 
 # generated benchmark output
 experiments/
