@@ -1,0 +1,69 @@
+{
+  "name": "money_fund_maturity_liquidity_limits",
+  "module": "evals.comparison_ranking.money_fund_maturity_liquidity_limits",
+  "task_family": "comparison_ranking",
+  "data_sources": [
+    "sec_nmfp_series_filings",
+    "sec_nmfp_liquidity"
+  ],
+  "case_type": "baseline",
+  "difficulty": "hard",
+  "conversations": [
+    {
+      "turns": [
+        {
+          "query": "Using the SEC Form N-MFP series filings, take every filing with a report date of 2025-06-30 that carries a series identifier, and keep one filing per series: the one with the latest filing date, breaking a tie on the greatest accession. Report how many funds result. Report the median and the maximum weighted average maturity in days, each to 4 decimals, and how many funds exceed the 60-day cap. Report the median and maximum weighted average life in days, each to 4 decimals, and how many exceed the 120-day cap. Finally define each fund's gap as its weighted average life minus its weighted average maturity and report the smallest gap in the population, to 4 decimals. Briefly explain why the filing-selection rule matters and how the two maturity measures should be interpreted.",
+          "validator": "validate_maturity_caps",
+          "stores": [
+            "filing_count",
+            "median_maturity_days",
+            "maximum_maturity_days",
+            "over_maturity_cap",
+            "median_life_days",
+            "maximum_life_days",
+            "over_life_cap",
+            "minimum_gap_days"
+          ]
+        },
+        {
+          "query": "Describe the gap across the population and by fund category. Report the median and the maximum gap in days, each to 4 decimals. Then, using the fund category field exactly as reported, report how many funds fall in the category named Government and their median gap in days, the median gap of the funds in the category named Prime, and how many funds fall in the category named Other Tax Exempt together with their median gap, gaps to 4 decimals. Interpret what these category summaries establish without assigning unobserved security holdings or causes.",
+          "validator": "validate_gap_composition",
+          "stores": [
+            "median_gap_days",
+            "maximum_gap_days",
+            "government_filings",
+            "government_gap_days",
+            "prime_gap_days",
+            "tax_exempt_filings",
+            "tax_exempt_gap_days"
+          ]
+        },
+        {
+          "query": "Turn to the daily liquid asset reports. Across the whole liquidity file, report how many rows carry a weekly liquid asset amount of exactly zero and that count as a percentage of the file to 4 decimals. Then join the funds from the first turn to the liquidity rows dated 2025-06-30 on the accession, and report how many funds match and how many of the matched rows carry that zero amount. Drop those rows and report how many funds remain and their median weekly liquid asset percentage, to 4 decimals. Explain what this zero-row screen can and cannot establish.",
+          "validator": "validate_liquidity_screen",
+          "stores": [
+            "zero_liquidity_rows",
+            "zero_liquidity_share_pct",
+            "matched_filings",
+            "zero_rows_at_date",
+            "screened_filings",
+            "median_weekly_liquid_pct"
+          ]
+        },
+        {
+          "query": "Now count apparent shortfalls against the 25 percent daily and 50 percent weekly minimums. On the screened funds report the median daily liquid asset percentage to 4 decimals. Report how many funds fall below the daily minimum before the zero rows are dropped and how many after. Of those remaining, report how many belong to either the category named Other Tax Exempt or the category named Single State, and how many belong to neither. For the funds belonging to neither, report the lowest weekly liquid asset percentage among them, to 4 decimals. Finally report how many screened funds fall below the weekly minimum. Explain how Rule 2a-7 applies to these categories and what a point-in-time reading below a threshold can establish.",
+          "validator": "validate_minimum_tests",
+          "stores": [
+            "median_daily_liquid_pct",
+            "below_daily_raw",
+            "below_daily_screened",
+            "below_daily_tax_exempt",
+            "below_daily_subject",
+            "subject_minimum_weekly_pct",
+            "below_weekly_screened"
+          ]
+        }
+      ]
+    }
+  ]
+}

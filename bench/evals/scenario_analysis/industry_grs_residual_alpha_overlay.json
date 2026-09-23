@@ -1,0 +1,65 @@
+{
+  "name": "industry_grs_residual_alpha_overlay",
+  "module": "evals.scenario_analysis.industry_grs_residual_alpha_overlay",
+  "task_family": "scenario_analysis",
+  "data_sources": [
+    "ken_french_10_industry_portfolios",
+    "ken_french_daily_factors"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Calibrate an intercept-bearing Fama–French three-factor model jointly for all ten Kenneth French value-weighted industry portfolios on complete common daily observations from 2018-01-01 through 2022-12-31. Use industry excess returns and Mkt-RF, SMB and HML in percentage-point units, with maximum-likelihood residual covariance based on the observation count. Report the count, HiTec and Enrgy daily alphas and residual covariance spectral condition number. Carry all coefficients and the full residual covariance forward, and interpret the model diagnostics. Use unrounded state throughout.",
+          "validator": "validate_turn_1",
+          "stores": [
+            "training_count",
+            "hitec_alpha_pp",
+            "enrgy_alpha_pp",
+            "residual_covariance_condition"
+          ]
+        },
+        {
+          "query": "Apply the exact finite-sample Gibbons–Ross–Shanken joint zero-alpha F test to the carried ten-equation model, under independent identically distributed conditional Gaussian disturbances. Use the centered factor covariance with the observation-count denominator. Report the F statistic, upper-tail p-value, daily squared maximum factor Sharpe ratio and squared Mahalanobis distance of the carried alpha vector under its residual covariance. Carry the fitted alpha-risk geometry forward and interpret the joint test at the five-percent significance level.",
+          "validator": "validate_turn_2",
+          "stores": [
+            "grs_f_statistic",
+            "grs_p_value",
+            "factor_sharpe_squared",
+            "alpha_mahalanobis_squared"
+          ]
+        },
+        {
+          "query": "Using the carried alpha vector and residual covariance, solve the unrestricted Markowitz minimum-residual-variance overlay targeting one percentage point of arithmetic annual alpha, with 252 observations per year. Allow signed industry holdings and impose no full-investment or leverage constraint. Hedge the three factors at the carried fitted loadings, with zero costs and daily rebalancing. Report the signed holding of each of the ten industries and annualized fitted residual volatility. Carry the complete holdings and factor hedge forward and interpret the fitted risk-return tradeoff.",
+          "validator": "validate_turn_3",
+          "stores": [
+            "overlay_nodur_weight",
+            "overlay_durbl_weight",
+            "overlay_manuf_weight",
+            "overlay_enrgy_weight",
+            "overlay_hitec_weight",
+            "overlay_telcm_weight",
+            "overlay_shops_weight",
+            "overlay_hlth_weight",
+            "overlay_utils_weight",
+            "overlay_other_weight",
+            "overlay_training_volatility_pct"
+          ]
+        },
+        {
+          "query": "Hold the carried industry holdings and factor hedge fixed for common dates from 2023-01-01 through 2023-12-31, retaining the same daily rebalancing and cost assumptions. Evaluate factor-hedged excess-return P&L, without re-estimating model coefficients. Report observation count, arithmetic annualized mean, sample annualized volatility using 252 observations per year, and the ordinary iid one-sample t statistic for zero daily mean. Compare the held-out result with the fitted alpha target and discuss its material evidentiary limits.",
+          "validator": "validate_turn_4",
+          "stores": [
+            "holdout_count",
+            "holdout_annual_mean_pct",
+            "holdout_annual_volatility_pct",
+            "holdout_mean_t_statistic"
+          ]
+        }
+      ]
+    }
+  ]
+}

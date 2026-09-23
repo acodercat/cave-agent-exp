@@ -1,0 +1,29 @@
+[project]
+name = "agent-performance-evaluator2"
+version = "0.1.0"
+description = "A comprehensive benchmarking framework for evaluating AI agent implementations and their tool-calling capabilities across multiple scenarios."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "litellm>=1.79.3",
+    "llama-index>=0.12.34",
+    "llama-index-llms-anthropic>=0.6.10",
+    "llama-index-llms-openai-like>=0.4.0",
+    "openai-agents>=0.0.14",
+    "pandas>=2.2.3",
+    # cave_agent is vendored at ./cave_agent (cave-agent 0.5.0 + the patches used for the paper runs);
+    # its runtime dependencies are declared explicitly below.
+    "ipython>=9.7.0",
+    "rich>=14.2.0",
+    "openai>=2.8.1",
+    "anthropic>=0.74.1",
+    "tqdm>=4.67.1",
+    "tau2",
+    "gymnasium>=1.2.2",
+    "nest-asyncio>=1.6.0",
+    "google-genai>=1.51.0",
+]
+
+[tool.uv.sources]
+# tau2-bench@0ed2fd8 + the changes used for the paper runs (branch cave-agent-experiments)
+tau2 = { path = "../third_party/tau2-bench", editable = true }

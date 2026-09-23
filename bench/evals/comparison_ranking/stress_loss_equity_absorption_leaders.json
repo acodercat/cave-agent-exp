@@ -1,0 +1,43 @@
+{
+  "name": "stress_loss_equity_absorption_leaders",
+  "module": "evals.comparison_ranking.stress_loss_equity_absorption_leaders",
+  "task_family": "comparison_ranking",
+  "data_sources": [
+    "fed_stress_tests",
+    "ffiec_y9c"
+  ],
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Across the legal-entity rows in the Federal Reserve's 2025 Supervisory Severely Adverse stress-test results, excluding the published participating-bank aggregate, match RSSD identifiers to 2024-12-31 Y-9C respondents with reported consolidated total equity. For every matched entity, scale the Fed projected total-loan-loss amount and projected provision amount by that same-date Y-9C equity. Report the matched count, summed Y-9C equity, summed projected loan losses, their ratio-of-sums, and the simple mean of the entity-level loan-loss-to-equity ratios. Separately identify the highest loan-loss-to-equity entity and the highest provision-to-equity entity, resolving an exact tie by Fed disclosure legal name alphabetically. For each leader report its Fed legal name, RSSD identifier, Y-9C equity, relevant projected amount and scaled ratio, plus actual and projected-minimum CET1 ratios. Explain what the weighting and the two leader results show and how these scale ratios relate to the reported CET1 outcomes.",
+          "validator": "validate",
+          "stores": [
+            "matched_stress_y9c_entity_count",
+            "cohort_y9c_total_equity_usd_billions",
+            "cohort_projected_total_loan_losses_usd_billions",
+            "cohort_loan_loss_to_equity_ratio_pct",
+            "simple_mean_entity_loan_loss_to_equity_pct",
+            "loan_loss_to_equity_leader_name",
+            "loan_loss_to_equity_leader_rssd_id",
+            "loan_loss_leader_y9c_equity_usd_billions",
+            "loan_loss_leader_projected_total_loan_losses_usd_billions",
+            "loan_loss_leader_loss_to_equity_ratio_pct",
+            "loan_loss_leader_actual_cet1_ratio_pct",
+            "loan_loss_leader_projected_minimum_cet1_ratio_pct",
+            "provision_to_equity_leader_name",
+            "provision_to_equity_leader_rssd_id",
+            "provision_leader_y9c_equity_usd_billions",
+            "provision_leader_projected_provision_usd_billions",
+            "provision_leader_provision_to_equity_ratio_pct",
+            "provision_leader_actual_cet1_ratio_pct",
+            "provision_leader_projected_minimum_cet1_ratio_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

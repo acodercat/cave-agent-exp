@@ -1,0 +1,54 @@
+{
+  "name": "frn_reopening_sofr_financed_credit_limit",
+  "module": "evals.scenario_analysis.frn_reopening_sofr_financed_credit_limit",
+  "task_family": "scenario_analysis",
+  "data_sources": [
+    "treasury_auctions",
+    "nyfed_reference_rates"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Identify the U.S. Treasury floating-rate note auctioned in March 2025. The auction record does not carry a floating-rate security type, so use the field that flags a floating rate rather than the security-type label. If more than one qualifies, take the latest auction date and break a remaining tie by CUSIP ascending. Buy USD 1,000,000 of face value at that auction's published price and published accrued interest, with no fees or haircut. Report the CUSIP, the settlement date, the first interest payment date after settlement, and the cash required at settlement in USD thousands to five decimals, the precision a cent-exact amount needs in that unit. Settle every cash amount to the nearest cent with half a cent rounded up, and carry the note, its dates and the settlement cash forward. Explain what the accrued interest represents in the buyer's settlement cash.",
+          "validator": "validate_purchase",
+          "stores": [
+            "selected_cusip",
+            "settlement_date",
+            "first_payment_date",
+            "settlement_cash_usd_thousands"
+          ]
+        },
+        {
+          "query": "Finance the whole settlement cash at realized SOFR with no additional spread. A date carrying a published SOFR observation is a business day; one simple ACT/360 factor covers each interval between consecutive observations, including any non-business days inside it, and the factors compound across intervals. The note's coupon accrues daily from its dated date on an index equal to the high discount rate of the most recent thirteen-week bill auction, converted to an ACT/360 money-market yield over that bill's own term from issue to maturity, plus the note's spread. An index takes effect only on days after the auction that set it, and the index in force is held fixed for the final two business days before each payment date. Round the converted index and each day's interest per USD 100 of face to nine decimals. At the first payment, accrue financing through but excluding the payment date and apply the entire coupon to the loan. Report the first coupon received and the loan balance immediately after that payment, both in USD thousands to five decimals. Explain how the period the coupon covers differs from the period the buyer has funded.",
+          "validator": "validate_first_coupon",
+          "stores": [
+            "first_coupon_usd_thousands",
+            "first_post_payment_loan_usd_thousands"
+          ]
+        },
+        {
+          "query": "Hold the same face amount through the following quarterly payment date, which follows the note's month-end dated date rather than falling three calendar months after the first payment. Continue financing the outstanding loan under the same conventions and again apply the whole coupon on its payment date. Report that payment date, its coupon in USD thousands, and the loan balance immediately after repayment in USD thousands, both to five decimals. Discuss what this balance establishes about the funded position, and what further observation would be needed before it could be read as a return.",
+          "validator": "validate_second_coupon",
+          "stores": [
+            "second_payment_date",
+            "second_coupon_usd_thousands",
+            "second_post_payment_loan_usd_thousands"
+          ]
+        },
+        {
+          "query": "Return to the loan immediately after the first coupon payment and impose, for this scenario only, a USD 1,005,000 credit limit running to the second payment date. At each SOFR business-day boundary in that window, capitalize the preceding interval's financing interest, apply any coupon falling due that day, and then test the balance. If it strictly exceeds the limit, the borrower contributes external cash at once, enough to bring the loan to no more than USD 1,000,000, rounded up to the next whole cent, and the loan falls by the cash actually contributed. Leave the holding and every other convention unchanged. Report the number of contributions, the date of the first one as a date or the token NONE, and the total contributed in USD thousands to five decimals. Discuss the liquidity this scenario demands and the evidentiary scope of the exercise.",
+          "validator": "validate_credit_limit",
+          "stores": [
+            "credit_contribution_count",
+            "first_contribution_date",
+            "total_contribution_usd_thousands"
+          ]
+        }
+      ]
+    }
+  ]
+}

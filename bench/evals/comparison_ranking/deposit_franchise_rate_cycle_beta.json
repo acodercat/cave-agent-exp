@@ -1,0 +1,61 @@
+{
+  "name": "deposit_franchise_rate_cycle_beta",
+  "module": "evals.comparison_ranking.deposit_franchise_rate_cycle_beta",
+  "task_family": "comparison_ranking",
+  "data_sources": [
+    "fdic_bankfind",
+    "nyfed_reference_rates"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "turns": [
+        {
+          "query": "At the 2024-12-31 report date keep banks with positive total deposits and assets and nonmissing total interest expense and reported net interest margin. Define an expense proxy as annual total interest expense divided by period-end total deposits, in percent. Report the qualifying count and the unweighted bank-level median reported margin and expense proxy. Using assets in thousands of USD, assign four left-closed bands: [0, 1,000,000), [1,000,000, 10,000,000), [10,000,000, 100,000,000), and [100,000,000, infinity); report the smallest- and largest-band counts. Explain that the proxy mixes an annual flow with a period-end stock, includes interest expense on nondeposit funding, and is neither a deposit rate nor an asset-weighted industry measure.",
+          "validator": "validate_cross_section",
+          "stores": [
+            "late_bank_count",
+            "late_median_margin_pct",
+            "late_median_expense_proxy_pct",
+            "late_smallest_band_count",
+            "late_largest_band_count"
+          ]
+        },
+        {
+          "query": "Compare the extreme size bands at the same date. Report the median reported margin and median expense proxy for the smallest and largest bands. Interpret the direction of the two cross-band gaps, and state what the expense field covers and what that allows you to say about deposit pricing.",
+          "validator": "validate_size_gradient",
+          "stores": [
+            "late_smallest_band_margin_pct",
+            "late_largest_band_margin_pct",
+            "late_smallest_band_expense_proxy_pct",
+            "late_largest_band_expense_proxy_pct"
+          ]
+        },
+        {
+          "query": "Repeat the same qualification, bands and expense-proxy construction for 2021-12-31. Report the qualifying count and the median expense proxy for the smallest and largest bands. From the published overnight rates, report EFFR on 2021-12-31 and 2024-12-31 in percent. Compare the two bands' proxy ordering across the endpoints, while stating that single-day EFFR observations and annual expense proxies do not establish deposit-pricing behavior.",
+          "validator": "validate_cycle_endpoints",
+          "stores": [
+            "early_bank_count",
+            "early_smallest_band_expense_proxy_pct",
+            "early_largest_band_expense_proxy_pct",
+            "early_policy_rate_pct",
+            "late_policy_rate_pct"
+          ]
+        },
+        {
+          "query": "Compute a descriptive endpoint sensitivity for each asset band: its 2024 median expense proxy minus its 2021 median expense proxy, divided by the endpoint EFFR change from turn 3. Report all four coefficients. Also report the endpoint change in median reported margin for the largest and smallest bands, in percentage points. Describe the coefficient ordering and explain what these coefficients measure, given how the expense field, the rate observation and the endpoint populations are each constructed. State what the table can and cannot reconcile about the two measures.",
+          "validator": "validate_pass_through",
+          "stores": [
+            "smallest_band_endpoint_sensitivity",
+            "second_band_endpoint_sensitivity",
+            "third_band_endpoint_sensitivity",
+            "largest_band_endpoint_sensitivity",
+            "largest_band_margin_change_pp",
+            "smallest_band_margin_change_pp"
+          ]
+        }
+      ]
+    }
+  ]
+}

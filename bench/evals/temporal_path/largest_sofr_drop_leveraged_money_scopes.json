@@ -1,0 +1,37 @@
+{
+  "name": "largest_sofr_drop_leveraged_money_scopes",
+  "module": "evals.temporal_path.largest_sofr_drop_leveraged_money_scopes",
+  "task_family": "temporal_path",
+  "data_sources": [
+    "nyfed_reference_rates",
+    "cftc_cot"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "For CFTC SOFR-3M contract code 134741, consider consecutive 2025 CFTC report dates for which both the futures-only and futures-and-options-combined reports and a same-date New York Fed overnight SOFR observation are available. Identify the pair with the largest decline in overnight SOFR, breaking any tie by the earlier ending report date. Report the two dates and both SOFR values. For each CFTC scope, calculate leveraged-money directional net as long minus short at both dates and its ending minus starting change. Also report combined minus futures-only directional net at each date and its ending minus starting change, all as signed integer contracts. Explain how the positioning changed across the two reporting scopes and what the aligned comparison can and cannot establish.",
+          "validator": "validate",
+          "stores": [
+            "window_start_date",
+            "window_end_date",
+            "start_overnight_sofr_pct",
+            "end_overnight_sofr_pct",
+            "futures_only_start_directional_net",
+            "futures_only_end_directional_net",
+            "futures_only_directional_net_change",
+            "combined_start_directional_net",
+            "combined_end_directional_net",
+            "combined_directional_net_change",
+            "start_combined_minus_futures_net",
+            "end_combined_minus_futures_net",
+            "combined_minus_futures_net_change"
+          ]
+        }
+      ]
+    }
+  ]
+}

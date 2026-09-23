@@ -1,0 +1,37 @@
+{
+  "name": "jpm_branch_deposit_geography_bridge",
+  "module": "evals.calculation_reconciliation.jpm_branch_deposit_geography_bridge",
+  "task_family": "calculation_reconciliation",
+  "data_sources": [
+    "fdic_bankfind",
+    "fdic_sod"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "For JPMorgan Chase Bank, N.A. (FDIC certificate 628) at 2025-06-30, use FDIC BankFind quarterly financials to report total and domestic deposits and derive the foreign-office residual between them. Independently aggregate all reported 2025 Summary of Deposits branch rows for that certificate, reconcile their branch deposits to the BankFind domestic balance, and report the branch-row and represented state-level-jurisdiction counts. Aggregate branch deposits by branch-state USPS abbreviation, breaking an exact leadership tie alphabetically; report the leading jurisdiction, its branch-row count and share of branch rows, its branch deposits and share of domestic deposits, and the state-level deposit HHI on the 0-to-10,000 scale. Explain what the reconciliation and concentration measures do and do not represent.",
+          "validator": "validate",
+          "stores": [
+            "sod_branch_row_count",
+            "represented_branch_state_count",
+            "bankfind_total_deposits_usd_billions",
+            "bankfind_domestic_deposits_usd_billions",
+            "derived_foreign_office_deposits_usd_billions",
+            "sod_branch_deposits_usd_billions",
+            "sod_minus_bankfind_domestic_usd_millions",
+            "largest_branch_deposit_state_usps",
+            "largest_state_branch_row_count",
+            "largest_state_branch_row_share_pct",
+            "largest_state_branch_deposits_usd_billions",
+            "largest_state_share_of_domestic_deposits_pct",
+            "state_deposit_hhi"
+          ]
+        }
+      ]
+    }
+  ]
+}

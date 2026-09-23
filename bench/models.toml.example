@@ -1,0 +1,17 @@
+# Copy to models.toml (gitignored). Each section is one model, named on
+# `scripts.run --model`. Keep keys out of the file: `${VAR}` is read from the
+# environment, and an unset or empty variable is an error.
+
+[deepseek-v4-flash]
+api_model = "deepseek-v4-flash"
+api_key = "${DEEPSEEK_API_KEY}"
+base_url = "https://example.com/v1"
+temperature = 0.1
+max_tokens = 8192
+timeout = 300
+# Reasoning, stated on every request rather than left to the model's default.
+thinking = "disabled"
+# Optional accounting metadata. Set both from the price in force for the run;
+# leave unset rather than guessing.
+# input_cost_per_million_usd = 0.0
+# output_cost_per_million_usd = 0.0

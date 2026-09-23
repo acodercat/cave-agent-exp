@@ -1,0 +1,36 @@
+{
+  "name": "notes_bonds_weighted_coupon",
+  "module": "evals.comparison_ranking.notes_bonds_weighted_coupon",
+  "task_family": "comparison_ranking",
+  "data_sources": [
+    "treasury_marketable_securities",
+    "treasury_auctions"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Compare the outstanding stock of conventional Treasury notes and bonds in the 2025-12-31 Monthly Statement of the Public Debt with calendar-2025 nominal fixed-rate Treasury note and bond auction flows. For the stock, exclude totals, bills, inflation-protected securities, floating-rate notes and Federal Financing Bank securities; report each class's outstanding principal and outstanding-principal-weighted stated coupon. For auctions with a 2025 issue date, include both original issues and reopenings, exclude inflation-indexed and floating-rate securities, and retain rows with a positive offering amount and reported high yield. For notes and bonds separately, report total auction count, reopening count, aggregate offering amount and offering-amount-weighted high yield. Explain what comparing the outstanding stock with the 2025 auction flow does and does not establish.",
+          "validator": "validate",
+          "stores": [
+            "notes_outstanding_billion_usd",
+            "bonds_outstanding_billion_usd",
+            "notes_weighted_coupon_pct",
+            "bonds_weighted_coupon_pct",
+            "note_auction_count",
+            "note_reopening_count",
+            "note_auction_offering_billion_usd",
+            "note_offering_weighted_high_yield_pct",
+            "bond_auction_count",
+            "bond_reopening_count",
+            "bond_auction_offering_billion_usd",
+            "bond_offering_weighted_high_yield_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

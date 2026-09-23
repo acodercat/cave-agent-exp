@@ -1,0 +1,24 @@
+{
+  "name": "short_volume_top_symbols_10",
+  "module": "cases.table_control.short_volume_top_symbols_10",
+  "task_family": "table_control",
+  "data_sources": [
+    "finra_short_volume"
+  ],
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "From FINRA's consolidated short sale volume file for 2024-12-31, rank every symbol by total volume, highest first, breaking ties by symbol in alphabetical order. Deliver the top 10 of that ranking. Each row: the symbol exactly as listed, its market codes as the file gives them, in one cell, short volume, total volume, and short volume over total volume. In this file short volume already includes the short-exempt shares, so neither add them nor net them out.",
+          "validator": "validate",
+          "stores": [
+            "volume_table"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "name": "treasury_rank1_vecm_positioning",
+  "module": "evals.temporal_path.treasury_rank1_vecm_positioning",
+  "task_family": "temporal_path",
+  "data_sources": [
+    "treasury_yield_curve",
+    "nyfed_reference_rates",
+    "cftc_cot"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "For futures-only CFTC 10-year Treasury note contract 043602 report dates from 2021-2025, inner-join exact same-date Treasury 2- and 10-year yields and SOFR. Define leveraged-money net share as long minus short divided by open interest. Report aligned count/boundaries and select the minimum 10-year-minus-2-year spread, ties earlier, with spread, SOFR and net share. Carry the weekly panel and interpret the relationship and material scope of the curve and positioning measures.",
+          "validator": "validate_alignment",
+          "stores": [
+            "aligned_week_count",
+            "aligned_start_date",
+            "aligned_end_date",
+            "minimum_curve_spread_date",
+            "minimum_ten_minus_two_spread_pp",
+            "same_date_sofr_pct",
+            "same_date_leveraged_net_share_pct"
+          ]
+        },
+        {
+          "query": "Through 2023-12-31, estimate by OLS the normalized long-run relation with 10-year yield dependent on an intercept, 2-year yield and SOFR. On its residual, estimate by OLS an intercept-bearing no-lag ADF regression of residual change on lagged residual; compute the coefficient standard error using residual sum of squares divided by observations minus two. Report count, long-run coefficients, residual n-1 standard deviation, ADF level coefficient and t statistic. Carry the normalized residual forward and interpret what this Engle-Granger-style diagnostic can and cannot license about cointegration.",
+          "validator": "validate_rank1",
+          "stores": [
+            "rank1_training_week_count",
+            "cointegrating_intercept",
+            "cointegrating_two_year_coefficient",
+            "cointegrating_sofr_coefficient",
+            "equilibrium_error_std_pp",
+            "equilibrium_error_adf_coefficient",
+            "equilibrium_error_adf_t_stat"
+          ]
+        },
+        {
+          "query": "Estimate the conditional rank-one error-correction equation for weekly 10-year-yield change on an intercept, lagged equilibrium error, contemporaneous 2-year-yield change and contemporaneous SOFR change. Report count, coefficients, R-squared and maximum absolute unscaled OLS normal-equation moment. Carry coefficients forward and interpret adjustment sign and contemporaneous-information limits.",
+          "validator": "validate_ecm",
+          "stores": [
+            "ecm_observation_count",
+            "ecm_intercept_pp",
+            "ecm_adjustment_coefficient",
+            "ecm_two_year_change_coefficient",
+            "ecm_sofr_change_coefficient",
+            "ecm_r_squared",
+            "ecm_maximum_normal_moment"
+          ]
+        },
+        {
+          "query": "Freeze coefficients and evaluate 2024-2025 conditional one-step changes using realized contemporaneous regressors versus a no-change random walk. Report count, both RMSEs and whether ECM is lower. Identify largest absolute actual-minus-predicted error, ties earlier, and report date/error and same-date leveraged-money net share. Interpret forecast-information and positioning-overlay limits.",
+          "validator": "validate_test",
+          "stores": [
+            "ecm_test_week_count",
+            "ecm_test_rmse_pp",
+            "random_walk_test_rmse_pp",
+            "ecm_beats_random_walk",
+            "largest_error_date",
+            "largest_error_pp",
+            "same_date_leveraged_net_share_pct_test"
+          ]
+        }
+      ]
+    }
+  ]
+}

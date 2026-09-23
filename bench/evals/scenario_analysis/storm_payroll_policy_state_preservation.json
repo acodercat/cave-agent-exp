@@ -1,0 +1,66 @@
+{
+  "name": "storm_payroll_policy_state_preservation",
+  "module": "evals.scenario_analysis.storm_payroll_policy_state_preservation",
+  "task_family": "scenario_analysis",
+  "data_sources": [
+    "bls_qcew",
+    "noaa_storm_events"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Establish a hypothetical parametric payroll-protection book for Louisiana counties using 2019 BLS QCEW private-sector county NAICS-sector annual wages. Require positive, nonmissing wages for both manufacturing, NAICS31–33, and health care and social assistance, NAICS62. Select the five counties with the largest manufacturing wages, breaking ties by ascending county FIPS. The original book insures 25 percent of each selected county’s manufacturing annual payroll, distributed uniformly over 365 calendar days. Report total insured annual payroll and the largest-exposure county. Assess exposure concentration. Use unrounded state throughout.",
+          "validator": "validate_turn_1",
+          "stores": [
+            "original_insured_payroll_million",
+            "largest_exposure_county"
+          ]
+        },
+        {
+          "query": "For the original book, use NOAA County-geography Flood and Flash Flood records in those counties with source begin datetimes in 2021. A contract trigger interval runs from source begin through 48 hours after source end, clipped at 2022-01-01. Measure naive source-local elapsed hours without time-zone or daylight-saving adjustment. A NOAA episode is one occurrence; within a county-occurrence, overlapping trigger intervals cover time only once. Each county-occurrence has a 24-hour aggregate time deductible and a USD500,000 indemnity limit. Indemnity covers the insured payroll accruing during trigger time beyond that deductible. Aggregate county indemnities within each occurrence. The annual book limit is USD8 million, applied by earliest in-scope source begin datetime and then ascending episode identifier. Report total indemnity before the annual limit and the largest occurrence indemnity. Assess the occurrence concentration.",
+          "validator": "validate_turn_2",
+          "stores": [
+            "original_preaggregate_claims_million",
+            "largest_original_occurrence_million"
+          ]
+        },
+        {
+          "query": "Quote an independent health-care and social-assistance book for the same counties. Insure 25 percent of their corresponding annual payroll and use a 12-hour aggregate time deductible; retain all other trigger, limit and ordering terms. Report its insured annual payroll and total indemnity before the annual limit. Assess the comparison with manufacturing.",
+          "validator": "validate_turn_3",
+          "stores": [
+            "comparison_insured_payroll_million",
+            "comparison_preaggregate_claims_million"
+          ]
+        },
+        {
+          "query": "Allocate that comparison book’s annual capacity across its occurrences. Report the episode in which the annual limit is first exhausted and the percentage of that occurrence’s pre-annual-limit indemnity that is paid. Interpret the capacity result.",
+          "validator": "validate_turn_4",
+          "stores": [
+            "comparison_exhaustion_episode",
+            "comparison_exhaustion_paid_pct"
+          ]
+        },
+        {
+          "query": "Complete the annual-capacity allocation for the original committed manufacturing book. Report its exhaustion episode and the amount paid on that occurrence. Assess this result relative to the comparison book.",
+          "validator": "validate_turn_5",
+          "stores": [
+            "original_exhaustion_episode",
+            "original_exhaustion_payment_million"
+          ]
+        },
+        {
+          "query": "For the original book’s actual payments under its annual limit, apply a per-occurrence reinsurance layer of USD750,000 excess of USD250,000, with no annual reinsurance cap or premium cash flow. Report total ceded claims and the episode with the largest retained payment, breaking a tie by ascending episode identifier. Interpret the resulting risk transfer.",
+          "validator": "validate_turn_6",
+          "stores": [
+            "original_ceded_claims_million",
+            "largest_retained_episode"
+          ]
+        }
+      ]
+    }
+  ]
+}

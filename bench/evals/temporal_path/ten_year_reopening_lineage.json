@@ -1,0 +1,37 @@
+{
+  "name": "ten_year_reopening_lineage",
+  "module": "evals.temporal_path.ten_year_reopening_lineage",
+  "task_family": "temporal_path",
+  "data_sources": [
+    "treasury_auctions",
+    "treasury_marketable_securities"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Trace the 2025 Treasury auction lineage for CUSIP 91282CMM0 and connect it to the 2025-04-30 Monthly Statement of the Public Debt detail. Report the auction count, original and reopening auction dates, distinct security-term labels in chronological first-appearance order, original issue date, common maturity and coupon, and cumulative offering and total accepted amounts. From the month-end debt statement report the matching issue-row count, cumulative issued amount and CUSIP-level outstanding amount, then report cumulative auction accepted minus cumulative debt-statement issued. Explain the lineage, stock-versus-flow representation and reconciliation boundary.",
+          "validator": "validate",
+          "stores": [
+            "auction_count",
+            "original_auction_date",
+            "reopening_auction_dates",
+            "reported_security_terms",
+            "original_issue_date",
+            "maturity_date",
+            "coupon_rate_pct",
+            "auction_offering_total_usd_billions",
+            "auction_accepted_total_usd_billions",
+            "mspd_issue_row_count",
+            "mspd_cumulative_issued_usd_billions",
+            "mspd_reported_outstanding_usd_billions",
+            "accepted_minus_mspd_issued_usd_billions"
+          ]
+        }
+      ]
+    }
+  ]
+}

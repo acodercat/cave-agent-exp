@@ -1,0 +1,81 @@
+{
+  "name": "industry_erc_ofr_tail_stress",
+  "module": "evals.scenario_analysis.industry_erc_ofr_tail_stress",
+  "task_family": "scenario_analysis",
+  "data_sources": [
+    "ofr_market_stress",
+    "ken_french_10_industry_portfolios",
+    "ken_french_daily_factors"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Build one common-date panel from the daily OFR Financial Stress Index, the Ken French value-weighted 10-industry portfolios and the daily Fama-French factors. Among common dates from 2019-01-01 through 2025-12-31, select the maximum OFR FSI level, breaking an exact tie by earlier date. Let the training end be the common date exactly 20 observations before that peak, use 504 common observations ending there, and define the disjoint stress window from the next common date through the common date 40 observations after the peak. Report the peak date and FSI level, both training boundaries, both stress boundaries and the stress observation count. On the training window, rank all ten industries by annualized sample volatility using 252 days and report the five highest-volatility canonical Ken French industry tokens in descending order, breaking an exact tie alphabetically. Carry the windows and ordered five-industry cohort forward, and explain the information boundary created by this construction.",
+          "validator": "validate_stress_windows",
+          "stores": [
+            "selected_stress_peak_date",
+            "selected_stress_peak_fsi",
+            "training_start_date",
+            "training_end_date",
+            "stress_start_date",
+            "stress_end_date",
+            "stress_observation_count",
+            "volatility_rank_1_industry",
+            "volatility_rank_2_industry",
+            "volatility_rank_3_industry",
+            "volatility_rank_4_industry",
+            "volatility_rank_5_industry"
+          ]
+        },
+        {
+          "query": "Using only the carried 504-date training window and the five retained industries, estimate the sample covariance matrix of daily decimal industry returns with the sample denominator. Report its minimum eigenvalue and spectral condition number. Separately run five Fama-French three-factor OLS regressions with an intercept, each industry's daily excess return as dependent variable, and Mkt-RF, SMB and HML in the source table's percentage units. Among the five fitted market betas, report the highest and lowest canonical industry tokens and values, breaking an exact beta tie alphabetically. Carry the covariance matrix and all fitted factor loadings forward, and interpret what the eigenvalue, condition number and fitted betas establish and do not establish.",
+          "validator": "validate_covariance_and_factors",
+          "stores": [
+            "minimum_covariance_eigenvalue",
+            "covariance_condition_number",
+            "highest_market_beta_industry",
+            "highest_market_beta",
+            "lowest_market_beta_industry",
+            "lowest_market_beta"
+          ]
+        },
+        {
+          "query": "From the carried sample covariance matrix, solve the fully invested, strictly positive, long-only equal-risk-contribution portfolio with equal variance-risk budgets across the five industries. Report each weight in the cohort order established in the first turn, the annualized training volatility using 252 days, and the maximum absolute deviation of a component variance-contribution share from 20 percent. Using the carried regression loadings, also report the portfolio's fitted Mkt-RF, SMB and HML betas. Carry the frozen weights forward and explain how equal risk contribution differs from equal capital weighting and what the factor exposures add to the risk-budget result.",
+          "validator": "validate_equal_risk_contribution",
+          "stores": [
+            "erc_weight_rank_1_pct",
+            "erc_weight_rank_2_pct",
+            "erc_weight_rank_3_pct",
+            "erc_weight_rank_4_pct",
+            "erc_weight_rank_5_pct",
+            "erc_annualized_training_volatility_pct",
+            "maximum_erc_share_deviation_pp",
+            "erc_market_beta",
+            "erc_smb_beta",
+            "erc_hml_beta"
+          ]
+        },
+        {
+          "query": "Apply the frozen target weights to each daily-return vector in the carried 60-date stress window, treating both portfolios as daily rebalanced and performing no weight re-estimation. Report the tail observation count, compounded portfolio return, annualized realized volatility using 252 days, maximum drawdown from a wealth index initialized at one, and positive-loss 97.5-percent non-interpolated historical expected shortfall using the worst ceiling-tail count. For an equal-capital-weight portfolio on the same cohort and dates, report compounded return and expected shortfall under the same convention. On the ERC portfolio's own tail dates, calculate component expected-shortfall contributions from each weighted industry loss; report the largest contributor by its canonical industry token and its contribution, breaking an exact contribution tie alphabetically, and component-sum minus portfolio expected shortfall. Compare the two portfolios, explain what the component contributions represent and over which observations they are defined, and give the material limits of the tail estimate.",
+          "validator": "validate_tail_stress",
+          "stores": [
+            "stress_tail_observation_count",
+            "erc_stress_cumulative_return_pct",
+            "erc_stress_annualized_volatility_pct",
+            "erc_stress_maximum_drawdown_pct",
+            "erc_stress_expected_shortfall_pct",
+            "equal_weight_stress_cumulative_return_pct",
+            "equal_weight_stress_expected_shortfall_pct",
+            "largest_erc_es_contributor_industry",
+            "largest_erc_es_contribution_pct",
+            "erc_es_additivity_residual_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

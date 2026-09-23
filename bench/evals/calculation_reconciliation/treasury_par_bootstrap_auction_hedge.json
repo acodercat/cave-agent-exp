@@ -1,0 +1,71 @@
+{
+  "name": "treasury_par_bootstrap_auction_hedge",
+  "module": "evals.calculation_reconciliation.treasury_par_bootstrap_auction_hedge",
+  "task_family": "calculation_reconciliation",
+  "data_sources": [
+    "treasury_auctions",
+    "treasury_yield_curve"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Within calendar-2025 Treasury auction records, restrict the population to original-issue ten-year fixed-rate nominal notes: exclude reopenings, inflation-indexed securities and floating-rate securities, require a reported issue date, and require positive bid-to-cover, coupon and price. Rank the eligible auctions by bid-to-cover descending, breaking an exact tie by earlier auction date and then CUSIP ascending. Report the eligible count and the selected CUSIP, auction date, issue date, maturity date, bid-to-cover ratio, annual coupon percent and auction price per 100 face. Carry the selected note and issue date forward, and interpret the material limits of using this selection rule as an auction-demand comparison.",
+          "validator": "validate_auction_selection",
+          "stores": [
+            "eligible_ten_year_auction_count",
+            "selected_cusip",
+            "selected_auction_date",
+            "selected_issue_date",
+            "selected_maturity_date",
+            "selected_bid_to_cover_ratio",
+            "selected_coupon_pct",
+            "selected_auction_price_per100"
+          ]
+        },
+        {
+          "query": "On that note's issue date, construct a semiannual analytical discount curve from the Treasury par yields at 6 months, 1, 2, 3, 5, 7, 10, 20 and 30 years. Use a sequential par-instrument bootstrap and linearly interpolate par yields in maturity for the missing half-year tenors. Report the curve date, the reported 10- and 30-year par yields, the bootstrapped 10- and 30-year discount factors, the corresponding semiannual-compounded spot yields, and the maximum absolute repricing residual per 100 face across synthetic par instruments at every half-year through 30 years. Carry the complete bootstrapped curve forward and explain the financial distinction between the reported par yields and the derived spot curve.",
+          "validator": "validate_bootstrapped_curve",
+          "stores": [
+            "curve_observation_date",
+            "ten_year_par_yield_pct",
+            "thirty_year_par_yield_pct",
+            "ten_year_discount_factor",
+            "thirty_year_discount_factor",
+            "ten_year_spot_yield_pct",
+            "thirty_year_spot_yield_pct",
+            "maximum_par_repricing_residual_per100"
+          ]
+        },
+        {
+          "query": "Using the curve carried forward, price the selected note per 100 face on its issue date with twenty regular half-year cash-flow periods and no accrued interest. Report the model price. Then rebootstrap after parallel one-basis-point upward and downward shocks to all nine quoted par nodes and report the two shocked prices, the standard symmetric effective duration and the standard symmetric effective convexity. Interpret the price reconciliation, the roles of duration and convexity, and the reconciliation's material inferential limits.",
+          "validator": "validate_note_repricing",
+          "stores": [
+            "target_model_price_per100",
+            "target_parallel_up_price_per100",
+            "target_parallel_down_price_per100",
+            "target_effective_duration_years",
+            "target_effective_convexity"
+          ]
+        },
+        {
+          "query": "Complete a two-key-rate hedge for 100 face of that note. Define synthetic five- and ten-year par securities on the base analytical curve, keeping their base coupons fixed thereafter. For the target and both hedges, measure five- and ten-year par-node key-rate DV01 by increasing only the corresponding quoted par node by one basis point, re-bootstrapping the curve, and taking the signed price loss under that upward bump. Solve the two hedge face amounts that set both combined key-rate DV01s to zero, with positive face denoting a long position and negative face a short. Report the target's two key-rate DV01s, both hedge face amounts and the maximum absolute post-hedge residual. Finally use the next available Treasury curve observation after the issue date, hold all coupons and cash-flow grids fixed, and report that date, the unhedged target and hedged portfolio changes as next value minus base value per 100 target face. Interpret what the hedge test establishes and its material coverage limits.",
+          "validator": "validate_key_rate_hedge",
+          "stores": [
+            "target_five_year_key_rate_dv01_per100",
+            "target_ten_year_key_rate_dv01_per100",
+            "five_year_hedge_face_per100_target",
+            "ten_year_hedge_face_per100_target",
+            "maximum_post_hedge_key_rate_residual_per100",
+            "next_curve_date",
+            "next_day_unhedged_price_change_per100",
+            "next_day_hedged_price_change_per100"
+          ]
+        }
+      ]
+    }
+  ]
+}

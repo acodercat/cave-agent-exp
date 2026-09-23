@@ -1,0 +1,64 @@
+{
+  "name": "bank_year_to_date_flow_derivation",
+  "module": "evals.calculation_reconciliation.bank_year_to_date_flow_derivation",
+  "task_family": "calculation_reconciliation",
+  "data_sources": [
+    "fdic_bankfind",
+    "fdic_sod",
+    "ffiec_call_reports_capital"
+  ],
+  "case_type": "baseline",
+  "difficulty": "hard",
+  "conversations": [
+    {
+      "turns": [
+        {
+          "query": "Bank income statements in the FDIC financial file accumulate within a calendar year. Build a panel from the banks whose total assets exceed 10 billion USD at the 2024-09-30 report date, and follow those same banks through all four 2024 report dates. Report how many banks the panel holds. For each bank and date derive the quarterly figure by subtracting the previous report date's cumulative figure within the same year, treating the first date as needing no subtraction. Define net interest income as total interest income minus total interest expense. At each of the four dates divide the panel's summed cumulative net interest income by its summed quarterly net interest income and report the four multiples to 4 decimals. Then report the panel's cumulative net interest income at the report date in USD billions to 4 decimals. Briefly interpret what the four multiples show about the cumulative reporting convention.",
+          "validator": "validate_cumulative_structure",
+          "stores": [
+            "panel_banks",
+            "first_quarter_multiple",
+            "second_quarter_multiple",
+            "third_quarter_multiple",
+            "fourth_quarter_multiple",
+            "cumulative_income_usd_billions"
+          ]
+        },
+        {
+          "query": "Stay at the 2024-09-30 report date. Report the panel's net interest income earned in that quarter alone, in USD billions to 4 decimals. Then take the panel's largest bank by total assets, breaking a tie on the lower certificate number, and report its name, its cumulative net interest income and its quarterly net interest income, both in USD billions to 4 decimals, and the ratio of the two to 4 decimals. Briefly interpret the scope difference between the cumulative and standalone-quarter amounts.",
+          "validator": "validate_quarter_derivation",
+          "stores": [
+            "quarter_income_usd_billions",
+            "leader_name",
+            "leader_cumulative_usd_billions",
+            "leader_quarter_usd_billions",
+            "leader_multiple"
+          ]
+        },
+        {
+          "query": "Now test what the convention does to a ratio with a stock underneath it. At the same date report the median of net income divided by total assets across the panel, in percent to 4 decimals, using the cumulative net income as reported. Then report the same median using net income annualized by multiplying by four thirds, and report the first median divided by the second, to 4 decimals. Next map each panel bank's FDIC certificate to an RSSD identifier using the Summary of Deposits branch file, and where a certificate carries more than one identifier keep the one appearing on the most branch records, breaking a tie on the lower identifier; and join to the FFIEC capital schedule at the same date. Keeping banks with positive standardized risk-weighted assets, report how many remain, the median ratio of risk-weighted assets to total assets to 4 decimals, and the median annualized net income over risk-weighted assets in percent to 4 decimals. Explain how the reporting period and denominator choices affect interpretation of the two return measures.",
+          "validator": "validate_flow_to_stock",
+          "stores": [
+            "median_return_from_cumulative",
+            "median_return_annualized",
+            "annualization_ratio",
+            "bridged_banks",
+            "median_risk_weight_share",
+            "median_return_on_risk_weighted"
+          ]
+        },
+        {
+          "query": "Finally test a ratio with a flow underneath it. Define revenue as net interest income plus total noninterest income, and the efficiency ratio as total noninterest expense divided by revenue, in percent. At the same date compute it two ways for each panel bank, once from cumulative figures and once from the derived quarterly figures, keeping only banks whose revenue is positive on both readings. Report how many banks remain, the median of each ratio to 4 decimals, the median absolute difference between the two in percentage points to 4 decimals, and how many banks differ by more than 5 percentage points. Explain why annualization and period aggregation affect this flow-to-flow ratio differently.",
+          "validator": "validate_flow_to_flow",
+          "stores": [
+            "efficiency_panel",
+            "median_efficiency_from_cumulative",
+            "median_efficiency_from_quarter",
+            "median_efficiency_gap",
+            "banks_gap_above_five"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "name": "bank_securities_concentration_outcome_channels",
+  "module": "evals.scenario_analysis.bank_securities_concentration_outcome_channels",
+  "task_family": "scenario_analysis",
+  "data_sources": [
+    "fdic_bankfind",
+    "treasury_yield_curve"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "turns": [
+        {
+          "query": "Build a matched panel of banks from the quarterly financial reports. Keep institutions that appear at both the 2021-12-31 and the 2024-12-31 report dates with at least 100,000 thousand USD of assets, positive deposits and positive equity at the earlier date, and report how many banks that leaves. From the par yield curve report the ten-year yield on each of those two dates in percent and the change between them in basis points. Then, for each bank, take securities divided by assets at the earlier date as a percent, sort ascending on that share with certificate ascending as the tie-break, assign the ordered banks to five equal-frequency groups, and report the median share of the lowest group, the median share of the highest group, and the minimum observed share in the highest group. Explain the survivor-panel boundary and the conditional price effect of the rate move on a fixed-rate securities portfolio bought before it.",
+          "validator": "validate_panel_construction",
+          "stores": [
+            "panel_bank_count",
+            "start_yield_pct",
+            "end_yield_pct",
+            "yield_change_bp",
+            "lowest_fifth_median_securities_share_pct",
+            "highest_fifth_median_securities_share_pct",
+            "top_fifth_lower_bound_pct"
+          ]
+        },
+        {
+          "query": "Compare the margin outcome. For the lowest and the highest of the five groups report the median net interest margin at each of the two dates, and separately the median across banks of each bank's own margin change in percentage points. Take the change per bank first and the median second; the median of the changes is not the change in the medians. Then report the correlation across the whole panel between the starting securities share and the change in margin. Explain how the level and change comparisons differ and what these descriptive figures can and cannot attribute to the earlier securities allocation.",
+          "validator": "validate_margin_channel",
+          "stores": [
+            "lowest_fifth_start_margin_pct",
+            "lowest_fifth_end_margin_pct",
+            "lowest_fifth_margin_change_pp",
+            "highest_fifth_start_margin_pct",
+            "highest_fifth_end_margin_pct",
+            "highest_fifth_margin_change_pp",
+            "margin_change_correlation"
+          ]
+        },
+        {
+          "query": "Compare deposit, book-equity and cumulative-income outcomes. For the lowest, middle and highest of the five groups report median deposit growth between the two dates in percent. For the lowest and highest group report median growth in book equity over the same window in percent, and how many of the five groups show negative median equity growth. Then, for the lowest and highest group, sum each bank's net income over the 2022, 2023 and 2024 annual reports, express that sum as a percent of its equity at the earlier date, and report the median of each group. Explain which outcomes separate in this sample and what the last figure establishes without attributing the non-earnings changes to an unobserved component.",
+          "validator": "validate_funding_and_capital_channels",
+          "stores": [
+            "lowest_fifth_deposit_growth_pct",
+            "middle_fifth_deposit_growth_pct",
+            "highest_fifth_deposit_growth_pct",
+            "lowest_fifth_equity_growth_pct",
+            "highest_fifth_equity_growth_pct",
+            "negative_equity_growth_fifth_count",
+            "lowest_fifth_earnings_over_equity_pct",
+            "highest_fifth_earnings_over_equity_pct"
+          ]
+        },
+        {
+          "query": "Repeat the tail-group comparison within the large-bank subset. Restrict the panel to banks strictly above 10,000,000 thousand USD of assets at the earlier date, report how many there are, and reassign five equal-frequency groups using the same starting-share ordering and tie-break. Report the median deposit growth and median equity growth of the lowest and highest group. Then report the full-panel correlations between the starting securities share and each of deposit growth and equity growth. Explain what the subset comparison adds without treating it as a causal size control, and why correlations and tail-group medians need not agree.",
+          "validator": "validate_size_control",
+          "stores": [
+            "large_bank_count",
+            "large_lowest_fifth_deposit_growth_pct",
+            "large_highest_fifth_deposit_growth_pct",
+            "large_lowest_fifth_equity_growth_pct",
+            "large_highest_fifth_equity_growth_pct",
+            "deposit_growth_correlation",
+            "equity_growth_correlation"
+          ]
+        }
+      ]
+    }
+  ]
+}

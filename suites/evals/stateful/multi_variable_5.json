@@ -1,0 +1,111 @@
+[
+  {
+    "name": "multi_variable_5",
+    "module": "evals.stateful.multi_variable_5",
+    "requirements": "Manage the state of a system with 5 variables. Each variable has a specific type and initial value. The system should be able to perform operations on the variables and update their values. The system should be able to persist the variables across multiple turns.",
+    "conversations": [
+      {
+        "id": "user_profile",
+        "turns": [
+          {
+            "query": "I need to create a new user account. The username is 'alice', she's 25 years old, starting balance is $100.50, mark her as active, and give her the 'new' and 'premium' tags.",
+            "validator": "validate_profile_init"
+          },
+          {
+            "query": "Alice just verified her email. Please update her username to include '_updated' at the end, she also had a birthday so increment her age, add $50 to her balance as a bonus, and add 'verified' to her tags.",
+            "validator": "validate_profile_update"
+          },
+          {
+            "query": "We need to process some changes: convert Alice's username to uppercase, apply a 10% fee to her balance, deactivate her account, and remove the 'new' tag since she's no longer a new user.",
+            "validator": "validate_profile_modify"
+          }
+        ]
+      },
+      {
+        "id": "reset_operations",
+        "turns": [
+          {
+            "query": "Create another user profile for Bob. He's 30 years old, has $500 in his account, is currently active, and has admin privileges.",
+            "validator": "validate_reset_init"
+          },
+          {
+            "query": "Bob's data just got corrupted by a bug that doubled everything. Apply this corrupted state: his username is now repeated twice, age and balance are doubled, and his admin tag shows up twice in the list.",
+            "validator": "validate_reset_double"
+          },
+          {
+            "query": "Bob requested account deletion. Clear all his information - empty username, zero out age and balance, deactivate the account, and remove all tags.",
+            "validator": "validate_reset_clear"
+          }
+        ]
+      },
+      {
+        "id": "subscription_cycle",
+        "turns": [
+          {
+            "query": "A new subscriber named 'charlie' just signed up. He's 22 years old, paid $9.99 for a monthly plan. Activate his account and tag him as 'monthly'.",
+            "validator": "validate_subscription_signup"
+          },
+          {
+            "query": "Charlie loves our service and wants to upgrade! Change his username to 'charlie_pro', update his payment to $29.99 for the annual plan, and replace his tags with 'annual' and 'pro'.",
+            "validator": "validate_subscription_upgrade"
+          },
+          {
+            "query": "Unfortunately Charlie decided to cancel. Give him a partial refund of $15 (so balance becomes $14.99), deactivate his account, and change his tags to just 'cancelled'.",
+            "validator": "validate_subscription_cancel"
+          }
+        ]
+      },
+      {
+        "id": "gaming_account",
+        "turns": [
+          {
+            "query": "New gamer registration! Username is 'DragonSlayer99', they're 18 years old, starting with 50 coins in their balance, account is active, tagged as 'beginner' and 'free' tier.",
+            "validator": "validate_gaming_create"
+          },
+          {
+            "query": "DragonSlayer99 just completed a quest! They spent 25 coins on upgrades (balance now 25), leveled up from 'beginner' to 'intermediate', and earned an 'achievement' badge. Keep the 'free' tag.",
+            "validator": "validate_gaming_levelup"
+          },
+          {
+            "query": "Big milestone! DragonSlayer99 is going premium. Add '_VIP' to their username, they had a birthday so now age 19, they bought 100 coins (balance now 125), upgrade to 'expert' level, change 'free' to 'premium', keep 'achievement', and add 'vip' tag.",
+            "validator": "validate_gaming_premium"
+          }
+        ]
+      },
+      {
+        "id": "money_transfer",
+        "turns": [
+          {
+            "query": "Setting up a transfer account for Dana. She's 35 years old, depositing $1000 to start, account is active, tagged with 'savings' and 'verified'.",
+            "validator": "validate_transfer_setup"
+          },
+          {
+            "query": "Dana is sending money to a friend. Deduct $250 for the transfer and $5 service fee from her balance. Add 'sent_money' to her tags to track the transaction.",
+            "validator": "validate_transfer_send"
+          },
+          {
+            "query": "Good news - Dana received a payment of $500! Add it to her balance and add 'received_money' to her tags.",
+            "validator": "validate_transfer_receive"
+          }
+        ]
+      },
+      {
+        "id": "employee_record",
+        "turns": [
+          {
+            "query": "We're hiring a new employee. Set username to 'emp_eva', she's 28 years old, starting salary is $5000 per month (use balance), she's actively employed, and tagged with 'engineering' department and 'junior' level.",
+            "validator": "validate_employee_hire"
+          },
+          {
+            "query": "Eva got promoted after 2 years! She's now 30, salary increased to $7500, still active. Change her level from 'junior' to 'senior' and add 'team_lead' to her tags.",
+            "validator": "validate_employee_promote"
+          },
+          {
+            "query": "Eva is leaving the company. Change her username to 'former_eva', zero out her salary, deactivate her account, and replace all her tags with just 'alumni'.",
+            "validator": "validate_employee_leave"
+          }
+        ]
+      }
+    ]
+  }
+]

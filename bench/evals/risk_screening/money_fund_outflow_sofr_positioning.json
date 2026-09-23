@@ -1,0 +1,71 @@
+{
+  "name": "money_fund_outflow_sofr_positioning",
+  "module": "evals.risk_screening.money_fund_outflow_sofr_positioning",
+  "task_family": "risk_screening",
+  "data_sources": [
+    "sec_nmfp",
+    "cftc_cot"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Screen original Form N-MFP3 accessions with 2025 report dates and report-date net assets of at least $10 billion. Within each accession's report-date calendar month, order its reported liquidity observations by date and form consecutive steps. Retain steps whose weekly-liquid-asset amount and reported fraction are both positive at both endpoints. Rank by the most negative ending-minus-starting weekly-liquid-assets fraction, breaking a tie by earlier ending date, series name and accession. Report the eligible accession and step counts; selected accession, series, report date and net assets; step dates; both weekly-liquid-asset amounts and fractions; and decline-magnitude margin over the runner-up. Explain the selected liquidity signal.",
+          "validator": "validate_nmfp_liquidity_drawdown",
+          "stores": [
+            "eligible_nmfp_accession_count",
+            "eligible_liquidity_step_count",
+            "liquidity_drawdown_leader_accession",
+            "liquidity_drawdown_leader_series_name",
+            "liquidity_drawdown_leader_report_date",
+            "liquidity_drawdown_leader_net_assets_usd_billions",
+            "liquidity_drawdown_start_date",
+            "liquidity_drawdown_end_date",
+            "start_weekly_liquid_assets_usd_billions",
+            "end_weekly_liquid_assets_usd_billions",
+            "start_weekly_liquid_assets_pct",
+            "end_weekly_liquid_assets_pct",
+            "liquidity_drawdown_leader_margin_pp"
+          ]
+        },
+        {
+          "query": "For the accession and ending date selected above, aggregate all reported share-class flow rows on that exact date. Report the contributing row count, gross subscriptions, gross redemptions, and net outflow, redemptions minus subscriptions, divided by report-date net assets. Also report net outflow divided by the turn-1 decline in weekly liquid assets. Explain whether the two dollar movements reconcile.",
+          "validator": "validate_event_flow_bridge",
+          "stores": [
+            "event_flow_share_class_count",
+            "event_gross_subscriptions_usd_billions",
+            "event_gross_redemptions_usd_billions",
+            "event_net_outflow_to_net_assets_pct",
+            "net_outflow_to_weekly_liquidity_decline_pct"
+          ]
+        },
+        {
+          "query": "Bracket the selected liquidity-step ending date with the immediately prior and immediately following CFTC report dates for the futures-only 3-month SOFR contract code 134741. For each endpoint calculate leveraged-money long minus short contracts. Report both dates, both net positions, their change, both open-interest levels and the open-interest change. Explain what this market-positioning overlay does and does not establish about the fund event.",
+          "validator": "validate_cftc_bracket",
+          "stores": [
+            "prior_cftc_report_date",
+            "next_cftc_report_date",
+            "prior_sofr3m_lev_money_net_contracts",
+            "next_sofr3m_lev_money_net_contracts",
+            "sofr3m_lev_money_net_change_contracts",
+            "prior_sofr3m_open_interest_contracts",
+            "next_sofr3m_open_interest_contracts",
+            "sofr3m_open_interest_change_contracts"
+          ]
+        },
+        {
+          "query": "Decompose the turn-1 dollar change in weekly liquid assets. At both step endpoints report daily liquid assets; weekly liquid assets minus daily liquid assets is the other component. Compute the ending-minus-starting change in each component and report their summed change minus the reported weekly-liquid-assets change. Explain which component drives the drawdown and the scope of this additive bridge.",
+          "validator": "validate_liquidity_decomposition",
+          "stores": [
+            "start_daily_liquid_assets_usd_billions",
+            "end_daily_liquid_assets_usd_billions",
+            "weekly_liquidity_decomposition_residual_usd_millions"
+          ]
+        }
+      ]
+    }
+  ]
+}

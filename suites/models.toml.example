@@ -1,0 +1,85 @@
+# Model registry for cave-bench.
+#
+# Copy this file to `models.toml` and fill in real keys. `models.toml` is
+# gitignored because it holds secrets; this `.example` is the committed template.
+#
+# Each [section] is one selectable model. Reference it by section name:
+#   uv run python -m scripts.stateful --model deepseek
+#
+# Fields:
+#   api_model         (required) identifier sent to the provider API. `model_id`
+#                     is accepted as an alias, so a config shared with other tools
+#                     loads unchanged.
+#   api_key           (required)
+#   base_url          (optional) custom endpoint; omit for the provider default
+#   provider          (optional) litellm provider, default "openai"
+#   temperature       (optional) default 0.3
+#   reasoning         (optional) true for a reasoning model; suppresses temperature
+#   supports_temperature (optional) set false for a NON-reasoning model that still
+#                     rejects `temperature` (see the claude-sonnet-5 note below)
+#   max_tokens        (optional) max completion tokens
+#   timeout           (optional) per-request timeout in seconds
+#   reasoning_effort  (optional) "low" | "medium" | "high" (reasoning models)
+#   extra_body        (optional) arbitrary provider passthrough (inline table)
+#   thinking          (optional) table of mode -> extra_body fragment, selected
+#                     by `--thinking on|off` and merged over extra_body at build
+#
+# Any value may use ${VAR}, which is read from the environment when the config
+# loads (see the [deepseek] section below), so this file can be shared without
+# holding a key. A variable that is unset or empty is an error at load time
+# rather than a 401 mid-sweep. There is no escape syntax for a literal ${...}.
+
+[deepseek]
+api_model = "deepseek-chat"
+api_key = "${DEEPSEEK_API_KEY}"   # or the key itself
+base_url = "https://api.deepseek.com/v1"
+provider = "openai"
+temperature = 0.3
+
+[gemini]
+api_model = "gemini-2.5-flash"
+api_key = "your-api-key"
+provider = "gemini"
+temperature = 0.3
+
+[anthropic]
+api_model = "claude-sonnet-4-6"
+api_key = "your-api-key"
+provider = "anthropic"
+temperature = 0.3
+
+# Reasoning model: budget tokens + effort. `reasoning = true` suppresses
+# `temperature`, which such models reject.
+#
+# Do not rely on litellm.drop_params for this. It only drops parameters litellm
+# knows a given model lacks, which it cannot know behind a custom gateway — the
+# request then still fails with a 400 (verified).
+[gpt5-reasoning]
+api_model = "gpt-5"
+api_key = "your-api-key"
+base_url = "https://api.openai.com/v1"
+reasoning = true
+max_tokens = 16384
+reasoning_effort = "medium"
+
+# A model that rejects `temperature` without being a reasoning model. Marking it
+# `reasoning = true` would suppress the parameter but misdescribe the model, so
+# say what is actually true instead.
+[claude-sonnet-5]
+api_model = "claude-sonnet-5"
+api_key = "your-api-key"
+base_url = "https://your-openai-compatible-gateway/v1"
+supports_temperature = false
+max_tokens = 65536
+timeout = 900.0
+
+# Thinking on/off axis (e.g. a self-hosted SGLang/Qwen endpoint). `--thinking on`
+# merges the `on` fragment onto extra_body; `--thinking off` merges `off`.
+[qwen-thinking]
+api_model = "qwen3"
+api_key = "your-api-key"
+base_url = "http://localhost:8000/v1"
+[qwen-thinking.thinking.on]
+chat_template_kwargs = { enable_thinking = true }
+[qwen-thinking.thinking.off]
+chat_template_kwargs = { enable_thinking = false }

@@ -1,0 +1,24 @@
+{
+  "name": "private_offerings_10",
+  "module": "cases.table_delivery.private_offerings_10",
+  "task_family": "table_delivery",
+  "data_sources": [
+    "sec_form_d"
+  ],
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Tabulate the Form D notices filed during 2024 whose industry group is Electric Utilities. For each notice: the accession number, the CIK, the entity name, the filing date, the total offering amount, the total amount sold, and the amount sold as a fraction of the offering. Many issuers declare an offering of indefinite size; treat that as no stated amount and leave the amount and the fraction missing, and leave the fraction missing for a stated amount of zero as well.",
+          "validator": "validate",
+          "stores": [
+            "offering_table"
+          ]
+        }
+      ]
+    }
+  ]
+}

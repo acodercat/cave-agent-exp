@@ -1,0 +1,19 @@
+{
+  "stateful": [
+    "simple_types",
+    "object_types",
+    "scientific_types",
+    "multi_variable_5",
+    "multi_variable_10",
+    "multi_variable_15",
+    "multi_variable_20",
+    "multi_variable_25",
+    "multi_turn_smart_home",
+    "multi_turn_financial_account"
+  ],
+  "token_efficiency": [
+    "inventory_management",
+    "financial_analysis_2",
+    "smart_farm_management"
+  ]
+}

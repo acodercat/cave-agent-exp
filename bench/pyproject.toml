@@ -1,0 +1,23 @@
+[project]
+name = "cave-bench"
+version = "0.2.0"
+description = "Runtime-grounded evaluation of CaveAgent on governed financial data, scored by programmatic verification"
+requires-python = ">=3.12"
+dependencies = [
+  "cave-agent[all]==0.8.0",
+  "google-genai>=1.52.0",
+  "pandas>=2.2.3",
+  "pyarrow>=18.1.0",
+  "scipy>=1.15.0",
+  "scikit-learn>=1.6.0",
+]
+
+[dependency-groups]
+dev = ["pytest>=9.0.2"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+markers = [
+  "runtime_data: requires the governed runtime tables under datasets/dataset_new",
+]

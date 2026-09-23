@@ -1,0 +1,94 @@
+[
+  {
+    "name": "multi_variable_10",
+    "module": "evals.stateful.multi_variable_10",
+    "requirements": "Manage the state of a system with 10 variables. Each variable has a specific type and initial value. The system should be able to perform operations on the variables and update their values. The system should be able to persist the variables across multiple turns.",
+    "conversations": [
+      {
+        "id": "product_lifecycle",
+        "turns": [
+          {
+            "query": "We're adding a new laptop to our inventory. It's called 'Laptop' in the Electronics category, we have 50 units available out of 100 total stock. Price is $999.99 with a 10% discount rate. It's in stock and featured. Customer reviews are 5, 4, 5 stars. The metadata should include brand 'TechCo' and year 2024.",
+            "validator": "validate_product_init"
+          },
+          {
+            "query": "We just sold 5 laptops! Decrease quantity by 5 and stock_count by 5. Set price to the discounted price by applying the 10% discount. Add a new 4-star review to the list. Add 'sold': 5 to the metadata.",
+            "validator": "validate_product_sale"
+          },
+          {
+            "query": "We're upgrading this to a Pro model. Append ' Pro' to the product name, make it a 'Premium Electronics' category, increase the current price by 20%, change the discount rate to 0.2, set is_featured to false. Add 'upgraded': true to metadata.",
+            "validator": "validate_product_update"
+          }
+        ]
+      },
+      {
+        "id": "inventory_cycle",
+        "turns": [
+          {
+            "query": "Adding a new phone to inventory. Product name is 'Phone', category 'Mobile', 200 available quantity, 500 total stock. Price $599, no discount yet. It's in stock but not featured. No reviews yet. Metadata just has color as black.",
+            "validator": "validate_inventory_init"
+          },
+          {
+            "query": "Great news! A shipment arrived - double the quantity and add 200 to stock_count. Set is_featured to true. Add a 5-star review to the reviews list. Add 'restocked': true to metadata.",
+            "validator": "validate_inventory_restock"
+          },
+          {
+            "query": "We're discontinuing this phone model. Append ' [CLEARANCE]' to the product name, set quantity and stock_count to 0, halve the price, set discount_rate to 0.5. Set in_stock to false and is_featured to false. Add 'clearance': true to metadata.",
+            "validator": "validate_inventory_clearance"
+          }
+        ]
+      },
+      {
+        "id": "bookstore",
+        "turns": [
+          {
+            "query": "New book arrival for our store! It's called 'Python Mastery' in the Programming Books category. We have 25 copies available out of 50 in stock. Priced at $49.99 with no discount. It's in stock and featured as our pick of the month. Already has reviews: 5, 5, 4 stars. Metadata includes author 'Jane Smith', 450 pages, ISBN '978-1234567890'.",
+            "validator": "validate_book_new"
+          },
+          {
+            "query": "Amazing news - our Python book is now a bestseller! Update the name to 'Python Mastery - Bestseller Edition', move it to the 'Bestsellers' category. Set quantity to 10 and stock_count to 35. Set price to $54.99 and discount_rate to 0.15. Append two 5-star reviews to the list. Add 'bestseller_rank': 1 to metadata.",
+            "validator": "validate_book_bestseller"
+          },
+          {
+            "query": "We're releasing a second edition! Change name to 'Python Mastery - 2nd Edition'. Set quantity to 110 and stock_count to 135. Set price to $59.99 and discount_rate to 0.1. Set is_featured to false. Update metadata: set pages to 500, ISBN to '978-1234567891', add 'edition': 2.",
+            "validator": "validate_book_reprint"
+          }
+        ]
+      },
+      {
+        "id": "fashion_retail",
+        "turns": [
+          {
+            "query": "Launching a new fashion item! Product name is 'Summer Dress' in Women's Apparel category. We have 75 units available out of 150 total stock. Price is $89.99, no discount for new arrivals. It's in stock and featured on our homepage. No reviews yet since it just launched. Metadata has size 'M', color 'blue', material 'cotton'.",
+            "validator": "validate_fashion_launch"
+          },
+          {
+            "query": "This dress is selling like crazy! Set quantity to 25 and stock_count to 100 after selling 50 units. Raise price to $99.99. Keep discount_rate at 0, in_stock true, is_featured true. Set reviews to [5, 4, 5, 5]. Add 'trending': true to metadata while keeping size, color, and material.",
+            "validator": "validate_fashion_popular"
+          },
+          {
+            "query": "End of season sale time! Update name to 'Summer Dress - End of Season', set category to 'Sale'. Set quantity and stock_count to 5. Set price to $49.99 and discount_rate to 0.5. Keep in_stock true, set is_featured to false. Append 3 to reviews. Add 'season': 'summer2024' to metadata while keeping existing entries.",
+            "validator": "validate_fashion_seasonal"
+          }
+        ]
+      },
+      {
+        "id": "grocery_store",
+        "turns": [
+          {
+            "query": "Stocking fresh produce today. Product name 'Organic Apples', category 'Fresh Produce'. Both quantity and stock are 200 units. Price is $4.99 per lb, no discount. In stock but not featured. Two reviews: 4 and 5 stars. Metadata shows origin 'Washington', organic is true, unit is 'per lb'.",
+            "validator": "validate_grocery_stock"
+          },
+          {
+            "query": "Running a weekly special on the apples! Update name to 'Organic Apples - Weekly Special'. Set quantity and stock_count to 150 after selling 50. Set price to $3.99 and discount_rate to 0.2. Keep in_stock true, set is_featured to true. Append 5 to reviews. Add 'promo_week': 42 to metadata while keeping existing entries.",
+            "validator": "validate_grocery_promo"
+          },
+          {
+            "query": "Promo week is over and we're running low. Set name back to 'Organic Apples'. Set quantity and stock_count to 10. Set price to $5.99 and discount_rate to 0. Keep in_stock true, set is_featured to false. Keep reviews unchanged. Add 'reorder': true to metadata while keeping existing entries.",
+            "validator": "validate_grocery_lowstock"
+          }
+        ]
+      }
+    ]
+  }
+]

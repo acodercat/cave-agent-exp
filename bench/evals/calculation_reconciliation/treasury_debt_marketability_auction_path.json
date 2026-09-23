@@ -1,0 +1,79 @@
+{
+  "name": "treasury_debt_marketability_auction_path",
+  "module": "evals.calculation_reconciliation.treasury_debt_marketability_auction_path",
+  "task_family": "calculation_reconciliation",
+  "data_sources": [
+    "treasury_debt_to_penny",
+    "treasury_marketable_securities",
+    "treasury_auctions",
+    "treasury_yield_curve"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Across the 2024-01-31 through 2025-12-31 monthly MSPD snapshots, align each snapshot to the latest Treasury Debt-to-the-Penny observation on or before that snapshot date. Rank consecutive aligned intervals by ending minus starting total public debt outstanding descending, breaking a tie by earlier ending MSPD date. Report aligned snapshot count; selected starting and ending MSPD dates and their aligned daily observation dates; changes in total debt, debt held by the public and intragovernmental holdings; and the selected total-debt change minus the runner-up interval change. Explain the component direction of the selected change.",
+          "validator": "validate_debt_interval",
+          "stores": [
+            "aligned_mspd_snapshot_count",
+            "selected_interval_start_mspd_date",
+            "selected_interval_end_mspd_date",
+            "selected_interval_start_debt_observation_date",
+            "selected_interval_end_debt_observation_date",
+            "selected_total_debt_change_usd_billions",
+            "selected_public_debt_change_usd_billions",
+            "selected_intragovernmental_change_usd_billions",
+            "selected_total_debt_change_margin_usd_billions"
+          ]
+        },
+        {
+          "query": "For the selected MSPD interval, use the published Total Marketable row and the Treasury Bills, Notes, Bonds, TIPS and Floating Rate Notes class-total rows. Report starting and ending total marketable outstanding; each class-total change; the class with the greatest increase, breaking a tie by class display name; total marketable change minus the sum of the five class changes; and total marketable change divided by the prior turn's debt-held-by-public change. Explain the reconciliation and the remaining scope difference.",
+          "validator": "validate_marketable_stock",
+          "stores": [
+            "start_total_marketable_outstanding_usd_billions",
+            "end_total_marketable_outstanding_usd_billions",
+            "bills_outstanding_change_usd_billions",
+            "notes_outstanding_change_usd_billions",
+            "bonds_outstanding_change_usd_billions",
+            "tips_outstanding_change_usd_billions",
+            "frn_outstanding_change_usd_billions",
+            "largest_marketable_change_class",
+            "class_change_reconciliation_residual_usd_millions",
+            "marketable_change_share_of_public_debt_change_pct"
+          ]
+        },
+        {
+          "query": "Carry the leading marketable class from the prior turn into Treasury auction records. Retain records for that class whose issue date is after the starting MSPD date and on or before the ending MSPD date. Report event count, distinct CUSIP count, aggregate offering and total accepted amounts. Aggregate offering by reported security term, report the leading term, its event count and offering, its margin over the runner-up term, and total offering divided by that class's prior-turn outstanding-stock increase. Break an offering tie by security-term text ascending. Explain the relationship between the gross issued flows and the net month-end stock change.",
+          "validator": "validate_selected_class_auction_flow",
+          "stores": [
+            "selected_class_issue_event_count",
+            "selected_class_issue_distinct_cusip_count",
+            "selected_class_issue_offering_usd_billions",
+            "selected_class_issue_total_accepted_usd_billions",
+            "largest_selected_class_term_by_offering",
+            "largest_selected_class_term_issue_count",
+            "largest_selected_class_term_offering_usd_billions",
+            "largest_selected_class_term_offering_margin_usd_billions",
+            "selected_class_offering_to_stock_change_ratio"
+          ]
+        },
+        {
+          "query": "Add short-curve context for the same interval using the latest Treasury par-yield observation on or before each MSPD endpoint. Report both curve dates and the starting and ending 3-month and 1-year yields. Also calculate the total-accepted-weighted high investment rate across the prior turn's selected-class issues. Explain what the curve and auction-rate comparison can support.",
+          "validator": "validate_short_curve_context",
+          "stores": [
+            "curve_start_observation_date",
+            "curve_end_observation_date",
+            "curve_start_three_month_yield_pct",
+            "curve_end_three_month_yield_pct",
+            "curve_start_one_year_yield_pct",
+            "curve_end_one_year_yield_pct",
+            "selected_class_accepted_weighted_high_investment_rate_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

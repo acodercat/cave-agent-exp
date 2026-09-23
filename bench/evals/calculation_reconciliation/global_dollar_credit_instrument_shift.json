@@ -1,0 +1,66 @@
+{
+  "name": "global_dollar_credit_instrument_shift",
+  "module": "evals.calculation_reconciliation.global_dollar_credit_instrument_shift",
+  "task_family": "calculation_reconciliation",
+  "data_sources": [
+    "bis_global_liquidity",
+    "bis_effective_exchange_rates"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "turns": [
+        {
+          "query": "The global liquidity indicators report credit to non-bank borrowers located in emerging market and developing economies, by currency of denomination, split into international debt securities reported for all lending sectors and bank loans reported for the banking sector. Report how many distinct periods the table covers and the earliest period label. For the 2025-Q4 period and the US dollar series, report credit, its debt-securities component and its bank-loan component in millions. Then report securities plus loans minus credit for the dollar series and for the euro and yen series. Explain what those three residuals establish about how the components relate to the published total, and note where each component is reported from.",
+          "validator": "validate_instrument_identity",
+          "stores": [
+            "period_count",
+            "earliest_period",
+            "dollar_credit_millions",
+            "dollar_securities_millions",
+            "dollar_loans_millions",
+            "dollar_identity_residual_millions",
+            "euro_identity_residual_millions",
+            "yen_identity_residual_millions"
+          ]
+        },
+        {
+          "query": "Still at 2025-Q4, report credit for the euro series and for the yen series in millions, the yen figure divided by the dollar figure exactly as published, and the euro figure divided by the dollar figure exactly as published. Then report how many distinct units of measure the series at that period carry. Explain what those two ratios do and do not tell you, and what would be required to compare the three series by size.",
+          "validator": "validate_denomination_boundary",
+          "stores": [
+            "euro_credit_millions",
+            "yen_credit_millions",
+            "yen_to_dollar_published_ratio",
+            "euro_to_dollar_published_ratio",
+            "distinct_unit_count"
+          ]
+        },
+        {
+          "query": "Composition can be compared even where levels cannot. For 2025-Q4 report the debt-securities component as a percent of credit for each of the dollar, euro and yen series, and name the currency with the highest such share. Explain why this comparison is legitimate where the one in turn 2 was not, what a higher share establishes about the published instrument mix, and what it cannot establish about ultimate holders.",
+          "validator": "validate_composition_by_currency",
+          "stores": [
+            "dollar_securities_share_pct",
+            "euro_securities_share_pct",
+            "yen_securities_share_pct",
+            "highest_securities_share_currency"
+          ]
+        },
+        {
+          "query": "Trace the dollar series. Report the debt-securities share of dollar credit at 2010-Q4, 2015-Q4 and 2020-Q4 in percent, the level of dollar credit at 2010-Q4 in millions, and the growth in dollar credit from 2010-Q4 to 2025-Q4 in percent. Then, from the broad nominal effective exchange rate series for the United States, report the index for 2020-12 and for 2025-12 and the change between them in percent. Explain how the share path and reported level path should be interpreted together, and state the evidentiary limits of the two exchange-rate endpoints for explaining that path.",
+          "validator": "validate_shift_and_dollar_context",
+          "stores": [
+            "dollar_share_2010_pct",
+            "dollar_share_2015_pct",
+            "dollar_share_2020_pct",
+            "dollar_credit_2010_millions",
+            "dollar_credit_growth_pct",
+            "dollar_index_2020",
+            "dollar_index_2025",
+            "dollar_index_change_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

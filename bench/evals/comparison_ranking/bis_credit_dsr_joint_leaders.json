@@ -1,0 +1,34 @@
+{
+  "name": "bis_credit_dsr_joint_leaders",
+  "module": "evals.comparison_ranking.bis_credit_dsr_joint_leaders",
+  "task_family": "comparison_ranking",
+  "data_sources": [
+    "bis_credit_gap",
+    "bis_debt_service"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "For 2025 Q3, form one common country population having BIS private-nonfinancial-sector actual credit-to-GDP ratios and actual-minus-trend credit gaps under all-lender coverage, together with BIS private-nonfinancial-sector debt-service ratios. Within that same population, rank the three measures separately from highest to lowest, using country-name alphabetical order to resolve an exact value tie. Report the common-country count and each measure's leading country and value. Also report the actual-ratio leader's ordinal credit-gap rank and the credit-gap leader's ordinal actual-ratio and debt-service-ratio ranks, with rank 1 denoting the highest value. Use four decimals for credit ratios and gaps, one decimal for debt-service ratios, and explain what the ranking pattern does and does not imply about credit burden.",
+          "validator": "validate",
+          "stores": [
+            "joint_country_count",
+            "highest_actual_credit_ratio_country",
+            "highest_actual_credit_ratio_pct_of_gdp",
+            "highest_credit_gap_country",
+            "highest_credit_gap_percentage_points",
+            "highest_dsr_country",
+            "highest_dsr_pct",
+            "actual_ratio_leader_credit_gap_rank",
+            "credit_gap_leader_actual_ratio_rank",
+            "credit_gap_leader_dsr_rank"
+          ]
+        }
+      ]
+    }
+  ]
+}

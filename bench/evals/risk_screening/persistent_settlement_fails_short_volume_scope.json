@@ -1,0 +1,58 @@
+{
+  "name": "persistent_settlement_fails_short_volume_scope",
+  "module": "evals.risk_screening.persistent_settlement_fails_short_volume_scope",
+  "task_family": "risk_screening",
+  "data_sources": [
+    "sec_ftd",
+    "finra_short_volume"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Work with the fails-to-deliver record for settlement dates from 2025-01-01 through 2025-03-31 inclusive, keyed by trading symbol. Report how many distinct settlement dates the quarter holds and how many distinct symbols record at least one fail in it. Then form the cohort of symbols that record a fail on every one of those settlement dates, and report how many there are. Within that cohort select the symbol with the largest single-date fail quantity, breaking a tie by symbol ascending, and report the symbol and that quantity. Carry the cohort forward and explain what a fail to deliver records and what it does not.",
+          "validator": "validate_fail_population",
+          "stores": [
+            "settlement_date_count",
+            "failing_symbol_count",
+            "persistent_fail_symbol_count",
+            "persistent_peak_leader_symbol",
+            "persistent_peak_leader_quantity_shares"
+          ]
+        },
+        {
+          "query": "Bring in the daily short-volume file for the same calendar range, aggregating each symbol's short volume and reported volume over the quarter and keeping only symbols whose reported volume is above zero. Report how many distinct symbols that file covers, how many of the carried cohort it reports, and how many it does not. For the symbol selected in turn 1, report its quarter short volume divided by its quarter reported volume in percent. Explain what the unmatched members imply about the coverage of the two files.",
+          "validator": "validate_short_volume_match",
+          "stores": [
+            "short_volume_symbol_count",
+            "cohort_matched_symbol_count",
+            "cohort_unmatched_symbol_count",
+            "peak_leader_short_volume_share_pct"
+          ]
+        },
+        {
+          "query": "Compare the matched cohort with the whole reported population. Report the median short share across the matched cohort members and across every symbol the file reports, both in percent, and the median quarter reported volume for each of the same two groups in shares. Interpret whether the cohort looks like a set of heavily shorted securities or a set of heavily traded ones, and give the limits of a sixteen-member comparison.",
+          "validator": "validate_cohort_comparison",
+          "stores": [
+            "cohort_median_short_volume_share_pct",
+            "market_median_short_volume_share_pct",
+            "cohort_median_reported_volume_shares",
+            "market_median_reported_volume_shares"
+          ]
+        },
+        {
+          "query": "Return to the cohort members the short-volume file does not report. Select the one with the largest single-date fail quantity, breaking a tie by symbol ascending, and report the symbol and that quantity. Report whether the matched cohort's median short share is above the median for the whole reported population. Explain what this security shows about screening for shorting pressure by joining these two files.",
+          "validator": "validate_unreported_scope",
+          "stores": [
+            "largest_unmatched_symbol",
+            "largest_unmatched_peak_quantity_shares",
+            "cohort_short_share_exceeds_market"
+          ]
+        }
+      ]
+    }
+  ]
+}

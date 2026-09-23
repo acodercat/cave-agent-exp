@@ -1,0 +1,24 @@
+{
+  "name": "crowdfunding_top_offerings_100",
+  "module": "cases.table_control.crowdfunding_top_offerings_100",
+  "task_family": "table_control",
+  "data_sources": [
+    "sec_form_c"
+  ],
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "From the SEC Regulation Crowdfunding (Form C) filings, take those that state a maximum offering amount and rank them by it, highest first, breaking ties by accession number in ascending order; a filing that states no maximum is left out rather than sorted last. Deliver the top 100 of that ranking. Each row: the accession number, the issuer's name as filed, the filing date, the submission type, and the maximum offering amount in dollars as filed.",
+          "validator": "validate",
+          "stores": [
+            "offering_table"
+          ]
+        }
+      ]
+    }
+  ]
+}

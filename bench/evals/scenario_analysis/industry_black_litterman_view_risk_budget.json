@@ -1,0 +1,59 @@
+{
+  "name": "industry_black_litterman_view_risk_budget",
+  "module": "evals.scenario_analysis.industry_black_litterman_view_risk_budget",
+  "task_family": "scenario_analysis",
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "data_sources": [
+    "ken_french_10_industry_portfolios",
+    "ken_french_daily_factors"
+  ],
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Use Kenneth French's value-weighted HiTec, Utils, Enrgy and NoDur daily portfolios and the daily risk-free return on common dates in 2018-2022. Estimate the covariance of daily decimal excess returns with the sample denominator and annualize it with 252 observations. For a stipulated equal-capital equilibrium benchmark and standard Markowitz risk aversion four on annual decimal returns, obtain the CAPM reverse-optimization equilibrium mean vector. Report the training count, HiTec's implied annual excess mean, the benchmark's annual volatility and the covariance spectral condition number. Carry the covariance and full equilibrium mean vector forward and discuss the prior's financial meaning.",
+          "validator": "validate_turn_1",
+          "stores": [
+            "training_count",
+            "equilibrium_hitec_mean_pct",
+            "benchmark_volatility_pct",
+            "covariance_condition"
+          ]
+        },
+        {
+          "query": "Use the Gaussian hierarchical Black–Litterman model with the carried equilibrium mean and prior mean-uncertainty scale 0.05. The two annual relative-return views are HiTec outperforming Utils by three percentage points and Enrgy outperforming NoDur by one percentage point; their independent Gaussian error standard deviations are respectively two and three percentage points, independent of the prior. Conditional on the unknown mean, annual returns have the carried covariance. Report the posterior HiTec and Enrgy annual excess means and the posterior standard deviation of HiTec's mean. Carry the complete posterior and posterior predictive distribution forward and interpret the views relative to the prior.",
+          "validator": "validate_turn_2",
+          "stores": [
+            "posterior_hitec_mean_pct",
+            "posterior_enrgy_mean_pct",
+            "posterior_hitec_mean_sd_pct"
+          ]
+        },
+        {
+          "query": "With the carried posterior predictive mean and covariance, solve the fully invested four-industry Markowitz mean–variance allocation with risk aversion four, unrestricted short positions and no cash asset. Report all four weights, annual tracking error to the equal-capital benchmark measured with the carried training covariance, and posterior predictive portfolio volatility. Carry the full allocation and tracking-risk level forward and interpret its risk profile.",
+          "validator": "validate_turn_3",
+          "stores": [
+            "hitec_weight_pct",
+            "utils_weight_pct",
+            "enrgy_weight_pct",
+            "nodur_weight_pct",
+            "tracking_error_pct",
+            "predictive_volatility_pct"
+          ]
+        },
+        {
+          "query": "Multiply both original view-error variances by one common factor, preserving their relative precision and all other prior and allocation conventions. Find the smallest factor in the inclusive interval from one to 100 whose recomputed posterior-predictive allocation has tracking error exactly half the carried allocation's level, using the original training covariance. Report that factor and the revised Enrgy weight. Apply this revised allocation as fixed daily-rebalanced weights on common dates in calendar 2023; report annualized arithmetic mean excess return and sample volatility using 252 observations per year. Interpret this view-uncertainty adjustment and its held-out evidence.",
+          "validator": "validate_turn_4",
+          "stores": [
+            "view_variance_multiplier",
+            "recalibrated_enrgy_weight_pct",
+            "heldout_mean_excess_pct",
+            "heldout_volatility_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,247 @@
+[
+  {
+    "name": "scientific_types",
+    "module": "evals.stateful.scientific_types",
+    "requirements": "Manage the state of a system with scientific types: DataFrame, ndarray, Series. The system should be able to perform operations on the variables and update their values. The system should be able to persist the variables across multiple turns.",
+    "conversations": [
+      {
+        "id": "dataframe_ops",
+        "turns": [
+          {
+            "query": "Add a new column 'total' to df that is price * quantity.",
+            "validator": "validate_df_add_column"
+          },
+          {
+            "query": "Update df to keep only rows where total > 1000 (set df = df[df['total'] > 1000]).",
+            "validator": "validate_df_filter"
+          },
+          {
+            "query": "Sort df by total in descending order. Update df in place.",
+            "validator": "validate_df_sort"
+          }
+        ]
+      },
+      {
+        "id": "dataframe_groupby",
+        "turns": [
+          {
+            "query": "Group df by category and sum the price. Store in result_df.",
+            "validator": "validate_df_groupby"
+          },
+          {
+            "query": "Count the number of unique categories. Store in result_value.",
+            "validator": "validate_df_groupby_count"
+          },
+          {
+            "query": "Find the maximum category total. Store in result_value.",
+            "validator": "validate_df_groupby_max"
+          }
+        ]
+      },
+      {
+        "id": "dataframe_merge",
+        "turns": [
+          {
+            "query": "Merge df and df2 on product column. Store in result_df.",
+            "validator": "validate_df_merge"
+          },
+          {
+            "query": "Update result_df to keep only rows where supplier is 'SupA' (set result_df = result_df[...]).",
+            "validator": "validate_df_merge_filter"
+          },
+          {
+            "query": "Calculate the sum of prices in result_df. Store in result_value.",
+            "validator": "validate_df_merge_sum"
+          }
+        ]
+      },
+      {
+        "id": "ndarray_ops",
+        "turns": [
+          {
+            "query": "Multiply all elements in matrix by 2. Update matrix with the result.",
+            "validator": "validate_array_multiply"
+          },
+          {
+            "query": "Add 10 to all elements in matrix. Update matrix with the result.",
+            "validator": "validate_array_add"
+          },
+          {
+            "query": "Transpose matrix. Update matrix with the result.",
+            "validator": "validate_array_transpose"
+          }
+        ]
+      },
+      {
+        "id": "ndarray_reshape",
+        "turns": [
+          {
+            "query": "Reshape array to shape (2, 4). Store in result_array.",
+            "validator": "validate_array_reshape"
+          },
+          {
+            "query": "Sum result_array along axis 1 (row sums). Store in result_array.",
+            "validator": "validate_array_sum_axis"
+          },
+          {
+            "query": "Calculate the total sum of result_array. Store in result_value.",
+            "validator": "validate_array_total"
+          }
+        ]
+      },
+      {
+        "id": "ndarray_boolean",
+        "turns": [
+          {
+            "query": "Filter array to get values > 10. Store in result_array.",
+            "validator": "validate_array_bool_filter"
+          },
+          {
+            "query": "Replace values < 10 in array with 0. Update array in place.",
+            "validator": "validate_array_bool_replace"
+          },
+          {
+            "query": "Calculate the mean of non-zero values in array. Store in result_value.",
+            "validator": "validate_array_bool_mean"
+          }
+        ]
+      },
+      {
+        "id": "series_ops",
+        "turns": [
+          {
+            "query": "Add 5 to all values in series. Update series with the result.",
+            "validator": "validate_series_add"
+          },
+          {
+            "query": "Clip series values to range [80, 100]. Update series with the result.",
+            "validator": "validate_series_clip"
+          },
+          {
+            "query": "Calculate the mean of series. Store in result_value.",
+            "validator": "validate_series_mean"
+          }
+        ]
+      },
+      {
+        "id": "series_index",
+        "turns": [
+          {
+            "query": "Select values at indices 'b', 'c', 'd' from series. Store in result_array.",
+            "validator": "validate_series_select"
+          },
+          {
+            "query": "Multiply values at indices 'b', 'c', 'd' in series by 2. Update series in place.",
+            "validator": "validate_series_multiply"
+          },
+          {
+            "query": "Calculate the sum of series. Store in result_value.",
+            "validator": "validate_series_sum"
+          }
+        ]
+      },
+      {
+        "id": "series_boolean",
+        "turns": [
+          {
+            "query": "Filter series to get values > 90. Store in result_array.",
+            "validator": "validate_series_bool_filter"
+          },
+          {
+            "query": "Count values > 90 in series. Store in result_value.",
+            "validator": "validate_series_bool_count"
+          },
+          {
+            "query": "Find the maximum value in series. Store in result_value.",
+            "validator": "validate_series_max"
+          }
+        ]
+      },
+      {
+        "id": "dataframe_missing",
+        "turns": [
+          {
+            "query": "Fill missing values in df_missing's age column with 30. Update df_missing in place.",
+            "validator": "validate_df_fillna"
+          },
+          {
+            "query": "Drop rows from df_missing that still have any NaN values. Store in result_df.",
+            "validator": "validate_df_dropna"
+          },
+          {
+            "query": "Double all non-NaN values in df_missing's score column. Update df_missing in place.",
+            "validator": "validate_df_apply"
+          }
+        ]
+      },
+      {
+        "id": "dataframe_pivot",
+        "turns": [
+          {
+            "query": "Create a pivot table from df_sales with region as rows, quarter as columns, and sales as values. Store in result_df.",
+            "validator": "validate_df_pivot"
+          },
+          {
+            "query": "Calculate the total sum of all sales in df_sales. Store in result_value.",
+            "validator": "validate_df_pivot_sum"
+          },
+          {
+            "query": "Find which region has the highest total sales (sum of Q1+Q2). Store that sum in result_value.",
+            "validator": "validate_df_pivot_max_region"
+          }
+        ]
+      },
+      {
+        "id": "ndarray_concat",
+        "turns": [
+          {
+            "query": "Concatenate array and array2 into a single array. Store in result_array.",
+            "validator": "validate_array_concat"
+          },
+          {
+            "query": "Slice the first 4 elements from result_array. Store back in result_array.",
+            "validator": "validate_array_slice"
+          },
+          {
+            "query": "Reverse result_array. Store back in result_array.",
+            "validator": "validate_array_reverse"
+          }
+        ]
+      },
+      {
+        "id": "ndarray_dot",
+        "turns": [
+          {
+            "query": "Compute the dot product of matrix and matrix2. Store in result_array.",
+            "validator": "validate_array_dot"
+          },
+          {
+            "query": "Calculate the sum of all elements in result_array. Store in result_value.",
+            "validator": "validate_array_dot_sum"
+          },
+          {
+            "query": "Find the maximum value in result_array. Store in result_value.",
+            "validator": "validate_array_dot_max"
+          }
+        ]
+      },
+      {
+        "id": "series_advanced",
+        "turns": [
+          {
+            "query": "Calculate the cumulative sum of series. Store in result_array.",
+            "validator": "validate_series_cumsum"
+          },
+          {
+            "query": "Calculate the difference between consecutive values in series. Store in result_array.",
+            "validator": "validate_series_diff"
+          },
+          {
+            "query": "Calculate the rank of each value in series (1=lowest, 5=highest). Store in result_array.",
+            "validator": "validate_series_rank"
+          }
+        ]
+      }
+    ]
+  }
+]

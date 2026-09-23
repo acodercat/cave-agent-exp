@@ -1,0 +1,780 @@
+[
+  {
+    "name": "financial_analysis_2",
+    "module": "evals.token_efficiency.financial_analysis_2_tools",
+    "requirements": "You are a financial advisor assistant.",
+    "conversations": [
+      {
+        "id": "basic_portfolio_setup",
+        "description": "Basic portfolio creation and initial analysis",
+        "turns": [
+          {
+            "query": "Get current prices for AAPL and MSFT. Also check what's in my watchlist.",
+            "expected_function_calls": [
+              {
+                "name": "get_stock_prices",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "symbols",
+                    "value": [
+                      "AAPL",
+                      "MSFT"
+                    ],
+                    "type": "list"
+                  }
+                ]
+              },
+              {
+                "name": "get_watchlist",
+                "required": true,
+                "arguments": []
+              }
+            ]
+          },
+          {
+            "query": "I want to buy 100 shares of AAPL and 50 shares of MSFT. Calculate the portfolio value and check my available balance.",
+            "expected_function_calls": [
+              {
+                "name": "get_account_balance",
+                "required": true,
+                "arguments": []
+              },
+              {
+                "name": "calculate_portfolio_value",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "holdings",
+                    "value": {
+                      "AAPL": 100,
+                      "MSFT": 50
+                    },
+                    "type": "dict"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "risk_assessment_pipeline",
+        "description": "Complete risk assessment requiring chained calls",
+        "turns": [
+          {
+            "query": "I own 30 shares of TSLA, 10 shares of GOOGL, and 5 shares of AMZN. Get the prices and calculate my total portfolio value.",
+            "expected_function_calls": [
+              {
+                "name": "get_stock_prices",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "symbols",
+                    "value": [
+                      "TSLA",
+                      "GOOGL",
+                      "AMZN"
+                    ],
+                    "type": "list"
+                  }
+                ]
+              },
+              {
+                "name": "calculate_portfolio_value",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "holdings",
+                    "value": {
+                      "TSLA": 30,
+                      "GOOGL": 10,
+                      "AMZN": 5
+                    },
+                    "type": "dict"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "query": "Based on my portfolio, calculate the risk score and give me investment advice.",
+            "expected_function_calls": [
+              {
+                "name": "calculate_risk_score",
+                "required": true,
+                "arguments": []
+              },
+              {
+                "name": "generate_investment_advice",
+                "required": true,
+                "arguments": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "portfolio_comparison",
+        "description": "Compare two portfolio strategies",
+        "turns": [
+          {
+            "query": "Get prices for all tech giants: AAPL, GOOGL, MSFT, AMZN, TSLA.",
+            "expected_function_calls": [
+              {
+                "name": "get_stock_prices",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "symbols",
+                    "value": [
+                      "AAPL",
+                      "GOOGL",
+                      "MSFT",
+                      "AMZN",
+                      "TSLA"
+                    ],
+                    "type": "list"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "query": "Compare two portfolios: Conservative (200 AAPL, 100 MSFT) vs Aggressive (50 TSLA, 20 GOOGL). Calculate values and risk scores for both.",
+            "expected_function_calls": [
+              {
+                "name": "calculate_portfolio_value",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "holdings",
+                    "value": {
+                      "AAPL": 200,
+                      "MSFT": 100
+                    },
+                    "type": "dict"
+                  }
+                ]
+              },
+              {
+                "name": "calculate_portfolio_value",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "holdings",
+                    "value": {
+                      "TSLA": 50,
+                      "GOOGL": 20
+                    },
+                    "type": "dict"
+                  }
+                ]
+              },
+              {
+                "name": "calculate_risk_score",
+                "required": true,
+                "arguments": []
+              },
+              {
+                "name": "calculate_risk_score",
+                "required": true,
+                "arguments": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "concentrated_position_warning",
+        "description": "Detect and advise on concentrated positions",
+        "turns": [
+          {
+            "query": "Check the price of GOOGL and calculate my portfolio value. I have 500 shares of GOOGL only.",
+            "expected_function_calls": [
+              {
+                "name": "get_stock_prices",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "symbols",
+                    "value": [
+                      "GOOGL"
+                    ],
+                    "type": "list"
+                  }
+                ]
+              },
+              {
+                "name": "calculate_portfolio_value",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "holdings",
+                    "value": {
+                      "GOOGL": 500
+                    },
+                    "type": "dict"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "query": "This seems like a concentrated position. Analyze the risk and tell me what I should do. Also add AAPL and MSFT to my watchlist for potential diversification.",
+            "expected_function_calls": [
+              {
+                "name": "calculate_risk_score",
+                "required": true,
+                "arguments": []
+              },
+              {
+                "name": "generate_investment_advice",
+                "required": true,
+                "arguments": []
+              },
+              {
+                "name": "add_to_watchlist",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "symbols",
+                    "value": [
+                      "AAPL",
+                      "MSFT"
+                    ],
+                    "type": "list"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rebalancing_workflow",
+        "description": "Portfolio rebalancing with transaction simulation",
+        "turns": [
+          {
+            "query": "Get my current account balance and check prices for AAPL, TSLA, and MSFT. I want to start building a balanced portfolio.",
+            "expected_function_calls": [
+              {
+                "name": "get_account_balance",
+                "required": true,
+                "arguments": []
+              },
+              {
+                "name": "get_stock_prices",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "symbols",
+                    "value": [
+                      "AAPL",
+                      "TSLA",
+                      "MSFT"
+                    ],
+                    "type": "list"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "query": "Simulate buying 50 AAPL, 30 TSLA, and 40 MSFT. Then calculate the resulting portfolio value and risk score.",
+            "expected_function_calls": [
+              {
+                "name": "simulate_trade",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "symbol",
+                    "value": "AAPL",
+                    "type": "str"
+                  },
+                  {
+                    "name": "shares",
+                    "value": 50,
+                    "type": "int"
+                  },
+                  {
+                    "name": "action",
+                    "value": "buy",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "simulate_trade",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "symbol",
+                    "value": "TSLA",
+                    "type": "str"
+                  },
+                  {
+                    "name": "shares",
+                    "value": 30,
+                    "type": "int"
+                  },
+                  {
+                    "name": "action",
+                    "value": "buy",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "simulate_trade",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "symbol",
+                    "value": "MSFT",
+                    "type": "str"
+                  },
+                  {
+                    "name": "shares",
+                    "value": 40,
+                    "type": "int"
+                  },
+                  {
+                    "name": "action",
+                    "value": "buy",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "calculate_portfolio_value",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "holdings",
+                    "value": {
+                      "AAPL": 50,
+                      "TSLA": 30,
+                      "MSFT": 40
+                    },
+                    "type": "dict"
+                  }
+                ]
+              },
+              {
+                "name": "calculate_risk_score",
+                "required": true,
+                "arguments": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "watchlist_driven_investment",
+        "description": "Use watchlist to guide investment decisions",
+        "turns": [
+          {
+            "query": "Show me my watchlist and get the current prices for all stocks in it.",
+            "expected_function_calls": [
+              {
+                "name": "get_watchlist",
+                "required": true,
+                "arguments": []
+              },
+              {
+                "name": "get_stock_prices",
+                "required": true,
+                "arguments": []
+              }
+            ]
+          },
+          {
+            "query": "I like what I see. Simulate buying 25 shares of each stock from my watchlist and calculate the total portfolio value.",
+            "expected_function_calls": [
+              {
+                "name": "simulate_trade",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "shares",
+                    "value": 25,
+                    "type": "int"
+                  },
+                  {
+                    "name": "action",
+                    "value": "buy",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "simulate_trade",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "shares",
+                    "value": 25,
+                    "type": "int"
+                  },
+                  {
+                    "name": "action",
+                    "value": "buy",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "simulate_trade",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "shares",
+                    "value": 25,
+                    "type": "int"
+                  },
+                  {
+                    "name": "action",
+                    "value": "buy",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "calculate_portfolio_value",
+                "required": true,
+                "arguments": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "position_exit_strategy",
+        "description": "Simulate selling positions and analyze impact",
+        "turns": [
+          {
+            "query": "I currently hold 100 TSLA and 50 AMZN. Get the prices and show me the portfolio value.",
+            "expected_function_calls": [
+              {
+                "name": "get_stock_prices",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "symbols",
+                    "value": [
+                      "TSLA",
+                      "AMZN"
+                    ],
+                    "type": "list"
+                  }
+                ]
+              },
+              {
+                "name": "calculate_portfolio_value",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "holdings",
+                    "value": {
+                      "TSLA": 100,
+                      "AMZN": 50
+                    },
+                    "type": "dict"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "query": "Simulate selling 50 shares of TSLA and 20 shares of AMZN. Check my account balance after the sales.",
+            "expected_function_calls": [
+              {
+                "name": "simulate_trade",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "symbol",
+                    "value": "TSLA",
+                    "type": "str"
+                  },
+                  {
+                    "name": "shares",
+                    "value": 50,
+                    "type": "int"
+                  },
+                  {
+                    "name": "action",
+                    "value": "sell",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "simulate_trade",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "symbol",
+                    "value": "AMZN",
+                    "type": "str"
+                  },
+                  {
+                    "name": "shares",
+                    "value": 20,
+                    "type": "int"
+                  },
+                  {
+                    "name": "action",
+                    "value": "sell",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "get_account_balance",
+                "required": true,
+                "arguments": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "new_investor_guidance",
+        "description": "Complete guidance for a new investor",
+        "turns": [
+          {
+            "query": "I'm new to investing. Check my account balance and add AAPL, GOOGL, and AMZN to my watchlist as potential first investments.",
+            "expected_function_calls": [
+              {
+                "name": "get_account_balance",
+                "required": true,
+                "arguments": []
+              },
+              {
+                "name": "add_to_watchlist",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "symbols",
+                    "value": [
+                      "AAPL",
+                      "GOOGL",
+                      "AMZN"
+                    ],
+                    "type": "list"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "query": "Get prices for AAPL and GOOGL. If I buy 20 shares of each, what would be my portfolio value and risk level? Give me advice.",
+            "expected_function_calls": [
+              {
+                "name": "get_stock_prices",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "symbols",
+                    "value": [
+                      "AAPL",
+                      "GOOGL"
+                    ],
+                    "type": "list"
+                  }
+                ]
+              },
+              {
+                "name": "calculate_portfolio_value",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "holdings",
+                    "value": {
+                      "AAPL": 20,
+                      "GOOGL": 20
+                    },
+                    "type": "dict"
+                  }
+                ]
+              },
+              {
+                "name": "calculate_risk_score",
+                "required": true,
+                "arguments": []
+              },
+              {
+                "name": "generate_investment_advice",
+                "required": true,
+                "arguments": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "multi_stock_watchlist_build",
+        "description": "Build and manage a diverse watchlist",
+        "turns": [
+          {
+            "query": "Add TSLA and MSFT to my watchlist, then show me what's in my watchlist now.",
+            "expected_function_calls": [
+              {
+                "name": "add_to_watchlist",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "symbols",
+                    "value": [
+                      "TSLA",
+                      "MSFT"
+                    ],
+                    "type": "list"
+                  }
+                ]
+              },
+              {
+                "name": "get_watchlist",
+                "required": true,
+                "arguments": []
+              }
+            ]
+          },
+          {
+            "query": "Get prices for TSLA and MSFT from my watchlist. Simulate buying 75 TSLA and 30 MSFT.",
+            "expected_function_calls": [
+              {
+                "name": "get_stock_prices",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "symbols",
+                    "value": [
+                      "TSLA",
+                      "MSFT"
+                    ],
+                    "type": "list"
+                  }
+                ]
+              },
+              {
+                "name": "simulate_trade",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "symbol",
+                    "value": "TSLA",
+                    "type": "str"
+                  },
+                  {
+                    "name": "shares",
+                    "value": 75,
+                    "type": "int"
+                  },
+                  {
+                    "name": "action",
+                    "value": "buy",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "simulate_trade",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "symbol",
+                    "value": "MSFT",
+                    "type": "str"
+                  },
+                  {
+                    "name": "shares",
+                    "value": 30,
+                    "type": "int"
+                  },
+                  {
+                    "name": "action",
+                    "value": "buy",
+                    "type": "str"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "full_investment_cycle",
+        "description": "Complete investment cycle from research to advice",
+        "turns": [
+          {
+            "query": "Check my balance, get my watchlist, and fetch prices for AAPL, MSFT, GOOGL, TSLA, and AMZN.",
+            "expected_function_calls": [
+              {
+                "name": "get_account_balance",
+                "required": true,
+                "arguments": []
+              },
+              {
+                "name": "get_watchlist",
+                "required": true,
+                "arguments": []
+              },
+              {
+                "name": "get_stock_prices",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "symbols",
+                    "value": [
+                      "AAPL",
+                      "MSFT",
+                      "GOOGL",
+                      "TSLA",
+                      "AMZN"
+                    ],
+                    "type": "list"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "query": "Build a diversified portfolio with 50 AAPL, 25 MSFT, 10 GOOGL, 40 TSLA, and 5 AMZN. Calculate the value, assess the risk, and give me your investment advice.",
+            "expected_function_calls": [
+              {
+                "name": "calculate_portfolio_value",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "holdings",
+                    "value": {
+                      "AAPL": 50,
+                      "MSFT": 25,
+                      "GOOGL": 10,
+                      "TSLA": 40,
+                      "AMZN": 5
+                    },
+                    "type": "dict"
+                  }
+                ]
+              },
+              {
+                "name": "calculate_risk_score",
+                "required": true,
+                "arguments": []
+              },
+              {
+                "name": "generate_investment_advice",
+                "required": true,
+                "arguments": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,59 @@
+{
+  "name": "z1_household_deposit_direction_reversal",
+  "module": "evals.temporal_path.z1_household_deposit_direction_reversal",
+  "task_family": "temporal_path",
+  "data_sources": [
+    "fed_z1_vintages",
+    "fdic_bankfind"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "The Financial Accounts of the United States are republished as complete vintages: each release restates every earlier quarter, and one series is printed in several statement tables of the same release with the same value. Work only with rows whose frequency field is Q, and treat the statement table as a label rather than a key, so that a vintage and quarter identify one observation. Take households and nonprofit organizations' checkable deposits and currency, series FL153020005.Q. Select as the target the most recent quarter that at least four release vintages have published, which is the newest quarter whose restatement history is long enough to read. Report how many distinct vintages the table holds, how many distinct statement tables carry this series, the selected quarter end, the release date of the earliest vintage covering it, the release date of the newest vintage, and the selected quarter's level in each of those two vintages in USD millions. Carry the quarter, both vintages and both levels forward, and explain what it means for one quarter to hold two published levels.",
+          "validator": "validate_vintage_population",
+          "stores": [
+            "z1_vintage_count",
+            "series_statement_table_count",
+            "target_quarter_end",
+            "first_publishing_vintage_date",
+            "newest_vintage_date",
+            "first_published_level_usd_millions",
+            "current_level_usd_millions"
+          ]
+        },
+        {
+          "query": "A quarterly change is defined inside a single vintage: both quarters are read from the same release, never one quarter from the release that introduced it and the other from an earlier release. Take as the prior quarter the one immediately before the carried target in this series. Report the target-minus-prior change read inside the earliest covering vintage, the same change read inside the newest vintage, and whether the two changes carry opposite signs. Interpret what a reader who followed the releases quarter by quarter would have concluded about the direction, and what the current release supports.",
+          "validator": "validate_within_vintage_direction",
+          "stores": [
+            "first_published_quarterly_change_usd_millions",
+            "current_quarterly_change_usd_millions",
+            "published_direction_reversed"
+          ]
+        },
+        {
+          "query": "Bring in the FDIC quarterly financial series for insured institutions, which is reported once per quarter end and is not organised into vintages. For the two quarter ends carried forward, report the number of reporting institutions at each, total deposits at the target quarter end in USD millions, and the target-minus-prior change in total deposits in USD millions. Interpret the direction this second series shows, and state what its population covers that the household series does not.",
+          "validator": "validate_deposit_reading",
+          "stores": [
+            "bankfind_prior_quarter_institution_count",
+            "bankfind_target_quarter_institution_count",
+            "bankfind_target_quarter_total_deposits_usd_millions",
+            "bankfind_deposit_change_usd_millions"
+          ]
+        },
+        {
+          "query": "Compare the three readings. Report which of the two Financial Accounts readings agrees in direction with the deposit series, as one of first-published, current or neither. Then report the newest-minus-earliest revision to the target quarter's level and the same revision to the prior quarter's level, both in USD millions. Explain what makes the direction change, and state the limits of using the deposit series to decide which household reading is correct.",
+          "validator": "validate_reconciliation",
+          "stores": [
+            "reading_matching_bankfind_direction",
+            "target_quarter_revision_usd_millions",
+            "prior_quarter_revision_usd_millions"
+          ]
+        }
+      ]
+    }
+  ]
+}

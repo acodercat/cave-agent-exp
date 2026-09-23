@@ -1,0 +1,24 @@
+{
+  "name": "leveraged_fund_positions_1k",
+  "module": "cases.table_delivery.leveraged_fund_positions_1k",
+  "task_family": "table_delivery",
+  "data_sources": [
+    "cftc_cot"
+  ],
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Track how leveraged funds were positioned in financial futures, using the CFTC Traders in Financial Futures futures-only reports: every contract from 2024-09-17 through 2024-12-31. For each contract and report date give the contract market code, the report date, the market and exchange name, open interest, the leveraged funds' net position (long minus short, so negative when net short), and that net position over open interest.",
+          "validator": "validate",
+          "stores": [
+            "position_table"
+          ]
+        }
+      ]
+    }
+  ]
+}

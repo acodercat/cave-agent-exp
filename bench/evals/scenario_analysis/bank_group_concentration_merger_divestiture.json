@@ -1,0 +1,58 @@
+{
+  "name": "bank_group_concentration_merger_divestiture",
+  "module": "evals.scenario_analysis.bank_group_concentration_merger_divestiture",
+  "task_family": "scenario_analysis",
+  "case_type": "baseline",
+  "difficulty": "medium",
+  "data_sources": [
+    "fdic_sod",
+    "ffiec_nic_structure"
+  ],
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Use the 2025-06-30 FDIC Summary of Deposits for a county-level analysis under the frozen current NIC organization snapshot. Use all branches with reported five-digit county FIPS codes. Define groups using only NIC direct relationships reported as controlled. A group root has no parent in that graph; a bank without a parent is its own root. A bank is assignable only if all its upward paths are acyclic and reach exactly one root. A county is eligible only if every branch has a bank RSSD, finite nonnegative reported deposits and an assignable group, and at least three groups have positive county deposits. Use all deposits at full weight. Among eligible counties, select the largest group-level minus bank-level deposit HHI on the 0–10,000 scale, breaking ties by county FIPS ascending. Report the eligible county count, selected county and its two HHIs. Interpret the organizational difference and the scope of this geographic comparison.",
+          "stores": [
+            "eligible_counties",
+            "origin_county",
+            "origin_bank_hhi",
+            "origin_group_hhi"
+          ],
+          "validator": "validate_selection"
+        },
+        {
+          "query": "For that county, assess each group's contribution to the HHI difference by consolidating only that group's banks while leaving every other bank separate. Select the group producing the largest increase over the all-bank HHI, breaking ties by root RSSD numerically ascending. For the selected group, now use its branches across all reported five-digit counties at the same SOD date, retaining branches with finite nonnegative deposits and an assignable bank even when their counties were ineligible for the earlier screen. Report the group root, the number of its banks with positive deposits in this broader population, and the selected county's percentage of this broader group deposit total. Interpret the group's geographic footprint.",
+          "stores": [
+            "acquiring_group",
+            "group_bank_count",
+            "origin_group_deposit_share_pct"
+          ],
+          "validator": "validate_group_footprint"
+        },
+        {
+          "query": "Suppose that group acquires the other group with the largest positive deposits in the originally selected county; break ties by root RSSD numerically ascending. Keep all deposits and county boundaries fixed. Across the original eligible county population, consider counties where both parties have positive deposits. Select the county with the largest merger-induced increase in group deposit HHI, breaking ties by county FIPS ascending. Report the acquired group's root, the number of overlap counties, the selected county and its post-merger HHI. Explain the geographic implication of the comparison.",
+          "stores": [
+            "target_group",
+            "overlap_counties",
+            "merger_county",
+            "merger_after_hhi"
+          ],
+          "validator": "validate_merger"
+        },
+        {
+          "query": "For the county selected in the merger comparison, consider transferring exactly one whole branch of either merging party to a new independent buyer with no existing deposits in that county. All the branch's reported deposits transfer with it; all other deposits and ownership are unchanged from the merger scenario. A qualifying transfer leaves county HHI no higher than its pre-merger group-level HHI. Among qualifying branches, select the smallest transferred deposit amount, breaking ties by bank RSSD numerically ascending and then source branch identifier lexicographically ascending. If none qualifies, make no transfer. Report the qualifying alternative count, selected bank and branch identifiers, transferred deposits and county HHI after the chosen action. Explain the tradeoff between retained deposits and concentration across the qualifying alternatives.",
+          "stores": [
+            "qualifying_transfers",
+            "transfer_bank",
+            "transfer_branch",
+            "transferred_deposits_thousand_usd",
+            "final_hhi"
+          ],
+          "validator": "validate_transfer"
+        }
+      ]
+    }
+  ]
+}

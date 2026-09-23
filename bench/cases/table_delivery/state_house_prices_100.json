@@ -1,0 +1,24 @@
+{
+  "name": "state_house_prices_100",
+  "module": "cases.table_delivery.state_house_prices_100",
+  "task_family": "table_delivery",
+  "data_sources": [
+    "fhfa_hpi"
+  ],
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "From the FHFA state house price index (traditional, all-transactions, quarterly, not seasonally adjusted), pull the rows for California from 2001Q1, through the latest quarter in the data, and deliver no other rows. Each row is one state and quarter: the state's postal code, the quarter written like 2024Q3, the index, and its change from the same quarter a year earlier. Work the change out on the full series before cutting it to the window, so the first quarters you deliver still have one; it is missing only where the series has no value a year earlier.",
+          "validator": "validate",
+          "stores": [
+            "index_table"
+          ]
+        }
+      ]
+    }
+  ]
+}

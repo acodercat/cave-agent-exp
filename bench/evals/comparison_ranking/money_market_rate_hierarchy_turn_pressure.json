@@ -1,0 +1,67 @@
+{
+  "name": "money_market_rate_hierarchy_turn_pressure",
+  "module": "evals.comparison_ranking.money_market_rate_hierarchy_turn_pressure",
+  "task_family": "comparison_ranking",
+  "data_sources": [
+    "nyfed_reference_rates",
+    "treasury_yield_curve"
+  ],
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "turns": [
+        {
+          "query": "Five overnight benchmarks are published daily: TGCR, BGCR and SOFR for nested Treasury-repo transaction populations, and OBFR and EFFR for unsecured bank-funding populations. Restrict to 2024 dates on which all five publish a rate and report the date count and each median in percent. For each complete date compute SOFR minus EFFR in basis points; report its median, widest date and widest value, breaking a tie by earlier date. Explain that the ordering and spread compare different transaction populations and do not by themselves identify credit risk, dealer balance-sheet constraints or another causal driver.",
+          "validator": "validate_rate_hierarchy",
+          "stores": [
+            "complete_business_day_count",
+            "median_tri_party_rate_pct",
+            "median_broad_collateral_rate_pct",
+            "median_secured_overnight_rate_pct",
+            "median_bank_funding_rate_pct",
+            "median_fed_funds_rate_pct",
+            "median_secured_minus_unsecured_bp",
+            "widest_secured_minus_unsecured_date",
+            "widest_secured_minus_unsecured_bp"
+          ]
+        },
+        {
+          "query": "The FOMC target range applies to the federal funds rate, and the EFFR rows carry that range. Read its lower and upper bounds in effect on 2024-12-31. Report that day's SOFR, SOFR minus the lower bound in basis points, and EFFR minus the lower bound in basis points. Explain that EFFR is a market statistic steered within the target range through administered tools, whereas SOFR is a repo benchmark and is not subject to that target-range compliance test; state that SOFR's one-day location within the range does not by itself diagnose funding pressure.",
+          "validator": "validate_target_band_placement",
+          "stores": [
+            "year_end_target_floor_pct",
+            "year_end_target_ceiling_pct",
+            "year_end_secured_rate_pct",
+            "year_end_secured_above_floor_bp",
+            "year_end_fed_funds_above_floor_bp"
+          ]
+        },
+        {
+          "query": "Measure SOFR deviations on the named quarter-end or last-business-day observations 2024-03-28, 2024-06-28, 2024-09-30 and 2024-12-31. For each, subtract the median SOFR over the five preceding complete-panel dates and report the signed result in basis points. Report the date with the largest signed deviation and its value, breaking a tie by earlier date. Describe whether the four deviations are uniform, but state that these observations alone do not identify balance-sheet management or prove a reporting-date mechanism.",
+          "validator": "validate_quarter_end_pressure",
+          "stores": [
+            "quarter_one_deviation_bp",
+            "quarter_two_deviation_bp",
+            "quarter_three_deviation_bp",
+            "quarter_four_deviation_bp",
+            "largest_deviation_quarter_end_date",
+            "largest_deviation_bp"
+          ]
+        },
+        {
+          "query": "For every 2024 SOFR date compute the published 99th volume-weighted percentile minus the published volume-weighted median rate in basis points. Report how many dates reach at least 25bp, how many fall in December, and the widest date and value, breaking ties by earlier date. At 2024-12-31 report the one-month and three-month Treasury constant-maturity par yields from the daily par curve. Explain what the percentile gap describes about the underlying transactions, and what the two rate differences establish given how each of the two rates is constructed and what horizon each covers.",
+          "validator": "validate_tail_and_front_curve",
+          "stores": [
+            "wide_tail_day_count",
+            "wide_tail_december_day_count",
+            "widest_tail_date",
+            "widest_tail_bp",
+            "year_end_one_month_treasury_par_yield_pct",
+            "year_end_three_month_treasury_par_yield_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

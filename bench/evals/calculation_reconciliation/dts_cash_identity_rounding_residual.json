@@ -1,0 +1,57 @@
+{
+  "name": "dts_cash_identity_rounding_residual",
+  "module": "evals.calculation_reconciliation.dts_cash_identity_rounding_residual",
+  "task_family": "calculation_reconciliation",
+  "data_sources": [
+    "treasury_dts_operating_cash",
+    "treasury_dts_public_debt"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "The Daily Treasury Statement's operating cash table names the government's cash account differently in different periods, and a screen written against one name silently drops the others. Report how many distinct account-type labels the table uses across its whole history. Then report the last date carrying the Federal Reserve Account label, the last date carrying the Treasury General Account label that stands alone without an opening, deposits, withdrawals or closing qualifier, and the first date carrying the opening-balance label. Finally report how many dates carry all four of the opening-balance, total-deposits, total-withdrawals and closing-balance lines together. Carry those dates forward and explain what the changing labels mean for a series built across them.",
+          "validator": "validate_naming_eras",
+          "stores": [
+            "account_type_label_count",
+            "federal_reserve_account_last_date",
+            "single_line_tga_last_date",
+            "four_line_first_date",
+            "four_line_date_count"
+          ]
+        },
+        {
+          "query": "On the carried dates the withdrawals line is printed as a positive magnitude even though its label marks it as a subtraction. Form the daily residual as opening balance plus deposits minus withdrawals minus closing balance, in the millions the table reports. Report how many of those dates give a residual of exactly zero, the largest absolute residual over them, and how many carry a positive residual. Interpret what the residual is and whether the statement balances.",
+          "validator": "validate_identity_residual",
+          "stores": [
+            "identity_exact_date_count",
+            "identity_maximum_absolute_residual",
+            "identity_positive_residual_date_count"
+          ]
+        },
+        {
+          "query": "Within the carried dates, select the date whose closing balance moved furthest from its own opening balance, in either direction, breaking a tie by the earlier date. Report that date, the signed closing-minus-opening movement, and the opening and closing balances themselves, all in millions. Interpret the size of this movement against a normal day's activity, and state what a one-day cash movement can and cannot tell you about the government's finances.",
+          "validator": "validate_largest_movement",
+          "stores": [
+            "largest_balance_movement_date",
+            "largest_balance_movement_amount",
+            "largest_movement_opening_balance",
+            "largest_movement_closing_balance"
+          ]
+        },
+        {
+          "query": "Turn to the public debt transactions the same statement reports for the date carried from turn 3. Report marketable issues minus marketable redemptions, nonmarketable issues minus nonmarketable redemptions, and whether marketable net issues reach the balance movement, all in millions. Explain how much of the day's cash movement debt issuance accounts for, and what the nonmarketable figure represents that does not raise cash from the public.",
+          "validator": "validate_debt_contribution",
+          "stores": [
+            "movement_day_marketable_net_issues",
+            "movement_day_nonmarketable_net_issues",
+            "marketable_net_issues_cover_movement"
+          ]
+        }
+      ]
+    }
+  ]
+}

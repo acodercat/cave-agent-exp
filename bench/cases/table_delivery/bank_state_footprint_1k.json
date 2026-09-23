@@ -1,0 +1,25 @@
+{
+  "name": "bank_state_footprint_1k",
+  "module": "cases.table_delivery.bank_state_footprint_1k",
+  "task_family": "table_delivery",
+  "data_sources": [
+    "fdic_sod",
+    "fdic_bankfind"
+  ],
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Prepare a regional bank coverage table for Texas, Illinois and Missouri, comparing deposits at local branches with each bank's total assets. Use the FDIC Summary of Deposits as of 2024-06-30 and the bank financials for the same date. One row per bank with at least one branch there: FDIC certificate number, the bank's name as the Summary of Deposits spells it, the number of its branches in the area and their combined deposits, its total assets, and those deposits divided by total assets. If a bank has no financial report for that date, keep the row and leave its assets and the ratio missing.",
+          "validator": "validate",
+          "stores": [
+            "bank_table"
+          ]
+        }
+      ]
+    }
+  ]
+}

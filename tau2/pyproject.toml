@@ -1,0 +1,29 @@
+[project]
+name = "tau2-revision"
+version = "0.1.0"
+description = "Tau2-bench with CaveAgent 0.8: CaveAgent, native function calling and a JSON-to-code arm."
+requires-python = ">=3.12"
+dependencies = [
+    "cave-agent[all]>=0.8.0",
+    "tau2",
+    "litellm>=1.80.7",
+    # tau2.run imports its gym interface unconditionally
+    "gymnasium>=1.2.2",
+    "loguru>=0.7.3",
+    # Gemini through its native API (tau2_cave/gemini.py)
+    "google-genai>=1.52.0",
+    # The paired bootstrap and its sign test (paired.py). Both arrive anyway as
+    # transitive dependencies; named here because this project imports them.
+    "numpy>=2.0",
+    "scipy>=1.14",
+]
+
+[dependency-groups]
+dev = ["pytest>=8.3.5"]
+
+[tool.uv.sources]
+# tau2-bench@0ed2fd8 + the changes the paper runs used (branch cave-agent-experiments)
+tau2 = { path = "../third_party/tau2-bench", editable = true }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

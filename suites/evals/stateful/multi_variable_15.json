@@ -1,0 +1,94 @@
+[
+  {
+    "name": "multi_variable_15",
+    "module": "evals.stateful.multi_variable_15",
+    "requirements": "Manage the state of a system with 15 variables. Each variable has a specific type and initial value. The system should be able to perform operations on the variables and update their values. The system should be able to persist the variables across multiple turns.",
+    "conversations": [
+      {
+        "id": "book_lifecycle",
+        "turns": [
+          {
+            "query": "I'm adding a new book to our catalog. Title is 'Python Guide' by John Smith, published by TechBooks in 2023. It has 450 pages, first edition, priced at $49.99. Rating is 4.5 stars, weighs 1.2kg. It's available, not a bestseller yet, but has an ebook version. Genres are programming and education. Chapters include Intro, Basics, and Advanced. ISBN is 123-456 and it's in English.",
+            "validator": "validate_book_init"
+          },
+          {
+            "query": "We're releasing a second edition! Append ' 2nd Edition' to the title, set publisher to 'TechBooks Pro'. Set year to 2024, pages to 550, edition to 2. Set price to $59.99, rating to 4.7, weight to 1.4. Set bestseller to true. Append 'reference' to genres. Append 'Expert' to chapters. Add 'updated': true to info while keeping existing isbn and language.",
+            "validator": "validate_book_update"
+          },
+          {
+            "query": "Holiday sale time! Prepend '[SALE] ' to the title. Set price to 20% off the current price. Append 'sale' to genres. Add 'discount': 0.2 to info while keeping existing entries.",
+            "validator": "validate_book_discount"
+          }
+        ]
+      },
+      {
+        "id": "course_lifecycle",
+        "turns": [
+          {
+            "query": "Creating a new online course called 'Web Development' by Jane Doe on the LearnOnline platform. Year 2024, no page count since it's video-based, first edition. Price is $199, no ratings yet, no physical weight. It's available, not a bestseller, no ebook. Genres: web, frontend, backend. No chapters yet. Info shows 40 hours of content at beginner level.",
+            "validator": "validate_course_init"
+          },
+          {
+            "query": "The course is gaining traction! Set pages to 10 (lesson count). Set rating to 4.8 and bestseller to true. Set chapters to ['HTML', 'CSS', 'JavaScript']. Add 'students': 1000 to info while keeping existing hours and level.",
+            "validator": "validate_course_progress"
+          },
+          {
+            "query": "Course is now complete! Append ' [COMPLETE]' to the title. Set pages to 20, edition to 2, price to $249. Set rating to 4.9, ebook to true. Append 'fullstack' to genres. Append 'React' and 'Node' to chapters. Add 'complete': true to info while keeping existing entries.",
+            "validator": "validate_course_complete"
+          }
+        ]
+      },
+      {
+        "id": "magazine_publication",
+        "turns": [
+          {
+            "query": "Launching a new tech magazine called 'Tech Weekly' by the Editorial Team, published by MediaGroup Inc. Year 2024, 64 pages, first edition. Price is $9.99, no rating yet, weighs 0.3kg. It's available, not a bestseller yet, but has an ebook. Genres: technology, news, gadgets. Sections include Cover Story, Reviews, and Interviews. Info: weekly frequency, issue 1, circulation 50000.",
+            "validator": "validate_magazine_launch"
+          },
+          {
+            "query": "The magazine is growing after 12 issues! Set pages to 80, edition to 12. Set price to $12.99, rating to 4.5, weight to 0.4. Set bestseller to true. Append 'AI' to genres. Append 'Deep Dive' to chapters. Update info: set issue to 12, circulation to 100000, add 'subscribers': 25000, while keeping frequency.",
+            "validator": "validate_magazine_growth"
+          },
+          {
+            "query": "Publishing our annual special edition! Set title to 'Tech Weekly - Annual Special', author to 'Editorial Team + Guests'. Set pages to 150, edition to 52, price to $19.99. Set rating to 4.8, weight to 0.6. Append 'special' to genres. Append 'Year in Review' and 'Predictions' to chapters. Update info: set issue to 52, circulation to 150000, add 'special_edition': true, while keeping frequency and subscribers.",
+            "validator": "validate_magazine_special"
+          }
+        ]
+      },
+      {
+        "id": "podcast_evolution",
+        "turns": [
+          {
+            "query": "Starting a new podcast called 'Code Talk' hosted by Mike Chen on PodNetwork. Started in 2023, 10 episodes so far (use pages for episode count), first edition. It's free so price is $0, rating 4.2, no physical weight. Available, not a bestseller, not an ebook. Genres: tech, interviews, coding. Chapter list: Ep1 through Ep5 for featured episodes. Info: platform 'Spotify', duration_avg 45.",
+            "validator": "validate_podcast_create"
+          },
+          {
+            "query": "The podcast is going premium! Set publisher to 'PodNetwork Pro', year to 2024, pages to 50 (episodes), edition to 2. Set price to $4.99, rating to 4.6. Set bestseller to true, ebook to true. Append 'premium' to genres. Append 'Bonus' to chapters. Update info: set duration_avg to 60, add 'sponsors': 3, while keeping platform.",
+            "validator": "validate_podcast_monetize"
+          },
+          {
+            "query": "We're expanding into a network! Set title to 'Code Talk Network', author to 'Mike Chen & Team'. Set pages to 100 (episodes), edition to 3, price to $9.99. Set rating to 4.9. Append 'video' to genres. Append 'Live' to chapters. Update info: set platform to 'Multi', add 'shows': 3, while keeping duration_avg and sponsors.",
+            "validator": "validate_podcast_expand"
+          }
+        ]
+      },
+      {
+        "id": "documentary_journey",
+        "turns": [
+          {
+            "query": "Starting production on a nature documentary called 'Ocean Secrets' by filmmaker Sarah Blake for NatureFilms. Year 2024, no episodes yet (pages 0), first edition. Still in production so price $0, no rating yet, no weight. Not available yet, not a bestseller, no digital version. Genres: documentary, nature, ocean. Planned chapters: Deep Sea, Coral Reefs, Arctic Waters. Info: 90 min runtime planned, status is filming, $500000 budget.",
+            "validator": "validate_doc_filming"
+          },
+          {
+            "query": "Documentary is complete and released! Set pages to 4 (bonus features), price to $14.99. Set rating to 4.7, weight to 0.1. Set available to true, ebook to true (streaming). Append 'educational' to genres. Append 'Behind the Scenes' to chapters. Update info: set runtime to 120, status to 'released', add 'streaming': true, while keeping budget.",
+            "validator": "validate_doc_release"
+          },
+          {
+            "query": "We won awards! Set title to 'Ocean Secrets - Award Winner', publisher to 'NatureFilms Premium'. Set pages to 6, edition to 2, price to $19.99. Set rating to 4.9, weight to 0.15. Set bestseller to true. Append 'award-winning' to genres. Append 'Director Commentary' and 'Extended Cuts' to chapters. Update info: set runtime to 150, add 'awards': 3, while keeping budget, status, and streaming.",
+            "validator": "validate_doc_award"
+          }
+        ]
+      }
+    ]
+  }
+]

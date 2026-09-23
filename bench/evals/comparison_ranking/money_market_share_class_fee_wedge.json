@@ -1,0 +1,66 @@
+{
+  "name": "money_market_share_class_fee_wedge",
+  "module": "evals.comparison_ranking.money_market_share_class_fee_wedge",
+  "task_family": "comparison_ranking",
+  "data_sources": [
+    "sec_nmfp_series_filings",
+    "sec_nmfp_class_yields",
+    "treasury_yield_curve"
+  ],
+  "case_type": "baseline",
+  "difficulty": "hard",
+  "conversations": [
+    {
+      "turns": [
+        {
+          "query": "Using the SEC N-MFP share-class yield table joined to the series filings on the accession number, take every row whose yield date is 2025-06-30 and that carries a series identifier. Report how many class rows there are and how many distinct series they belong to. Then report how many of those series report more than one distinct share class, and among those, how many report a single identical seven-day gross yield across every class. Finally report the median number of distinct classes per series across all series at that date, to 4 decimals. Briefly explain what identical within-series gross yields do and do not establish about the class rows.",
+          "validator": "validate_class_structure",
+          "stores": [
+            "class_rows",
+            "series_count",
+            "multi_class_series",
+            "identical_gross_series",
+            "median_classes_per_series"
+          ]
+        },
+        {
+          "query": "Before measuring anything, apply a reporting-quality screen to the same 2025-06-30 rows. Report how many rows carry a seven-day net yield of exactly zero alongside a positive gross yield, and how many of those belong to a share class whose reported class net assets are zero. Separately, across the entire yield table and not only this date, report how many rows carry a net yield strictly above the gross yield. Then build the screened population by keeping only 2025-06-30 rows with positive class net assets, a positive gross yield, and a net yield that is above zero and not above the gross yield, and report how many rows and how many distinct series survive. Briefly discuss what this screen can and cannot establish about the observations it excludes.",
+          "validator": "validate_reporting_screen",
+          "stores": [
+            "zero_net_rows",
+            "zero_net_empty_class_rows",
+            "net_above_gross_rows",
+            "clean_rows",
+            "clean_series"
+          ]
+        },
+        {
+          "query": "On the screened population, define each class's wedge as its gross yield minus its net yield, expressed in basis points. Report the median wedge and the mean wedge across classes, each to 4 decimals. Then report the wedge weighted by each class's net assets, to 4 decimals. Report the largest wedge borne by any single class, to 4 decimals. Finally, among series that still have more than one screened class, identify the series whose cheapest and dearest classes are furthest apart, and report its name and that spread in basis points to 4 decimals. Interpret the difference between the equal-class and asset-weighted averages using only measures available in the declared sources.",
+          "validator": "validate_fee_wedge",
+          "stores": [
+            "median_wedge_bp",
+            "mean_wedge_bp",
+            "asset_weighted_wedge_bp",
+            "widest_class_wedge_bp",
+            "widest_series_name",
+            "widest_series_spread_bp"
+          ]
+        },
+        {
+          "query": "Finally check whether the table supports a comparison over time before making one. Report how many distinct share classes appear in June 2024 and how many in June 2025 by calendar month of the yield date. Report how many yield rows are dated before 2025-01-01, and what percentage of those come from a filing whose form type ends in \"/A\", to 4 decimals. Explain what comparison that observed pre-2025 coverage can and cannot support. Then, restricting to 2025 and using the same screen as before, report the asset-weighted gross yield across all classes for January 2025 and for November 2025, each in percent to 4 decimals. Report the mean three-month Treasury bill yield for each of those two months, in percent to 4 decimals, and state how the two declines compare, including the evidentiary limits of using two endpoints.",
+          "validator": "validate_coverage_and_passthrough",
+          "stores": [
+            "early_month_classes",
+            "late_month_classes",
+            "pre_2025_rows",
+            "amended_pre_2025_share_pct",
+            "january_gross_yield_pct",
+            "november_gross_yield_pct",
+            "january_bill_pct",
+            "november_bill_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

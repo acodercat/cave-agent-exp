@@ -1,0 +1,24 @@
+{
+  "name": "flood_claim_top_payments_10",
+  "module": "cases.table_control.flood_claim_top_payments_10",
+  "task_family": "table_control",
+  "data_sources": [
+    "fema_nfip"
+  ],
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Take the NFIP flood claims with a date of loss in 2024 and rank them by the net payment on building and contents combined, highest first, breaking ties by claim record identifier in ascending order. Deliver the top 10 of that ranking. Each row: the claim record identifier, the state, the date of loss, that net payment, and the share of it paid on the building.",
+          "validator": "validate",
+          "stores": [
+            "claim_table"
+          ]
+        }
+      ]
+    }
+  ]
+}

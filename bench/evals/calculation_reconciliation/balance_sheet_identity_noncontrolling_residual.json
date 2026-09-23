@@ -1,0 +1,69 @@
+{
+  "name": "balance_sheet_identity_noncontrolling_residual",
+  "module": "evals.calculation_reconciliation.balance_sheet_identity_noncontrolling_residual",
+  "task_family": "calculation_reconciliation",
+  "data_sources": [
+    "sec_financial_statements",
+    "sec_companyfacts"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "turns": [
+        {
+          "query": "Take the standardized statement rows for annual reports on form 10-K whose balance-sheet date is 2024-12-31, excluding amendments and quarterly reports. Report how many such statement observations there are and how many distinct central index keys they cover. A balance sheet foots when total assets equal the reported total of liabilities and equity. Among the observations that report both of those figures, report how many there are, how many agree exactly, and the largest absolute difference in USD anywhere in that set. Explain what your three figures say about the reliability of this identity in the data.",
+          "validator": "validate_footing_identity",
+          "stores": [
+            "annual_statement_observation_count",
+            "distinct_issuer_count",
+            "footing_identity_observation_count",
+            "footing_identity_exact_count",
+            "footing_identity_max_absolute_usd"
+          ]
+        },
+        {
+          "query": "Now test what looks like the same identity built from its parts. For the same population, take the statement observations that report total assets, total liabilities and the stockholders' equity line, and compute assets less liabilities less that equity line. Report how many observations qualify, how many leave exactly zero, how many leave a non-zero remainder, and the median of the non-zero remainders in USD. Then identify the two observations with the largest positive remainders, breaking a tie by central index key ascending, and report each company's name as the table records it together with its remainder in USD. Explain why this identity behaves differently from the one in turn 1.",
+          "validator": "validate_parent_equity_residual",
+          "stores": [
+            "parent_identity_observation_count",
+            "parent_identity_exact_count",
+            "parent_identity_residual_count",
+            "median_nonzero_residual_usd",
+            "largest_residual_company",
+            "largest_residual_usd",
+            "largest_residual_runner_up_company",
+            "largest_residual_runner_up_usd"
+          ]
+        },
+        {
+          "query": "Close the largest remainder exactly. For the company you named first in turn 2, look up in the company facts, at the same balance-sheet date, its noncontrolling interests and its redeemable noncontrolling interests carried outside permanent equity. Report both amounts in USD, their sum, and the turn-2 remainder minus that sum. Report the noncontrolling interests as a percent of the remainder. Explain what the closure demonstrates and why the second component sits apart from the first on the balance sheet.",
+          "validator": "validate_residual_closure",
+          "stores": [
+            "largest_residual_minority_interest_usd",
+            "largest_residual_redeemable_interest_usd",
+            "largest_residual_components_total_usd",
+            "largest_residual_closure_difference_usd",
+            "largest_residual_minority_share_pct"
+          ]
+        },
+        {
+          "query": "Assess what a liquidity screen on this population would rest on. Among the qualifying annual statement observations, report how many present both a current-assets and a current-liabilities subtotal, that count as a percent of all qualifying observations, and how many observations lack at least one of the two. For the observations that lack one, report the most common industry classification code as the table records it and how many carry it. Then, among observations that present both subtotals and report positive current liabilities, report the median ratio of current assets to current liabilities. Restrict to those reporting at least one billion USD of current assets, report how many there are, and identify the highest ratio among them, breaking a tie by central index key ascending, giving the company name, its ratio and its margin over the next observation. Explain what the composition of the excluded group means for any statement made about the median.",
+          "validator": "validate_classified_selection",
+          "stores": [
+            "current_subtotals_present_observation_count",
+            "classified_balance_sheet_share_pct",
+            "current_subtotals_missing_observation_count",
+            "unclassified_leading_sic_code",
+            "unclassified_leading_sic_count",
+            "median_current_ratio",
+            "large_current_asset_observation_count",
+            "large_current_asset_ratio_leader",
+            "large_current_asset_leader_ratio",
+            "large_current_asset_leader_margin"
+          ]
+        }
+      ]
+    }
+  ]
+}

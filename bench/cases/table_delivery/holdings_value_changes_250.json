@@ -1,0 +1,24 @@
+{
+  "name": "holdings_value_changes_250",
+  "module": "cases.table_delivery.holdings_value_changes_250",
+  "task_family": "table_delivery",
+  "data_sources": [
+    "sec_13f_holdings"
+  ],
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Between the 2025-06-30 and 2025-09-30 report periods, which securities saw the largest swing in total 13F reported value? Use the holdings aggregated by CUSIP, keep only securities reported in both periods, and deliver the top 250 by absolute change. Each row: the CUSIP, the issuer name as reported for 2025-09-30, the value in each period, the change (later minus earlier), and the change relative to the earlier value, left missing where the earlier value is zero.",
+          "validator": "validate",
+          "stores": [
+            "security_table"
+          ]
+        }
+      ]
+    }
+  ]
+}

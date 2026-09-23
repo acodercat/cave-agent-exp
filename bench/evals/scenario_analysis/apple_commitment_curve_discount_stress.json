@@ -1,0 +1,73 @@
+{
+  "name": "apple_commitment_curve_discount_stress",
+  "module": "evals.scenario_analysis.apple_commitment_curve_discount_stress",
+  "task_family": "scenario_analysis",
+  "data_sources": [
+    "sec_notes",
+    "treasury_yield_curve"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Using Apple's fiscal-2025 SEC Notes dataset facts with month-end-rounded period date 2025-09-30, build the undiscounted long-term-debt principal maturity ladder from the six separately tagged buckets: next twelve months, years two through five, and after year five. Report each bucket and their sum. Reconcile that sum to the reported consolidated gross long-term-debt carrying amount: report the number of all physical rows for that measure/date/unit, the number of physical rows carrying no dimensions, the number of distinct numeric values among those no-dimension rows, the consolidated gross-debt amount, and maturity sum minus gross debt. Interpret the reconciliation and row-count evidence.",
+          "validator": "validate_debt_ladder",
+          "stores": [
+            "debt_year_1_usd_billions",
+            "debt_year_2_usd_billions",
+            "debt_year_3_usd_billions",
+            "debt_year_4_usd_billions",
+            "debt_year_5_usd_billions",
+            "debt_after_year_5_usd_billions",
+            "debt_maturity_sum_usd_billions",
+            "gross_debt_fact_physical_row_count",
+            "gross_debt_undimensioned_physical_row_count",
+            "gross_debt_distinct_undimensioned_value_count",
+            "gross_long_term_debt_usd_billions",
+            "maturity_sum_minus_gross_debt_usd_millions"
+          ]
+        },
+        {
+          "query": "Extend the turn-1 ladder with the six undimensioned unrecorded unconditional purchase-obligation buckets for the same end date: years one through five and after year five. Report each bucket, their sum, combined debt-plus-purchase commitments due in year one, and combined undiscounted commitments across all six timing buckets. Explain the accounting boundary between the two ladders.",
+          "validator": "validate_purchase_ladder",
+          "stores": [
+            "purchase_year_1_usd_billions",
+            "purchase_year_2_usd_billions",
+            "purchase_year_3_usd_billions",
+            "purchase_year_4_usd_billions",
+            "purchase_year_5_usd_billions",
+            "purchase_after_year_5_usd_billions",
+            "purchase_obligation_sum_usd_billions",
+            "combined_year_1_commitments_usd_billions",
+            "combined_undiscounted_commitments_usd_billions"
+          ]
+        },
+        {
+          "query": "Now apply the following present-value convention to the two turn-2 ladders. Use the latest reported Treasury par-yield-curve observation on or before 2025-09-30 and its 5-year par yield as one flat annual discount rate. Treat years one through five as end-of-year cash flows at t=1,...,5 and the after-year-five bucket as one payment at t=10. Report the curve date and yield, and the base present value of the debt ladder, purchase ladder and combined ladder. Explain what this construction can and cannot measure.",
+          "validator": "validate_base_discount",
+          "stores": [
+            "curve_observation_date",
+            "five_year_par_yield_pct",
+            "base_debt_present_value_usd_billions",
+            "base_purchase_present_value_usd_billions",
+            "base_combined_present_value_usd_billions"
+          ]
+        },
+        {
+          "query": "Shock the turn-3 flat discount rate upward by exactly 100 basis points, holding every disclosed cash-flow bucket and timing convention fixed. Report the shocked rate; shocked debt, purchase and combined present values; and the combined percentage change relative to the base combined present value. Interpret the sign and distinguish the modeled present-value change from contractual nominal payments.",
+          "validator": "validate_parallel_shock",
+          "stores": [
+            "shocked_flat_discount_rate_pct",
+            "shocked_debt_present_value_usd_billions",
+            "shocked_purchase_present_value_usd_billions",
+            "shocked_combined_present_value_usd_billions",
+            "combined_pv_change_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

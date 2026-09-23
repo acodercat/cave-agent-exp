@@ -1,0 +1,94 @@
+[
+  {
+    "name": "multi_variable_25",
+    "module": "evals.stateful.multi_variable_25",
+    "requirements": "Manage the state of a system with 25 variables. Each variable has a specific type and initial value. The system should be able to perform operations on the variables and update their values. The system should be able to persist the variables across multiple turns.",
+    "conversations": [
+      {
+        "id": "community_hospital",
+        "turns": [
+          {
+            "query": "I'm setting up records for our community hospital. It's called Riverside Community Hospital, directed by Dr. Sarah Chen, located at 100 Health Way, Springfield. We specialize in General Medicine with license HC-2020-001. We have 150 beds, 45 doctors, 120 nurses, currently 80 patients. Founded in 2005. Budget is $25M (25000000), revenue $30M (30000000), occupancy at 53% (0.53), satisfaction score 4.2, average stay 3.5 days. We're accredited with emergency services, but not a research or teaching facility. We are nonprofit though. Departments: ['Emergency', 'Surgery', 'Pediatrics', 'Cardiology']. Equipment: ['MRI', 'CT Scanner', 'X-Ray']. Services: ['Inpatient', 'Outpatient', 'Emergency']. Staff_roles: admin 30, support 50, technicians 25. Contacts: main '555-1000', emergency '555-1911'.",
+            "validator": "validate_community_init"
+          },
+          {
+            "query": "Major expansion update! Set beds to 250, doctors to 75, nurses to 200, patients to 175. Set budget to $40M (40000000), revenue to $50M (50000000). Set occupancy_rate to 0.70, satisfaction_score to 4.5, avg_stay_days to 3.0. Set teaching_hospital to true. Append 'Oncology' and 'Neurology' to departments. Append 'PET Scanner' and 'Robot Surgery' to equipment. Append 'Rehab' and 'Telemedicine' to services. Set staff_roles to {'admin': 45, 'support': 80, 'technicians': 40, 'residents': 30}. Add 'appointments': '555-1200' to contacts while keeping existing entries.",
+            "validator": "validate_community_expansion"
+          },
+          {
+            "query": "We've achieved a major milestone! Set hospital_name to 'Riverside Regional Medical Center', specialty to 'Comprehensive Care', license_number to 'HC-2020-001-R'. Set beds to 400, doctors to 120, nurses to 350, patients to 300. Set budget to $75M (75000000), revenue to $90M (90000000), occupancy_rate to 0.75, satisfaction_score to 4.7, avg_stay_days to 2.5. Set research_facility to true. Append 'Research' and 'Trauma' to departments. Append 'Proton Therapy' and 'Lab Automation' to equipment. Append 'Clinical Trials' and 'Trauma Center' to services. Set staff_roles to {'admin': 60, 'support': 120, 'technicians': 70, 'residents': 50, 'researchers': 25}. Add 'research': '555-1300' to contacts while keeping existing entries.",
+            "validator": "validate_community_upgrade"
+          }
+        ]
+      },
+      {
+        "id": "research_institution",
+        "turns": [
+          {
+            "query": "Recording details for Metro University Hospital. Directed by Dr. James Wright, located at 500 Academic Drive, Metro City. Specialty is Research & Teaching, license UH-1985-100. It's a large facility: 600 beds, 200 doctors, 500 nurses, 450 patients currently. Founded in 1985. Budget $150M (150000000), revenue $180M (180000000), 75% occupancy (0.75), 4.6 satisfaction, 4.0 day average stay. Fully accredited with emergency services, both a research facility and teaching hospital, nonprofit. Departments: ['All Specialties']. Equipment: ['State of the Art']. Services: ['Full Service']. Staff_roles: faculty 150, residents 200, fellows 75. Contacts: main '555-5000', admissions '555-5001'.",
+            "validator": "validate_research_init"
+          },
+          {
+            "query": "Big news - we received a major cancer research grant! Set specialty to 'Cancer Research'. Set beds to 650, doctors to 225, nurses to 550, patients to 500. Set budget to $200M (200000000), revenue to $220M (220000000). Set occupancy_rate to 0.77, satisfaction_score to 4.7, avg_stay_days to 4.5. Append 'Oncology Research Center' to departments. Append 'Gene Sequencing Lab' and 'Immunotherapy Suite' to equipment. Append 'Clinical Trials Phase I-III' to services. Add 'research_staff': 100 to staff_roles while keeping existing entries. Add 'research': '555-5050' to contacts while keeping existing entries.",
+            "validator": "validate_research_grant"
+          },
+          {
+            "query": "We've formed a groundbreaking partnership! Set hospital_name to 'Metro University Hospital & Research Institute', specialty to 'Precision Medicine', license_number to 'UH-1985-100-RI'. Set beds to 750, doctors to 275, nurses to 650, patients to 600. Set budget to $300M (300000000), revenue to $350M (350000000), occupancy_rate to 0.80, satisfaction_score to 4.8, avg_stay_days to 4.0. Append 'Genomics Institute' and 'AI Medicine Lab' to departments. Append 'Quantum Computing' and 'AI Diagnostics' to equipment. Append 'Precision Diagnostics' and 'Global Telemedicine' to services. Set staff_roles to {'faculty': 175, 'residents': 250, 'fellows': 100, 'research_staff': 150, 'data_scientists': 50}. Add 'partnerships': '555-5100' to contacts while keeping existing entries.",
+            "validator": "validate_research_partnership"
+          }
+        ]
+      },
+      {
+        "id": "private_clinic",
+        "turns": [
+          {
+            "query": "Opening a new private clinic called Elite Care Clinic. Directed by Dr. Michael Ross, located at 200 Luxury Lane, Beverly Hills. We specialize in Cosmetic Surgery with license PC-2018-500. Small boutique facility: 20 beds, 8 doctors, 25 nurses, 15 patients. Founded in 2018. Budget $5M (5000000), revenue $8M (8000000), 75% occupancy (0.75), 4.9 satisfaction, 1.0 day average stay. We're accredited but no emergency services, not research or teaching, and we're for-profit. Departments: ['Cosmetic', 'Dermatology', 'Wellness']. Equipment: ['Laser Systems', 'Imaging Suite']. Services: ['Outpatient', 'Day Surgery', 'Consultations']. Staff_roles: admin 10, aestheticians 15, concierge 5. Contacts: appointments '555-8000', vip '555-8001'.",
+            "validator": "validate_clinic_open"
+          },
+          {
+            "query": "We're expanding our clinic! Set hospital_name to 'Elite Care Medical Center', specialty to 'Comprehensive Aesthetics', license_number to 'PC-2018-500-M'. Set beds to 50, doctors to 25, nurses to 60, patients to 40. Set budget to $15M (15000000), revenue to $25M (25000000), occupancy_rate to 0.80, avg_stay_days to 1.5. Set research_facility to true. Append 'Anti-Aging' and 'Regenerative' to departments. Append 'Stem Cell Lab' and 'Cryo Therapy' to equipment. Append 'Med Spa' and 'Research Trials' to services. Set staff_roles to {'admin': 20, 'aestheticians': 30, 'concierge': 10, 'researchers': 15}. Add 'research': '555-8050' to contacts while keeping existing entries.",
+            "validator": "validate_clinic_expand"
+          },
+          {
+            "query": "Going international! Set hospital_name to 'Elite Care International', specialty to 'Luxury Healthcare', license_number to 'PC-2018-500-INT'. Set beds to 100, doctors to 50, nurses to 120, patients to 80. Set budget to $50M (50000000), revenue to $80M (80000000), occupancy_rate to 0.80, satisfaction_score to 5.0, avg_stay_days to 2.0. Set emergency_services to true, teaching_hospital to true. Append 'Executive Health' and 'Global VIP' to departments. Append 'Robotic Surgery' and 'AI Diagnostics' to equipment. Append 'Concierge Medicine' and 'Medical Tourism' to services. Set staff_roles to {'admin': 40, 'aestheticians': 50, 'concierge': 25, 'researchers': 30, 'international': 20}. Add 'global': '555-8100' to contacts while keeping existing entries.",
+            "validator": "validate_clinic_franchise"
+          }
+        ]
+      },
+      {
+        "id": "childrens_hospital",
+        "turns": [
+          {
+            "query": "Recording our children's hospital: Sunshine Children's Hospital. Directed by Dr. Lisa Park, at 300 Rainbow Road, Sunnyville. Specialty is Pediatrics, license CH-2010-200. We have 100 beds, 40 doctors, 100 nurses, 60 patients. Founded in 2010. Budget $30M (30000000), revenue $35M (35000000), 60% occupancy (0.60), 4.8 satisfaction, 2.5 day average stay. Accredited with emergency services, not research or teaching yet, nonprofit. Departments: ['General Pediatrics', 'NICU', 'Pediatric Surgery']. Equipment: ['Child-sized MRI', 'Pediatric ICU', 'Play Therapy Room']. Services: ['Inpatient', 'Outpatient', 'Emergency', 'Family Support']. Staff_roles: admin 20, child_life 15, social_workers 10. Contacts: main '555-KIDS', emergency '555-5432'.",
+            "validator": "validate_childrens_open"
+          },
+          {
+            "query": "We're launching a pediatric oncology program! Set specialty to 'Pediatric Oncology'. Set beds to 150, doctors to 60, nurses to 150, patients to 100. Set budget to $50M (50000000), revenue to $55M (55000000), occupancy_rate to 0.67, satisfaction_score to 4.9, avg_stay_days to 5.0. Set research_facility to true. Append 'Oncology' and 'Hematology' to departments. Append 'Proton Beam' and 'Chemo Suite' to equipment. Append 'Cancer Treatment' and 'Clinical Trials' to services. Set staff_roles to {'admin': 30, 'child_life': 25, 'social_workers': 20, 'researchers': 15}. Add 'oncology': '555-5433' to contacts while keeping existing entries.",
+            "validator": "validate_childrens_specialize"
+          },
+          {
+            "query": "We've become a national flagship! Set hospital_name to 'Sunshine National Children's Medical Center', specialty to 'Comprehensive Pediatrics', license_number to 'CH-2010-200-NAT'. Set beds to 300, doctors to 120, nurses to 300, patients to 225. Set budget to $120M (120000000), revenue to $140M (140000000), occupancy_rate to 0.75, satisfaction_score to 5.0, avg_stay_days to 4.0. Set teaching_hospital to true. Append 'Cardiology', 'Neurology', and 'Genetics' to departments. Append 'Heart Center' and 'Gene Lab' to equipment. Append 'Transplant' and 'Rehab' to services. Set staff_roles to {'admin': 50, 'child_life': 40, 'social_workers': 30, 'researchers': 35, 'educators': 25}. Add 'research': '555-5434' to contacts while keeping existing entries.",
+            "validator": "validate_childrens_flagship"
+          }
+        ]
+      },
+      {
+        "id": "veterans_hospital",
+        "turns": [
+          {
+            "query": "Setting up records for Veterans Memorial Medical Center. Directed by Dr. Robert Miller, located at 400 Honor Drive, Capital City. Specialty is Veteran Care, license VA-2000-001. We have 200 beds, 60 doctors, 180 nurses, 150 patients. Founded in 2000. Budget $60M (60000000), revenue $60M (60000000), 75% occupancy (0.75), 4.3 satisfaction, 5.0 day average stay. Accredited with emergency services, not research or teaching yet, nonprofit. Departments: ['Primary Care', 'Mental Health', 'Rehabilitation']. Equipment: ['Standard Imaging', 'Prosthetics Lab']. Services: ['Inpatient', 'Outpatient', 'Emergency', 'PTSD Treatment']. Staff_roles: admin 40, veterans_liaisons 20, therapists 30. Contacts: main '555-VETS', crisis '555-0000'.",
+            "validator": "validate_veterans_establish"
+          },
+          {
+            "query": "Major modernization initiative! Set specialty to 'Comprehensive Veteran Care'. Set beds to 350, doctors to 100, nurses to 280, patients to 280. Set budget to $100M (100000000), revenue to $100M (100000000), occupancy_rate to 0.80, satisfaction_score to 4.6, avg_stay_days to 4.0. Set research_facility to true. Append 'Traumatic Brain Injury' and 'Polytrauma' to departments. Append 'Advanced MRI', 'VR Therapy', and 'Robotic Rehab' to equipment. Append 'Telehealth' and 'Home Care' to services. Set staff_roles to {'admin': 60, 'veterans_liaisons': 40, 'therapists': 50, 'researchers': 25}. Add 'telehealth': '555-0001' to contacts while keeping existing entries.",
+            "validator": "validate_veterans_modernize"
+          },
+          {
+            "query": "We've been designated the national flagship! Set hospital_name to 'National Veterans Health System Flagship', specialty to 'National Veteran Excellence', license_number to 'VA-2000-001-FLAG'. Set beds to 500, doctors to 180, nurses to 450, patients to 400. Set budget to $200M (200000000), revenue to $200M (200000000), occupancy_rate to 0.80, satisfaction_score to 4.9, avg_stay_days to 3.5. Set teaching_hospital to true. Append 'Burn Center', 'Spinal Cord', and 'Research' to departments. Append '3D Printing' and 'Exoskeletons' to equipment. Append 'National Training' and 'Research Hub' to services. Set staff_roles to {'admin': 80, 'veterans_liaisons': 60, 'therapists': 80, 'researchers': 50, 'educators': 30}. Add 'research': '555-0002' to contacts while keeping existing entries.",
+            "validator": "validate_veterans_flagship"
+          }
+        ]
+      }
+    ]
+  }
+]

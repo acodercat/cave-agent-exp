@@ -1,0 +1,33 @@
+{
+  "name": "fedfund_share_class_yield_weighting",
+  "module": "evals.calculation_reconciliation.fedfund_share_class_yield_weighting",
+  "task_family": "calculation_reconciliation",
+  "data_sources": [
+    "sec_nmfp",
+    "nyfed_reference_rates"
+  ],
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "For FEDFUND accession 0002071691-25-004249 on 2025-10-31, compare its reported seven-day share-class yields with the New York Fed overnight SOFR effective on the same date. Report the class count, total class net assets, series gross yield, equal-class mean net yield and class-net-asset-weighted mean net yield. Report the Institutional class asset share and identify the unique lowest-net-yield class with its net yield. Then report SOFR and compare the series gross yield and the asset-weighted class net yield with it. Explain the weighting result and the limits of comparing the fund yields with SOFR.",
+          "validator": "validate",
+          "stores": [
+            "reported_class_count",
+            "class_net_assets_usd_billions",
+            "series_gross_seven_day_yield_pct",
+            "simple_mean_class_net_yield_pct",
+            "asset_weighted_class_net_yield_pct",
+            "institutional_class_asset_share_pct",
+            "lowest_net_yield_class",
+            "lowest_class_net_yield_pct",
+            "same_date_sofr_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

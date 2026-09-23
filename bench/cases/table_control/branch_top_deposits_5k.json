@@ -1,0 +1,24 @@
+{
+  "name": "branch_top_deposits_5k",
+  "module": "cases.table_control.branch_top_deposits_5k",
+  "task_family": "table_control",
+  "data_sources": [
+    "fdic_sod"
+  ],
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "From the FDIC Summary of Deposits as of 2024-06-30, rank every branch by its deposits, highest first, breaking ties by branch identifier in ascending order. Deliver the top 5,000 of that ranking. Each row: the branch identifier, the bank's name as the Summary of Deposits spells it, the branch's state, its main-office indicator exactly as the source writes it, and its deposits in thousands of dollars as reported.",
+          "validator": "validate",
+          "stores": [
+            "branch_table"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,213 @@
+[
+  {
+    "name": "simple_types",
+    "module": "evals.stateful.simple_types",
+    "requirements": "Manage the state of a system with simple Python types: int, float, str, bool, list, dict. The system should be able to perform operations on the variables and update their values. The system should be able to persist the variables across multiple turns.",
+    "conversations": [
+      {
+        "id": "integer_basic",
+        "turns": [
+          {
+            "query": "I'm tracking my daily steps using number. I walked 15 steps just now, can you add 15 to number?",
+            "validator": "validate_int_add"
+          },
+          {
+            "query": "Actually, I realized I need to count this as triple steps because I was walking uphill. Can you multiply number by 3?",
+            "validator": "validate_int_multiply"
+          },
+          {
+            "query": "I want to see how many complete weeks of steps this would be if a week is 7 steps. Set number to the remainder of number divided by 7.",
+            "validator": "validate_int_modulo"
+          }
+        ]
+      },
+      {
+        "id": "integer_advanced",
+        "turns": [
+          {
+            "query": "Set number to -25 (a temperature change), then set number to its absolute value to get the magnitude.",
+            "validator": "validate_int_abs"
+          },
+          {
+            "query": "I need to split number into 4 equal groups. Set number to the floor division of number by 4.",
+            "validator": "validate_int_floor_div"
+          },
+          {
+            "query": "Now I need to calculate the area of a square with that side length. Set number to number squared.",
+            "validator": "validate_int_power"
+          }
+        ]
+      },
+      {
+        "id": "float_basic",
+        "turns": [
+          {
+            "query": "I'm calculating shipping costs using value. There's an additional $2.50 handling fee. Add 2.50 to value.",
+            "validator": "validate_float_add"
+          },
+          {
+            "query": "Great news! We're running a 20% off promotion. Multiply value by 0.8 to apply the discount.",
+            "validator": "validate_float_discount"
+          },
+          {
+            "query": "For the invoice, I need value rounded to 2 decimal places. Round value to 2 decimals.",
+            "validator": "validate_float_round"
+          }
+        ]
+      },
+      {
+        "id": "float_temperature",
+        "turns": [
+          {
+            "query": "I'm converting temperature readings. Set value to 36.5 degrees Celsius, then convert to Fahrenheit using value = value * 9/5 + 32.",
+            "validator": "validate_float_c_to_f"
+          },
+          {
+            "query": "The thermometer was slightly off. Add 2.3 to value to correct it to exactly 100.0 degrees.",
+            "validator": "validate_float_add_temp"
+          },
+          {
+            "query": "Now I need this back in Celsius for my report. Convert value using value = (value - 32) * 5/9.",
+            "validator": "validate_float_f_to_c"
+          }
+        ]
+      },
+      {
+        "id": "string_basic",
+        "turns": [
+          {
+            "query": "I'm building a greeting message. The current text is 'Hello', can you append ' World' to complete it?",
+            "validator": "validate_str_append"
+          },
+          {
+            "query": "I need this as a header so it should be all caps. Convert the text to uppercase please.",
+            "validator": "validate_str_upper"
+          },
+          {
+            "query": "Actually, let's change 'WORLD' to 'PYTHON' in the text to make it more relevant.",
+            "validator": "validate_str_replace"
+          }
+        ]
+      },
+      {
+        "id": "string_split_join",
+        "turns": [
+          {
+            "query": "I have a CSV-style string 'a,b,c' that needs reformatting. Set text to 'a,b,c', split by comma, and rejoin with ' | ' as separator. Store result back in text.",
+            "validator": "validate_str_split"
+          },
+          {
+            "query": "Sort the parts of text alphabetically while keeping the ' | ' separator format. Update text with the sorted result.",
+            "validator": "validate_str_sort"
+          },
+          {
+            "query": "Reverse the order of parts in text but keep the ' | ' separator. Update text with the reversed result.",
+            "validator": "validate_str_reverse"
+          }
+        ]
+      },
+      {
+        "id": "bool_basic",
+        "turns": [
+          {
+            "query": "I have a feature flag stored in flag. Toggle flag to the opposite value (not flag).",
+            "validator": "validate_bool_toggle"
+          },
+          {
+            "query": "I need to check if flag passes a condition. Set flag to flag AND True.",
+            "validator": "validate_bool_and"
+          },
+          {
+            "query": "The requirements changed again. Toggle flag one more time (not flag).",
+            "validator": "validate_bool_toggle2"
+          }
+        ]
+      },
+      {
+        "id": "bool_logic",
+        "turns": [
+          {
+            "query": "I'm implementing permission checks. Set flag to flag OR True.",
+            "validator": "validate_bool_or"
+          },
+          {
+            "query": "Now set flag to flag AND False to test the restriction logic.",
+            "validator": "validate_bool_and_false"
+          },
+          {
+            "query": "Finally, set flag to not flag to flip the access permission.",
+            "validator": "validate_bool_not"
+          }
+        ]
+      },
+      {
+        "id": "list_basic",
+        "turns": [
+          {
+            "query": "I'm building a queue of tasks using items. Append 4, 5, and 6 to items.",
+            "validator": "validate_list_append"
+          },
+          {
+            "query": "The first task is completed. Remove the first element from items.",
+            "validator": "validate_list_remove"
+          },
+          {
+            "query": "I need to process these in reverse order now. Reverse items in place.",
+            "validator": "validate_list_reverse"
+          }
+        ]
+      },
+      {
+        "id": "list_sort",
+        "turns": [
+          {
+            "query": "I have an unsorted list of priorities: 5, 2, 8, 1, 3. Set items to [5, 2, 8, 1, 3] and sort items in ascending order.",
+            "validator": "validate_list_sort"
+          },
+          {
+            "query": "Actually, I need the highest priority first. Sort items in descending order.",
+            "validator": "validate_list_sort_desc"
+          },
+          {
+            "query": "The priority scale changed - everything needs to be doubled. Multiply each element in items by 2.",
+            "validator": "validate_list_double"
+          }
+        ]
+      },
+      {
+        "id": "dict_basic",
+        "turns": [
+          {
+            "query": "I'm updating a user profile. Can you add a 'city' field with the value 'NYC' to the data?",
+            "validator": "validate_dict_add"
+          },
+          {
+            "query": "The user had a birthday! Update their 'age' to 26 in the data.",
+            "validator": "validate_dict_update"
+          },
+          {
+            "query": "For privacy reasons, we need to remove the 'city' field from the data.",
+            "validator": "validate_dict_remove"
+          }
+        ]
+      },
+      {
+        "id": "dict_nested",
+        "turns": [
+          {
+            "query": "I'm updating student grades. Please change the math score to 90 in data['scores']['math'].",
+            "validator": "validate_dict_nested_update"
+          },
+          {
+            "query": "The student just took a science test. Add a science score of 88 to data['scores'].",
+            "validator": "validate_dict_nested_add"
+          },
+          {
+            "query": "There was a curve on all tests. Add 5 points to every score in the scores dictionary.",
+            "validator": "validate_dict_increment"
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,37 @@
+{
+  "name": "jpm_standardized_advanced_cet1",
+  "module": "evals.comparison_ranking.jpm_standardized_advanced_cet1",
+  "task_family": "comparison_ranking",
+  "data_sources": [
+    "ffiec_call_reports_capital",
+    "ffiec_nic_structure",
+    "fed_stress_tests"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Using the retained 2025-Q3 FFIEC Call Report for JPMorgan Chase Bank, N.A., compare its standardized-approach and advanced-approaches common equity tier 1 risk-based capital measures. Report the bank's RSSD ID, common equity tier 1 capital and each approach's risk-weighted assets, then calculate both ratios. Use the current FFIEC NIC structure snapshot observed on 2026-08-13 to identify the bank's immediate parent in the 2025 Federal Reserve Supervisory Severely Adverse stress-test results; report that parent's legal name, RSSD ID and NIC entity type, the actual-ratio date, and its actual and projected-minimum common equity tier 1 ratios. Explain what each comparison measures and what reading them together does and does not establish.",
+          "validator": "validate",
+          "stores": [
+            "bank_rssd_id",
+            "parent_rssd_id",
+            "parent_legal_name",
+            "parent_nic_entity_type",
+            "cet1_capital_billion_usd",
+            "standardized_rwa_billion_usd",
+            "advanced_rwa_billion_usd",
+            "standardized_cet1_ratio_pct",
+            "advanced_cet1_ratio_pct",
+            "stress_actual_as_of_date",
+            "parent_stress_actual_cet1_ratio_pct",
+            "parent_stress_projected_minimum_cet1_ratio_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

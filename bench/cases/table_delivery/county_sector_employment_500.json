@@ -1,0 +1,24 @@
+{
+  "name": "county_sector_employment_500",
+  "module": "cases.table_delivery.county_sector_employment_500",
+  "task_family": "table_delivery",
+  "data_sources": [
+    "bls_qcew"
+  ],
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Break down private employment in Maryland by county and NAICS sector, from the 2024 QCEW annual averages. Skip the unknown-or-undefined areas, whose codes end in 999. Each county-sector row should carry the county code, the sector code, establishments, average employment, average annual pay, and the sector's share of all private employment in its county. Take that county total from the county's own private-ownership row, not from a sum of the sector rows, which leaves the suppressed sectors out. BLS suppresses some cells, and the file shows zeros there under disclosure code N; those are not zeros, so leave employment, pay and the share missing for them, and leave the share missing too where the county total is suppressed.",
+          "validator": "validate",
+          "stores": [
+            "sector_table"
+          ]
+        }
+      ]
+    }
+  ]
+}

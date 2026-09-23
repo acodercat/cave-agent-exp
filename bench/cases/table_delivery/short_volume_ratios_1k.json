@@ -1,0 +1,24 @@
+{
+  "name": "short_volume_ratios_1k",
+  "module": "cases.table_delivery.short_volume_ratios_1k",
+  "task_family": "table_delivery",
+  "data_sources": [
+    "finra_short_volume"
+  ],
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "From FINRA's consolidated short sale volume file for 2024-12-31, report every symbol with a total volume of at least 1 million shares. Give the symbol exactly as listed, the market codes, short volume, total volume, short volume over total volume, and short-exempt volume over short volume. In this file short volume already includes the short-exempt shares, so neither add them nor net them out.",
+          "validator": "validate",
+          "stores": [
+            "volume_table"
+          ]
+        }
+      ]
+    }
+  ]
+}

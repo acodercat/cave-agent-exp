@@ -1,0 +1,31 @@
+{
+  "name": "hitec_factor_regression_2018_2022",
+  "module": "evals.comparison_ranking.hitec_factor_regression_2018_2022",
+  "task_family": "comparison_ranking",
+  "data_sources": [
+    "ken_french_daily_factors",
+    "ken_french_10_industry_portfolios"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "For 2018-01-01 through 2022-12-31, align the value-weighted HiTec portfolio with the daily factor table by date. Run OLS with HiTec minus RF as the dependent variable and an intercept, Mkt-RF, SMB and HML as regressors, all in the table's percentage units. Report the observation count, daily alpha, three factor coefficients, ordinary in-sample R-squared, and alpha annualized as (1 + daily alpha/100)^252 - 1. Interpret the coefficients and state what this regression does not establish.",
+          "validator": "validate",
+          "stores": [
+            "aligned_observation_count",
+            "daily_alpha_pct",
+            "market_beta",
+            "smb_beta",
+            "hml_beta",
+            "r_squared",
+            "compounded_annualized_alpha_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "name": "storm_damage_nfip_claim_grain_bridge",
+  "module": "evals.risk_screening.storm_damage_nfip_claim_grain_bridge",
+  "task_family": "risk_screening",
+  "data_sources": [
+    "noaa_storm_events",
+    "fema_nfip"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Run a retrospective 2024 state-month screen across the 50 states and the District of Columbia using NOAA Storm Events detail rows. Group every event row by the calendar month of its begin timestamp, sum only reported property-damage amounts (do not add crop damage and do not treat missing damage as a reported zero), and select the state-month with the largest sum; resolve an exact tie by state name and then month alphabetically. Report the selected state name, USPS abbreviation and month, all NOAA event-row count, reported-property-damage row count, and property damage. Then use all NFIP claim records whose state and date-of-loss calendar month match that selection. Report the physical claim-record count and sum of reported policy counts; among nonblank flood-event labels identify the event with the largest summed policy count, resolving an exact tie alphabetically, and report its label, policy count and share of policy count across all matching records, including records with blank event labels in the denominator. Finally report the aggregate signed net building, contents and ICC claim payments; aggregate reported building-plus-contents insurance coverage; and their ratio. Explain the record-versus-policy grain and what the NOAA, NFIP event, payment and coverage measures do and do not establish.",
+          "validator": "validate",
+          "stores": [
+            "noaa_damage_leader_state_name",
+            "noaa_damage_leader_state_usps",
+            "noaa_damage_leader_month",
+            "noaa_selected_event_row_count",
+            "noaa_reported_property_damage_row_count",
+            "noaa_property_damage_usd_billions",
+            "nfip_claim_record_count",
+            "nfip_represented_policy_count",
+            "nfip_dominant_named_flood_event",
+            "nfip_dominant_event_policy_count",
+            "nfip_dominant_event_policy_share_pct",
+            "nfip_total_net_claim_payment_usd_billions",
+            "nfip_total_reported_coverage_usd_billions",
+            "nfip_net_payment_to_coverage_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

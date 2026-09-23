@@ -1,0 +1,35 @@
+{
+  "name": "wti_forecast_vintage_error_deterioration",
+  "module": "evals.temporal_path.wti_forecast_vintage_error_deterioration",
+  "task_family": "temporal_path",
+  "data_sources": [
+    "eia_steo_vintages",
+    "eia_bulk_wti"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Evaluate the EIA Short-Term Energy Outlook WTI spot-average forecasts published on 2024-01-04 and 2024-04-04 against the EIA PET.RWTC.M monthly Cushing WTI spot-price observations. Use only their common strictly future target months from May through December 2024. Define signed forecast error as forecast minus actual and evaluate accuracy in absolute USD-per-barrel error. Report the target-month count, each vintage's mean absolute error, and the number of months in which the April vintage has the lower absolute error. Find the month with the largest April-minus-January increase in absolute error, resolving an exact tie by the earlier target month, and report that month's two forecasts and monthly actual price. For that selected calendar month, use PET.RWTC.D to report the count of nonmissing daily observations, the daily low and the daily high; do not synthesize observations for dates absent from the daily series. Report prices, selected-month errors, the daily range and aggregate error measures, and explain what the forecast comparison and daily dispersion do and do not establish.",
+          "validator": "validate",
+          "stores": [
+            "common_future_target_month_count",
+            "january_vintage_mean_absolute_error_usd_per_barrel",
+            "april_vintage_mean_absolute_error_usd_per_barrel",
+            "april_lower_absolute_error_month_count",
+            "largest_absolute_error_deterioration_month",
+            "selected_month_january_forecast_usd_per_barrel",
+            "selected_month_april_forecast_usd_per_barrel",
+            "selected_month_actual_usd_per_barrel",
+            "selected_month_daily_observation_count",
+            "selected_month_daily_low_usd_per_barrel",
+            "selected_month_daily_high_usd_per_barrel"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "name": "nport_pca_keyrate_factor_hedge",
+  "module": "evals.scenario_analysis.nport_pca_keyrate_factor_hedge",
+  "task_family": "scenario_analysis",
+  "data_sources": [
+    "treasury_yield_curve",
+    "sec_nport_interest_rate_risk"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Use complete daily 3-month, 1-year, 5-year, 10-year, and 30-year Treasury par yields from 2020-01-02 through 2024-12-31, ordered as stated. Form consecutive available-curve-date yield differences in basis points and estimate their sample covariance with the n-minus-one denominator. Perform covariance PCA, order eigenvalues descending, and orient every eigenvector so the sum of its five loadings is positive. Report the yield-change count, all five eigenvalues, first-three cumulative explained variance, covariance 2-norm condition number, and all five PC1 and PC2 loadings. Interpret the shapes of the leading fitted loadings and discuss the temporal scope of the fitted covariance structure, then carry the full eigenbasis forward.",
+          "validator": "validate_pca",
+          "stores": [
+            "pca_yield_change_count",
+            "pca_eigenvalue_1_bp2",
+            "pca_eigenvalue_2_bp2",
+            "pca_eigenvalue_3_bp2",
+            "pca_eigenvalue_4_bp2",
+            "pca_eigenvalue_5_bp2",
+            "pca_first_three_explained_pct",
+            "pca_covariance_condition_number",
+            "pc1_3month_loading",
+            "pc1_1year_loading",
+            "pc1_5year_loading",
+            "pc1_10year_loading",
+            "pc1_30year_loading",
+            "pc2_3month_loading",
+            "pc2_1year_loading",
+            "pc2_5year_loading",
+            "pc2_10year_loading",
+            "pc2_30year_loading"
+          ]
+        },
+        {
+          "query": "In N-PORT interest-rate-risk rows for report date 2025-03-31, keep USD rows with positive net assets, a nonmissing SEC series identifier, and complete five-bucket DV01. For each series keep the row with latest filing date, ties by accession descending. Divide its ordered DV01 vector by net assets and multiply by 10,000, then project it on the carried Treasury eigenvectors. Rank funds by absolute PC1 duration exposure descending, ties by series identifier ascending. Report eligible count; the selected fund's registered series name verbatim from N-PORT, series identifier, accession, net assets; five reported DV01 buckets; all five normalized factor exposures; and the absolute-PC1 margin over the runner-up. Explain what selection on factor-normalized exposure means and what reported DV01 does not reveal about the complete portfolio.",
+          "validator": "validate_selection",
+          "stores": [
+            "nport_eligible_fund_count",
+            "selected_fund_name",
+            "selected_fund_series_id",
+            "selected_fund_accession",
+            "selected_fund_net_assets_usd",
+            "selected_3month_dv01_usd",
+            "selected_1year_dv01_usd",
+            "selected_5year_dv01_usd",
+            "selected_10year_dv01_usd",
+            "selected_30year_dv01_usd",
+            "selected_pc1_duration_exposure",
+            "selected_pc2_duration_exposure",
+            "selected_pc3_duration_exposure",
+            "selected_pc4_duration_exposure",
+            "selected_pc5_duration_exposure",
+            "selected_pc1_absolute_margin"
+          ]
+        },
+        {
+          "query": "Construct a hypothetical key-rate DV01 overlay using only the 1-year, 5-year, and 30-year buckets. Solve the three-instrument linear system that makes the carried fund's post-overlay exposures to PC1, PC2, and PC3 exactly zero; do not constrain signs or notionals. Report the three overlay DV01 values, the hedge-factor matrix 2-norm condition number, maximum absolute residual across the first three factor exposures, remaining PC4 and PC5 DV01 exposures, and gross absolute overlay DV01. Interpret the conditioning and reported residual factor exposures, and discuss material implementation and cost limitations.",
+          "validator": "validate_hedge",
+          "stores": [
+            "hedge_1year_dv01_usd",
+            "hedge_5year_dv01_usd",
+            "hedge_30year_dv01_usd",
+            "hedge_factor_matrix_condition_number",
+            "hedge_maximum_first_three_factor_residual",
+            "hedged_pc4_dv01_usd",
+            "hedged_pc5_dv01_usd",
+            "hedge_gross_dv01_usd"
+          ]
+        },
+        {
+          "query": "Hold both the report-date DV01 vector and the carried overlay fixed. From Treasury par yields on 2025-03-31 and 2025-12-31, report ending-minus-starting changes for all five tenors in basis points. Treat positive DV01 as a gain for a one-basis-point yield decline and compute unhedged and hedged signed first-order P&L, both P&Ls as percentages of report-date net assets, and the percentage reduction in absolute P&L relative to absolute unhedged P&L, retaining a negative value if the hedge increases absolute P&L. Interpret the comparison and discuss its material model, implementation, and selection limitations.",
+          "validator": "validate_realized",
+          "stores": [
+            "realized_3month_yield_change_bp",
+            "realized_1year_yield_change_bp",
+            "realized_5year_yield_change_bp",
+            "realized_10year_yield_change_bp",
+            "realized_30year_yield_change_bp",
+            "unhedged_first_order_pnl_usd",
+            "hedged_first_order_pnl_usd",
+            "unhedged_pnl_pct_net_assets",
+            "hedged_pnl_pct_net_assets",
+            "absolute_pnl_reduction_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

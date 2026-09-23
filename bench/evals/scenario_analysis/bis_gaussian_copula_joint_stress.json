@@ -1,0 +1,74 @@
+{
+  "name": "bis_gaussian_copula_joint_stress",
+  "module": "evals.scenario_analysis.bis_gaussian_copula_joint_stress",
+  "task_family": "scenario_analysis",
+  "data_sources": [
+    "bis_credit_gap",
+    "bis_debt_service",
+    "bis_effective_exchange_rates"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Build a balanced country-quarter panel from BIS private-non-financial-sector credit gaps (actual minus trend, all lenders), reported private-sector debt-service ratios, and broad real effective exchange rates. Represent each quarter by the March, June, September, or December EER observation, as applicable, and define year-over-year real-EER depreciation as the negative of the ordinary percentage change from that month one year earlier. Use 2020-Q1 through 2024-Q4 as one pooled training sample and retain only economies having all 20 training quarters plus 2025-Q4. For each feature separately, convert pooled training observations to normal scores using average ranks and plotting positions based on rank minus one half divided by sample size. Fit the sample correlation matrix of those three Gaussian-score columns. Report training rows/countries, its three off-diagonal correlations, and its 2-norm condition number. Explain how the marginal transformation affects what the fitted dependence model implies about raw levels, discuss what pooling country-quarters implies for inference across economies and time, and carry the fitted marginals and correlation matrix forward.",
+          "validator": "validate_copula_fit",
+          "stores": [
+            "copula_training_observation_count",
+            "copula_training_country_count",
+            "gap_dsr_gaussian_correlation",
+            "gap_depreciation_gaussian_correlation",
+            "dsr_depreciation_gaussian_correlation",
+            "copula_correlation_condition_number"
+          ]
+        },
+        {
+          "query": "Score every retained economy at 2025-Q4 using the carried empirical marginals. For a target value, use the midpoint of the counts strictly below and no greater than it divided by the training row count, clipped to the two plotting-position endpoints, before applying the normal quantile. Construct the standardized GLS common-mean z-statistic under equal latent loadings and the fitted Gaussian correlation. Rank scores descending, ties by economy name ascending. Report the scored count, leader as its exact two-letter BIS borrower-area code, its three raw stress features, three Gaussian scores, common-stress score, standard-normal upper-tail probability, and its score margin over the runner-up. Explain the statistical and financial scope of that tail probability under the pooled copula construction.",
+          "validator": "validate_joint_stress",
+          "stores": [
+            "joint_stress_country_count",
+            "joint_stress_leader",
+            "leader_credit_gap_pp",
+            "leader_private_dsr_pct",
+            "leader_real_eer_depreciation_pct",
+            "leader_gap_z",
+            "leader_dsr_z",
+            "leader_depreciation_z",
+            "leader_common_stress_score",
+            "leader_common_stress_upper_tail_probability",
+            "leader_score_margin"
+          ]
+        },
+        {
+          "query": "Decompose the carried leader's score into one additive contribution per Gaussian feature using the fitted common-direction coefficients, and report all three contributions plus the absolute residual between their sum and the score. Then use the partitioned fitted Gaussian correlation to derive the conditional distribution of the DSR normal score given that economy's credit-gap and depreciation normal scores. Report conditional mean, conditional standard deviation, standardized DSR residual, and its conditional upper-tail probability. Compare the conditional DSR tail with the joint score, explain their distinct meanings, and discuss how the additive contributions should be interpreted.",
+          "validator": "validate_conditional_decomposition",
+          "stores": [
+            "leader_gap_score_contribution",
+            "leader_dsr_score_contribution",
+            "leader_depreciation_score_contribution",
+            "leader_contribution_sum_residual",
+            "leader_conditional_dsr_z_mean",
+            "leader_conditional_dsr_z_std",
+            "leader_conditional_dsr_standardized_residual",
+            "leader_conditional_dsr_upper_tail_probability"
+          ]
+        },
+        {
+          "query": "Form a coherent marginal shock by setting each raw feature to its pooled-training 95th percentile, using the linear sample-quantile convention. Transform those three values with the same carried empirical marginal rule and score them with the same fitted common direction. Report the three raw scenario values, scenario score and upper-tail probability, and scenario tail probability divided by the observed leader tail probability. Explain how fitted dependence and the projection affect interpretation relative to the marginal tail probabilities, and discuss the status and limitations of this constructed scenario.",
+          "validator": "validate_joint_scenario",
+          "stores": [
+            "scenario_credit_gap_pp",
+            "scenario_private_dsr_pct",
+            "scenario_real_eer_depreciation_pct",
+            "scenario_common_stress_score",
+            "scenario_common_stress_upper_tail_probability",
+            "scenario_tail_probability_ratio"
+          ]
+        }
+      ]
+    }
+  ]
+}

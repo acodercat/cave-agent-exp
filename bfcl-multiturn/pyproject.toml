@@ -1,0 +1,27 @@
+[project]
+name = "bfcl-multiturn"
+version = "0.1.0"
+description = "BFCL's stateful multi-turn subset under capability-matched paradigms."
+requires-python = ">=3.12"
+dependencies = [
+    # The benchmark itself: the stateful API classes, the state checker and the
+    # multi-turn data all ship in the official package, so nothing here
+    # reimplements an environment.
+    "bfcl-eval>=2026.3.23",
+    "cave-agent[all]>=0.8.0",
+    # Gemini 3 ties each function call to a thought signature the gateway's
+    # OpenAI-compatible endpoint drops, so it is reached through its own SDK.
+    "google-genai>=1.52.0",
+    "litellm>=1.80.7",
+    "loguru>=0.7.3",
+    # bfcl-eval pins numpy 1.26.4, so nothing here asks for a newer one; the
+    # statistics it needs come from the benchmark's own checker and from scipy,
+    # which is compatible with that pin.
+    "scipy>=1.11",
+]
+
+[dependency-groups]
+dev = ["pytest>=9.0.1"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]

@@ -1,0 +1,24 @@
+{
+  "name": "fails_to_deliver_values_10",
+  "module": "cases.table_delivery.fails_to_deliver_values_10",
+  "task_family": "table_delivery",
+  "data_sources": [
+    "sec_ftd"
+  ],
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Value the fails to deliver for the settlement date 2024-12-31 from the SEC fails-to-deliver file, and report every security whose fails were worth at least 20 million USD. For each one: CUSIP, symbol, description, quantity of fails, price, and the dollar value of the fails, taken as quantity times price. Where the file states no price, leave both price and estimated value missing rather than guessing. A security with no price cannot clear a value threshold, so it belongs in the table only where no threshold is asked for.",
+          "validator": "validate",
+          "stores": [
+            "fails_table"
+          ]
+        }
+      ]
+    }
+  ]
+}

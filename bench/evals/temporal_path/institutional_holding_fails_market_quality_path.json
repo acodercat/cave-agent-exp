@@ -1,0 +1,69 @@
+{
+  "name": "institutional_holding_fails_market_quality_path",
+  "module": "evals.temporal_path.institutional_holding_fails_market_quality_path",
+  "task_family": "temporal_path",
+  "data_sources": [
+    "sec_13f_holdings",
+    "sec_ftd",
+    "sec_midas_security_exchange"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Using the 13F holdings-by-CUSIP table for report period 2025-09-30, rank CUSIPs by plain-share institutional value (the plain-share value total in dollars, which excludes put, call and non-share rows) descending, breaking ties by CUSIP ascending. Report the count of distinct CUSIPs in the period; the leader's CUSIP, issuer name as recorded in the table, distinct filer count, plain-share value in USD billions and plain-share amount; and the leader's margin over the runner-up in USD billions. Explain what the aggregate does and does not say about ownership of the issuer.",
+          "validator": "validate_institutional_leader",
+          "stores": [
+            "period_cusip_count",
+            "leader_cusip",
+            "leader_issuer_name",
+            "leader_filer_count",
+            "leader_share_value_usd_billions",
+            "leader_share_amount",
+            "leader_margin_usd_billions"
+          ]
+        },
+        {
+          "query": "Link that CUSIP to the SEC fails-to-deliver files for settlement dates 2025-10-01 through 2025-12-31 (inclusive). Report the symbol the CUSIP maps to (require a single symbol), the count of distinct settlement dates in that window across all securities, the count of settlement dates with a fails row for the CUSIP, the total failed shares, the largest single-date fails quantity and its settlement date (earliest on a tie), and total failed shares as a percent of the turn-1 plain-share amount. Explain what a fails-to-deliver quantity measures.",
+          "validator": "validate_fails_linkage",
+          "stores": [
+            "leader_symbol",
+            "window_settlement_date_count",
+            "leader_fail_date_count",
+            "leader_total_fails",
+            "leader_peak_fails",
+            "leader_peak_fail_settlement_date",
+            "leader_fails_to_institutional_shares_pct"
+          ]
+        },
+        {
+          "query": "Using MIDAS daily security rows of security type Stock for the same date window, compute for the mapped symbol the count of trading days, odd-lot volume divided by trade volume, and hidden volume divided by the trade volume eligible for hidden orders (SEC's hidden-volume rate), each as a percent of window sums. Map each of the top-20 CUSIPs from turn 1 to its fails-to-deliver symbol (first symbol by settlement date in the window) and match that symbol to MIDAS Stock rows by exact string equality only; CUSIPs whose symbol has no Stock rows drop out of the cohort. Compute the same two shares for every mapped symbol. Report the mapped cohort size, the cohort medians of the two shares, and the leader's rank by odd-lot share descending (1 = highest). Explain what the odd-lot share indicates.",
+          "validator": "validate_market_quality_context",
+          "stores": [
+            "leader_midas_trading_day_count",
+            "leader_odd_lot_volume_share_pct",
+            "leader_hidden_volume_share_pct",
+            "cohort_symbol_count",
+            "cohort_median_odd_lot_volume_share_pct",
+            "cohort_median_hidden_volume_share_pct",
+            "leader_odd_lot_share_rank"
+          ]
+        },
+        {
+          "query": "Compare the leader's 2025-09-30 holdings row with its 2024-09-30 row; both periods report values in dollars and lie after the issuer's 2024 share split, so no unit or split adjustment applies. Report the 2024-09-30 plain-share value in USD billions, the percent change in plain-share value, the 2024-09-30 filer count, the change in filer count, and the percent change in plain-share amount. Explain what the value and share-count changes together establish about how the position changed.",
+          "validator": "validate_prior_period_change",
+          "stores": [
+            "prior_period_share_value_usd_billions",
+            "share_value_change_pct",
+            "prior_period_filer_count",
+            "filer_count_change",
+            "share_amount_change_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

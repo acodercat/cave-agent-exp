@@ -1,0 +1,67 @@
+{
+  "name": "pension_ftap_credit_balance_restriction",
+  "module": "evals.comparison_ranking.pension_ftap_credit_balance_restriction",
+  "task_family": "comparison_ranking",
+  "data_sources": [
+    "dol_form5500_schedule_sb",
+    "dol_form5500_financials"
+  ],
+  "case_type": "baseline",
+  "difficulty": "hard",
+  "conversations": [
+    {
+      "turns": [
+        {
+          "query": "Using the Form 5500 Schedule SB actuarial file, build the population of plans whose plan year ends 2023-12-31, whose filing status records a successful receipt, whose total funding target is positive, and which report both an actuarial value of assets and a funding target attainment percentage. Identify a plan by sponsor EIN and plan number, and where more than one filing qualifies keep the one with the latest date received, breaking a tie on the greatest filing identifier. Report how many plans result. For each, define its credit balance as the prefunding balance plus the funding standard carryover balance, treating a blank as zero. Report how many plans carry a positive credit balance, that count as a percent of the population to 4 decimals, the median positive balance in USD millions to 4 decimals, and the total across the population in USD billions to 4 decimals. Finally report the median of actuarial value of assets divided by total funding target, in percent to 4 decimals. Briefly explain the role of funding balances in the FTAP calculation.",
+          "validator": "validate_credit_balance_scale",
+          "stores": [
+            "plan_count",
+            "credit_balance_plans",
+            "credit_balance_share_pct",
+            "median_credit_balance_usd_millions",
+            "total_credit_balance_usd_billions",
+            "median_unadjusted_ratio_pct"
+          ]
+        },
+        {
+          "query": "The funding target attainment percentage is defined as the actuarial value of assets reduced by the prefunding balance and the funding standard carryover balance, divided by the funding target. Compute it for every plan and report its median in percent to 4 decimals, and the median of the unadjusted ratio minus this one in percentage points to 4 decimals. Then check both against the percentage each plan certifies on its own Schedule SB: for each of the two ratios report the percent of plans agreeing with the certified figure within 0.05 percentage points, to 4 decimals, and the median absolute difference from it in percentage points, to 4 decimals.",
+          "validator": "validate_statutory_formula",
+          "stores": [
+            "median_statutory_ratio_pct",
+            "median_overstatement_pp",
+            "unadjusted_agreement_pct",
+            "unadjusted_median_gap_pp",
+            "statutory_agreement_pct",
+            "statutory_median_gap_pp"
+          ]
+        },
+        {
+          "query": "Use 80 percent and 60 percent as sensitivity cutoffs for the two FTAP ratios, without treating these counts as determinations of actual IRC section 436 restriction status. Report how many plans fall below 80 percent under the unadjusted ratio, how many under the reconstructed FTAP, and how many the unadjusted ratio places at or above 80 percent while the reconstructed FTAP places them below. Report the same three counts at the 60 percent cutoff. Explain why these FTAP screens do not substitute for a plan's AFTAP certification and restriction history.",
+          "validator": "validate_restriction_thresholds",
+          "stores": [
+            "unadjusted_below_eighty",
+            "statutory_below_eighty",
+            "wrongly_cleared_eighty",
+            "unadjusted_below_sixty",
+            "statutory_below_sixty",
+            "wrongly_cleared_sixty"
+          ]
+        },
+        {
+          "query": "Two choices sit underneath the asset figure. First, build a nonstatutory current-value sensitivity ratio by replacing actuarial value with current value while keeping the same funding-balance subtraction. Report its median in percent to 4 decimals, the median of reconstructed FTAP minus this ratio in percentage points to 4 decimals, how many plans fall below 80 percent on current value, and how many are at or above 80 percent on reconstructed FTAP but below it on current value. Second, report how many plans carry a valuation date of 2023-01-01. Then join the population to the Form 5500 plan financial statements on the filing identifier, keep plans with positive net assets at both the beginning and the end of the year and a positive Schedule SB current value, and report how many plans match, the percent whose current value assets equal beginning-of-year net assets within one percent to 4 decimals, and the median ratio of current value assets to end-of-year net assets to 4 decimals. Explain what the asset-basis and timing comparisons can and cannot establish.",
+          "validator": "validate_asset_measure_choices",
+          "stores": [
+            "median_market_ratio_pct",
+            "smoothing_gap_pp",
+            "market_below_eighty",
+            "actuarial_above_eighty_market_below",
+            "first_day_valuations",
+            "matched_plans",
+            "beginning_asset_agreement_pct",
+            "median_ending_asset_ratio"
+          ]
+        }
+      ]
+    }
+  ]
+}

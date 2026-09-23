@@ -1,0 +1,24 @@
+{
+  "name": "effective_exchange_rates_10",
+  "module": "cases.table_delivery.effective_exchange_rates_10",
+  "task_family": "table_delivery",
+  "data_sources": [
+    "bis_effective_exchange_rates"
+  ],
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Line up the BIS broad nominal and real effective exchange rate indices for the United States from 2025-03, month by month through the latest month available. One row per economy and month: the two-letter code, the economy's name (the file gives the two together, as in \"US: United States\"), the month, the nominal index, the real index, and real divided by nominal.",
+          "validator": "validate",
+          "stores": [
+            "rate_table"
+          ]
+        }
+      ]
+    }
+  ]
+}

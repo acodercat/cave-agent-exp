@@ -1,0 +1,16 @@
+# Secrets
+.env
+models.toml
+
+# Environments and caches
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Run outputs and downloaded inputs
+experiments/
+results/
+logs/
+datasets
+third_party/tau2-bench/

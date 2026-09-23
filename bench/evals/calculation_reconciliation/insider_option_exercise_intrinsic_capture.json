@@ -1,0 +1,67 @@
+{
+  "name": "insider_option_exercise_intrinsic_capture",
+  "module": "evals.calculation_reconciliation.insider_option_exercise_intrinsic_capture",
+  "task_family": "calculation_reconciliation",
+  "data_sources": [
+    "sec_insider",
+    "ken_french_daily_factors"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "turns": [
+        {
+          "query": "Within 2024 transaction dates, take derivative-table rows whose filing is a Form 4, excluding Form 5, with transaction code M. Report their count, how many carry a conversion or exercise price, how many carry an expiration date, and the median nonmissing reported conversion or exercise price in USD. Separately report the count of 2024 Form 4 derivative rows with code A, on the same Form 4 population, so the two code counts are comparable. Using the SEC code definitions, explain that M covers an exercise or conversion of a derivative security under Rule 16b-3 and is not limited to options, while A covers a grant, award or other acquisition under Rule 16b-3(d). State that these fields and codes do not provide grant-date fair value or all contractual economics.",
+          "validator": "validate_m_population",
+          "stores": [
+            "m_transaction_count",
+            "m_with_conversion_price_count",
+            "m_with_expiry_count",
+            "median_reported_conversion_price_usd",
+            "a_transaction_count"
+          ]
+        },
+        {
+          "query": "Apply a co-reporting match to the 2024 M rows: for each accession and transaction date, take the median numeric price across nonderivative S rows, join that price to every M row in the same accession and date, and retain matches with a positive conversion or exercise price and nonmissing underlying-share count. Report the matched M-row count, median conversion price, median co-reported sale price, median row-level sale-price-to-conversion-price multiple, and count whose sale price is below conversion price. Explain how the matching was constructed and what the resulting multiple does and does not establish about the underlying transactions.",
+          "validator": "validate_co_reported_sale_match",
+          "stores": [
+            "matched_m_transaction_count",
+            "matched_median_conversion_price_usd",
+            "matched_median_co_reported_sale_price_usd",
+            "median_sale_to_conversion_price_multiple",
+            "sale_below_conversion_price_count"
+          ]
+        },
+        {
+          "query": "For each matched M row, compute a signed co-reported price-gap proxy as (sale-price summary minus conversion price) times the derivative row's underlying-share count. Report its total in USD billions and median per M row in USD. Group by issuer and rank summed proxy descending, breaking ties by issuer central index key ascending; report the leading issuer name, total and M-row count, the runner-up name and M-row count, and the issuer count. Explain why proxy amount and row frequency answer different questions. State what the share count in this proxy measures and which economic quantities it therefore cannot be.",
+          "validator": "validate_price_gap_proxy_concentration",
+          "stores": [
+            "total_signed_price_gap_proxy_usd_billions",
+            "median_price_gap_proxy_per_m_row_usd",
+            "leading_issuer_name",
+            "leading_issuer_price_gap_proxy_usd_billions",
+            "leading_issuer_m_row_count",
+            "runner_up_issuer_name",
+            "runner_up_issuer_m_row_count",
+            "issuer_count"
+          ]
+        },
+        {
+          "query": "Finally analyze timing for all 2024 M rows. For rows with an expiration date, compute calendar days from transaction date to expiration, keep 0 through 4,000 inclusive, and report the qualifying count, median days remaining, count above 730 days and count at or below 90 days. Then take unique 2024 M transaction dates, report their count and how many match a Fama-French daily-factor date. Report the median daily market excess return on matched M dates and the median across all 2024 factor dates. Explain that the expiration distribution covers mixed derivative exercises and conversions and cannot identify voluntary early exercise or forfeited time value; the factor-date comparison is descriptive and cannot establish market causation or issuer-specific performance.",
+          "validator": "validate_remaining_term_and_event_dates",
+          "stores": [
+            "expiry_dated_m_transaction_count",
+            "median_days_to_expiry",
+            "long_dated_m_transaction_count",
+            "near_expiry_m_transaction_count",
+            "unique_m_transaction_date_count",
+            "factor_matched_m_date_count",
+            "median_event_date_market_excess_return_pct",
+            "median_2024_market_excess_return_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

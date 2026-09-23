@@ -1,0 +1,24 @@
+{
+  "name": "market_growth_drawdown_10k",
+  "module": "cases.table_delivery.market_growth_drawdown_10k",
+  "task_family": "table_delivery",
+  "data_sources": [
+    "ken_french_daily_factors"
+  ],
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Build the series behind a growth-of-a-dollar chart for the US market from 1985-01-01 through 2024-12-31, out of the Fama-French daily factors. For every trading day give the market's total return in percent (the excess return plus the risk-free rate), the value of the dollar at that day's close with the first day's return already in it, and the drawdown from the highest close so far in the window.",
+          "validator": "validate",
+          "stores": [
+            "daily_table"
+          ]
+        }
+      ]
+    }
+  ]
+}

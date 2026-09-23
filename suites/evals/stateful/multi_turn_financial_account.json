@@ -1,0 +1,179 @@
+[
+  {
+    "name": "financial_account",
+    "module": "evals.stateful.multi_turn_financial_account",
+    "requirements": "You are a bank account management system. Process each customer request by reading current account state, performing calculations, and updating balances. Log every financial transaction (deposits, withdrawals, interest, loans, payments, etc.) to the history. Note: Opening an account is NOT a deposit - only log 'account_opened'. Interest rates are applied directly to the balance (not annualized). When a deposit includes a bonus, log only the final combined amount as one deposit. Reward point redemptions are internal operations - do NOT log them as transactions. All monetary amounts should be integers (truncate decimals, e.g., 20% of 1105 = 221).",
+    "conversations": [
+      {
+        "id": "alice_account",
+        "turns": [
+          {
+            "query": "Open a new bank account for 'Alice' with a starting balance of 1000. Set status to 'standard', interest rate to 3% per period, loan balance to 0, and rewards points to 0.",
+            "validator": "validate_alice_turn_1"
+          },
+          {
+            "query": "Deposit 500 into the account.",
+            "validator": "validate_alice_turn_2"
+          },
+          {
+            "query": "Withdraw 20% of the current balance.",
+            "validator": "validate_alice_turn_3"
+          },
+          {
+            "query": "Check the balance: if it's greater than 1000, upgrade status to 'premium'.",
+            "validator": "validate_alice_turn_4"
+          },
+          {
+            "query": "Apply the current interest rate to the balance.",
+            "validator": "validate_alice_turn_5"
+          },
+          {
+            "query": "Make a deposit of 200, but if status is 'premium', add a 10% bonus to the deposit.",
+            "validator": "validate_alice_turn_6"
+          },
+          {
+            "query": "Calculate rewards points: award 1 point for every 100 in the current balance.",
+            "validator": "validate_alice_turn_7"
+          },
+          {
+            "query": "Round down the balance to the nearest hundred by withdrawing the excess.",
+            "validator": "validate_alice_turn_8"
+          },
+          {
+            "query": "Check eligibility for better interest rate: if balance is at least 1400 AND status is 'premium', upgrade interest rate to 5% per period.",
+            "validator": "validate_alice_turn_9"
+          },
+          {
+            "query": "Apply the current interest rate to the balance again.",
+            "validator": "validate_alice_turn_10"
+          },
+          {
+            "query": "Take out a loan equal to 50% of the current balance. Add the loan amount to both the balance and loan_balance.",
+            "validator": "validate_alice_turn_11"
+          },
+          {
+            "query": "Make a loan payment of 20% of the current loan balance. Subtract from both balance and loan_balance.",
+            "validator": "validate_alice_turn_12"
+          },
+          {
+            "query": "Check for gold status upgrade: if balance is greater than 2000 AND loan_balance is less than 600, upgrade status to 'gold'.",
+            "validator": "validate_alice_turn_13"
+          },
+          {
+            "query": "If status is 'gold', upgrade the interest rate to 7% per period.",
+            "validator": "validate_alice_turn_14"
+          },
+          {
+            "query": "Apply interest to the balance. Then add bonus rewards: 1 point for every 10 dollars of interest earned.",
+            "validator": "validate_alice_turn_15"
+          },
+          {
+            "query": "If rewards_points is greater than 20, redeem 10 points to pay off 100 from the loan. Don't change balance.",
+            "validator": "validate_alice_turn_16"
+          },
+          {
+            "query": "Pay a dividend based on status: 2% if 'gold', 1% if 'premium', 0.5% if 'standard'.",
+            "validator": "validate_alice_turn_17"
+          },
+          {
+            "query": "Pay off the remaining loan in full from the account balance.",
+            "validator": "validate_alice_turn_18"
+          },
+          {
+            "query": "If the loan is fully paid off, award a bonus of 50 rewards points.",
+            "validator": "validate_alice_turn_19"
+          },
+          {
+            "query": "Apply final interest to the balance. This completes the account management session.",
+            "validator": "validate_alice_turn_20"
+          }
+        ]
+      },
+      {
+        "id": "carol_debt_paydown",
+        "turns": [
+          {
+            "query": "Carol is starting a debt paydown journey. Initialize her account with name 'Carol', starting balance 500, status 'standard', interest rate 8% (this is her monthly LOAN rate), loan_balance 2000, and rewards points 0.",
+            "validator": "validate_carol_turn_1"
+          },
+          {
+            "query": "Bad news: monthly loan interest is due. Apply the interest rate to the loan balance and add it to the debt.",
+            "validator": "validate_carol_turn_2"
+          },
+          {
+            "query": "Payday! Carol receives her paycheck of 800.",
+            "validator": "validate_carol_turn_3"
+          },
+          {
+            "query": "Time to make a loan payment. Pay the smaller of 15% of balance or 15% of loan_balance. Subtract from both balance and loan_balance.",
+            "validator": "validate_carol_turn_4"
+          },
+          {
+            "query": "Earn payment rewards: 1 point for every 50 dollars paid in the last loan payment. Check the last entry in history to find the payment amount.",
+            "validator": "validate_carol_turn_5"
+          },
+          {
+            "query": "Emergency expense! Carol's car broke down. Withdraw 30% of the balance for repairs.",
+            "validator": "validate_carol_turn_6"
+          },
+          {
+            "query": "Another payday arrives with 800.",
+            "validator": "validate_carol_turn_7"
+          },
+          {
+            "query": "Carol decides to be aggressive with debt. Pay the larger of 40% of balance or 500 toward the loan.",
+            "validator": "validate_carol_turn_8"
+          },
+          {
+            "query": "Milestone check: The original loan was 2000. If it has dropped by 25% or more, award 20 bonus reward points.",
+            "validator": "validate_carol_turn_9"
+          },
+          {
+            "query": "Good payment history reward! If there are 2 or more loan payments in history, reduce the interest rate to 5% per period.",
+            "validator": "validate_carol_turn_10"
+          },
+          {
+            "query": "Monthly loan interest is due again at the current rate. Add it to the loan balance.",
+            "validator": "validate_carol_turn_11"
+          },
+          {
+            "query": "Unexpected windfall! Carol receives a bonus equal to 50% of her remaining loan balance.",
+            "validator": "validate_carol_turn_12"
+          },
+          {
+            "query": "Convert all reward points to loan payment: each point is worth $10. Subtract from loan_balance and set rewards_points to 0.",
+            "validator": "validate_carol_turn_13"
+          },
+          {
+            "query": "Check upgrade eligibility: if loan_balance is less than balance, Carol has positive net worth! Upgrade status to 'premium'.",
+            "validator": "validate_carol_turn_14"
+          },
+          {
+            "query": "Premium payday! Premium employees receive 1000 instead of 800.",
+            "validator": "validate_carol_turn_15"
+          },
+          {
+            "query": "Final push: if balance is greater than loan_balance, pay off the entire remaining loan. Otherwise, pay 75% of balance toward the loan.",
+            "validator": "validate_carol_turn_16"
+          },
+          {
+            "query": "Debt freedom celebration! If loan is fully paid, set rewards_points to 100.",
+            "validator": "validate_carol_turn_17"
+          },
+          {
+            "query": "Switch to savings mode: change interest rate to 4% per period (now earning instead of paying).",
+            "validator": "validate_carol_turn_18"
+          },
+          {
+            "query": "Check for gold status: if loan is paid off, balance is over 1000, and rewards are at least 100, upgrade to 'gold'.",
+            "validator": "validate_carol_turn_19"
+          },
+          {
+            "query": "Final turn: Apply savings interest to the balance. Carol's debt paydown journey is complete!",
+            "validator": "validate_carol_turn_20"
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,66 @@
+{
+  "name": "bond_fund_curve_bucket_exposure_scenario",
+  "module": "evals.scenario_analysis.bond_fund_curve_bucket_exposure_scenario",
+  "task_family": "scenario_analysis",
+  "data_sources": [
+    "sec_nport_interest_rate_risk",
+    "treasury_yield_curve"
+  ],
+  "case_type": "baseline",
+  "difficulty": "hard",
+  "conversations": [
+    {
+      "turns": [
+        {
+          "query": "Using the SEC N-PORT interest rate risk table, take every filing with a report date of 2025-06-30 that reports in USD and has positive net assets. Report how many such filings there are. Among them, keep those whose five bucket sensitivities (three-month, one-year, five-year, ten-year, thirty-year) sum to a positive total, and report how many qualify. For each qualifying filing compute implied duration in years as the total sensitivity divided by net assets and by one basis point (0.0001). Report the median and the ninetieth percentile using linear interpolation, each to 4 decimals. Then identify the filing with the longest implied duration, breaking a tie on the lower accession number, and report its fund name, its duration to 4 decimals, and the percentage of its total sensitivity that sits in the ten-year and thirty-year buckets combined, to 4 decimals. Briefly interpret the cross-sectional duration distribution and the scope of this constructed measure.",
+          "validator": "validate_exposure_cross_section",
+          "stores": [
+            "filing_count",
+            "exposed_filing_count",
+            "median_duration_years",
+            "ninetieth_duration_years",
+            "longest_duration_fund",
+            "longest_duration_years",
+            "longest_duration_long_end_share_pct"
+          ]
+        },
+        {
+          "query": "Now bring in the daily Treasury par yield curve. For each of the five maturity points that match the sensitivity buckets (3 Mo, 1 Yr, 5 Yr, 10 Yr, 30 Yr), compute the change in yield from 2025-06-30 to 2025-12-31 in basis points, to 4 decimals each. Report the five changes and briefly characterize the shape of the move across maturities.",
+          "validator": "validate_curve_move",
+          "stores": [
+            "three_month_change_bp",
+            "one_year_change_bp",
+            "five_year_change_bp",
+            "ten_year_change_bp",
+            "thirty_year_change_bp"
+          ]
+        },
+        {
+          "query": "Apply the curve move to the exposures. For each qualifying filing from the first turn, estimate the mark-to-market impact as the negative of the sum over the five buckets of (bucket sensitivity x that bucket's yield change in basis points), so that a falling yield produces a gain. Report the total across all qualifying filings in USD millions to 4 decimals, the median impact per filing in USD to 2 decimals, and then, expressing each filing's impact as a percentage of its own net assets, report the median, the minimum and the maximum of that percentage, each to 4 decimals. Explain how bucket placement affects the sign of the estimate and state the evidentiary limits of this first-order scenario.",
+          "validator": "validate_scenario_mark",
+          "stores": [
+            "total_estimated_mark_usd_millions",
+            "median_estimated_mark_usd",
+            "median_mark_share_of_assets_pct",
+            "minimum_mark_share_pct",
+            "maximum_mark_share_pct"
+          ]
+        },
+        {
+          "query": "Finally, take the two qualifying filings with the largest net assets, breaking asset ties on the lower accession number. For each, report the fund name, its implied duration in years to 4 decimals, and its estimated impact as a percentage of net assets to 4 decimals. For the larger of the two also report the percentage of its total sensitivity that sits in the five-year bucket, and for the second the percentage that sits in the ten-year and thirty-year buckets combined, both to 4 decimals. State which has the longer duration and which has the better outcome, defining better as the larger estimated impact as a percentage of net assets. Explain whether duration alone determines their ranking under the observed curve move.",
+          "validator": "validate_duration_versus_placement",
+          "stores": [
+            "largest_fund_name",
+            "largest_fund_duration_years",
+            "largest_fund_five_year_share_pct",
+            "largest_fund_mark_share_pct",
+            "second_fund_name",
+            "second_fund_duration_years",
+            "second_fund_long_end_share_pct",
+            "second_fund_mark_share_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

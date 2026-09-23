@@ -1,0 +1,24 @@
+{
+  "name": "sba_industry_lending_250",
+  "module": "cases.table_delivery.sba_industry_lending_250",
+  "task_family": "table_delivery",
+  "data_sources": [
+    "sba_7a"
+  ],
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Summarise the SBA 7(a) lending approved in fiscal year 2024 for projects in Connecticut, by project state and NAICS industry. For every state-industry pair with at least one loan, report the state, the NAICS code with its description, the number of loans, total gross approval, the share of that total guaranteed by the SBA, and the average initial interest rate weighted by gross approval, leaving a loan that states no rate out of both the weighted sum and its total weight.",
+          "validator": "validate",
+          "stores": [
+            "lending_table"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "name": "mortgage_program_pricing_leverage_split",
+  "module": "evals.comparison_ranking.mortgage_program_pricing_leverage_split",
+  "task_family": "comparison_ranking",
+  "data_sources": [
+    "hmda",
+    "fhfa_hpi"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "turns": [
+        {
+          "query": "Report the HMDA register row count. Keep action-taken code 1 originations secured by lien-status code 1 first liens and report that count. Convert rate spread to numeric; retain the inclusive range -5 through 20 percentage points and report the retained count, total excluded count, missing-spread count, and nonmissing outside-band count. Report retained counts for loan types 1 conventional, 2 FHA-insured, 3 VA-guaranteed, and 4 RHS- or FSA-guaranteed. Explain what population the later shares describe and what the lien-priority restriction does and does not control for.",
+          "validator": "validate_population_and_band",
+          "stores": [
+            "record_count",
+            "first_lien_origination_count",
+            "banded_record_count",
+            "excluded_record_count",
+            "missing_rate_spread_count",
+            "outside_band_rate_spread_count",
+            "conventional_count",
+            "fha_count",
+            "va_count",
+            "rhs_fsa_count"
+          ]
+        },
+        {
+          "query": "Use 1.5 percentage points as a common analytic cutoff, not a legal HPML classification: Regulation Z uses a 2.5-point threshold for first-lien jumbo loans, and the runtime lacks the row-level rate-lock and conforming-limit test. Within the retained population, report for loan types 1 through 4 the share at or above the cutoff. Report median spread for conventional type 1 and VA type 3, and the code whose programme median is negative. Compare the programme results descriptively; do not attribute the differences solely to government insurance or guarantees or infer borrower quality from these fields.",
+          "validator": "validate_programme_pricing",
+          "stores": [
+            "conventional_above_cutoff_share_pct",
+            "fha_above_cutoff_share_pct",
+            "va_above_cutoff_share_pct",
+            "rhs_fsa_above_cutoff_share_pct",
+            "conventional_median_spread_pp",
+            "va_median_spread_pp",
+            "negative_median_spread_loan_type_code"
+          ]
+        },
+        {
+          "query": "For each retained loan type, report the nonmissing loan-to-value row count and median of those nonmissing LTV values in percent. Report the lowest loan-type code tied for the highest median LTV and the median conventional type-1 loan amount. Compare the leverage ordering with turn 2's spread ordering descriptively. State what programme medians can and cannot establish about lending rules or guarantees, and address the coverage of the leverage field before comparing types.",
+          "validator": "validate_programme_leverage",
+          "stores": [
+            "conventional_valid_ltv_count",
+            "fha_valid_ltv_count",
+            "va_valid_ltv_count",
+            "rhs_fsa_valid_ltv_count",
+            "conventional_median_ltv_pct",
+            "fha_median_ltv_pct",
+            "va_median_ltv_pct",
+            "rhs_fsa_median_ltv_pct",
+            "highest_median_ltv_loan_type_code",
+            "conventional_median_loan_amount"
+          ]
+        },
+        {
+          "query": "Within the retained population identify the state code with the most rows, breaking a tie by code ascending, and report its count and median loan amount. From the quarterly state-level traditional purchase-only FHFA HPI, report that state's unadjusted 2023Q4 and 2024Q4 index values and growth. Explain how the two measures are constructed and whether growth in one can be read as growth in the other.",
+          "validator": "validate_state_price_context",
+          "stores": [
+            "leading_state_code",
+            "leading_state_origination_count",
+            "leading_state_median_loan_amount",
+            "leading_state_index_prior_year",
+            "leading_state_index_current_year",
+            "leading_state_index_growth_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

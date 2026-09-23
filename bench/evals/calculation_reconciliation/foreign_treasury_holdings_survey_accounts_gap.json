@@ -1,0 +1,66 @@
+{
+  "name": "foreign_treasury_holdings_survey_accounts_gap",
+  "module": "evals.calculation_reconciliation.foreign_treasury_holdings_survey_accounts_gap",
+  "task_family": "calculation_reconciliation",
+  "data_sources": [
+    "treasury_tic",
+    "fed_z1_vintages"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "turns": [
+        {
+          "query": "The Treasury International Capital Major Foreign Holders table publishes monthly Treasury-security holdings as country rows plus aggregate rows. For the December 2024 observation month report the country-row count and sum in USD billions, the `All Other` residual aggregate, and the published `Grand Total`. Report Grand Total minus the country sum minus All Other. Rank only country rows by holdings, breaking ties by country name ascending; report the leading label, its holding, share of Grand Total, margin over the next country, and the top five countries' combined share. Explain that the country labels reflect reported legal residence but can be affected by foreign custody chains, so they are not clean beneficial-owner locations, and that a small displayed component residual can arise because published rows are rounded.",
+          "validator": "validate_survey_composition",
+          "stores": [
+            "tic_country_row_count",
+            "tic_country_sum_usd_billions",
+            "tic_residual_row_usd_billions",
+            "tic_grand_total_usd_billions",
+            "tic_rounding_residual_usd_billions",
+            "tic_leading_holder",
+            "tic_leading_holder_usd_billions",
+            "tic_leading_holder_share_pct",
+            "tic_leading_holder_margin_usd_billions",
+            "tic_top_five_share_pct"
+          ]
+        },
+        {
+          "query": "Now use the Financial Accounts rest-of-world sector's Treasury-securities asset at market value, series LM263061105.Q in table l133, reported in millions of USD. Select the newest release available in the vintage table and report its release date. For 2024-03-31 and 2024-12-31 report that release's values in USD billions. Explain that this is an aggregate rest-of-world sector line with no country allocation in the runtime table, and that TIC data underlie many rest-of-world Financial Accounts items; therefore it is not an independent residence-based country measure to contrast with the TIC custody chain.",
+          "validator": "validate_accounts_series",
+          "stores": [
+            "accounts_newest_vintage_date",
+            "accounts_first_quarter_usd_billions",
+            "accounts_final_quarter_usd_billions"
+          ]
+        },
+        {
+          "query": "For each 2024 quarter end, report that month's TIC Grand Total minus the newest-vintage Financial Accounts value, in USD billions. Identify the quarter with the largest absolute gap, report its signed gap as a percent of the same TIC total, and identify the quarter with the smallest absolute gap; break any equal absolute gaps by earlier quarter end. Describe the observed path, but state that the gap alone cannot isolate compilation, valuation, timing or revision causes and cannot designate either publication as correct.",
+          "validator": "validate_source_gap_path",
+          "stores": [
+            "gap_first_quarter_usd_billions",
+            "gap_second_quarter_usd_billions",
+            "gap_third_quarter_usd_billions",
+            "gap_final_quarter_usd_billions",
+            "widest_gap_quarter",
+            "widest_gap_pct_of_survey",
+            "closest_gap_quarter"
+          ]
+        },
+        {
+          "query": "For 2024-12-31, report how many Financial Accounts vintages carry the line, the earliest covering release date and its value in USD billions. Against the same TIC Grand Total, report the gap using that earliest release and the newest-minus-earliest revision as a percent of the earliest-release gap. Explain why any quoted gap must name the Financial Accounts vintage, and state that movement toward the TIC level does not establish that TIC was the revision target.",
+          "validator": "validate_release_dependence",
+          "stores": [
+            "vintages_covering_final_quarter",
+            "first_covering_vintage_date",
+            "first_published_accounts_usd_billions",
+            "gap_at_first_release_usd_billions",
+            "accounts_revision_as_pct_of_first_gap"
+          ]
+        }
+      ]
+    }
+  ]
+}

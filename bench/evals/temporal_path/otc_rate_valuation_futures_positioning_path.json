@@ -1,0 +1,48 @@
+{
+  "name": "otc_rate_valuation_futures_positioning_path",
+  "module": "evals.temporal_path.otc_rate_valuation_futures_positioning_path",
+  "task_family": "temporal_path",
+  "data_sources": [
+    "bis_otc_derivatives",
+    "cftc_cot"
+  ],
+  "case_type": "baseline",
+  "difficulty": "hard",
+  "conversations": [
+    {
+      "turns": [
+        {
+          "query": "Using the BIS semiannual OTC derivatives series from 2019-S1 through 2025-S2, consider interest-rate contracts at total-instrument and total-counterparty scope on the net-net basis, and use outstanding gross market value in USD millions. For every half-year from 2019-S2 onward, calculate its signed percent change from the immediately preceding half-year. Identify the half-year with the largest absolute change, breaking a tie in favor of the earliest half-year, and report that period and its signed change. Briefly interpret what a movement in gross market value represents.",
+          "validator": "validate_otc_event",
+          "stores": [
+            "otc_event_half_year",
+            "otc_interest_rate_gmv_change_pct"
+          ]
+        },
+        {
+          "query": "Carry that event half-year into the CFTC futures-only reports. Restrict the comparison to U.S. Treasury contract market codes 020601, 020604, 042601, 043602 and 044601. Define leveraged-money net positioning as long contracts minus short contracts. For each code, compare the first and last report dates available within the event half-year. Identify the code with the largest absolute first-to-last change, breaking a tie by the lexicographically smallest code, and report the code and the signed last-minus-first change in contracts. Discuss how this futures signal relates to the preceding OTC observation.",
+          "validator": "validate_contract_move",
+          "stores": [
+            "treasury_contract_code",
+            "treasury_net_position_change_contracts"
+          ]
+        },
+        {
+          "query": "For that selected contract within the same event half-year, compute leveraged-money net positioning as a percent of total open interest on each report date. Identify the report with the largest absolute percentage, breaking a tie in favor of the earliest date, and report the date and the signed percentage. Interpret the sign and magnitude as a positioning measure.",
+          "validator": "validate_peak_position",
+          "stores": [
+            "peak_position_date",
+            "peak_signed_net_open_interest_pct"
+          ]
+        },
+        {
+          "query": "At that selected peak report, run a transparent sensitivity in which leveraged-money long contracts are reduced by 10 percent while short contracts and total open interest remain fixed. Recompute and report the signed net-position percentage. Explain the material limits of combining this sensitivity with the BIS event when drawing a market conclusion.",
+          "validator": "validate_long_sensitivity",
+          "stores": [
+            "long_reduction_scenario_net_open_interest_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

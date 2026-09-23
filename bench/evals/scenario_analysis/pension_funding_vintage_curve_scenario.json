@@ -1,0 +1,79 @@
+{
+  "name": "pension_funding_vintage_curve_scenario",
+  "module": "evals.scenario_analysis.pension_funding_vintage_curve_scenario",
+  "task_family": "scenario_analysis",
+  "data_sources": [
+    "dol_form5500_financials",
+    "dol_form5500_schedule_sb",
+    "treasury_yield_curve"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Build a retrospective point-in-time screen using only Form 5500 filings received on or before 2025-09-30. Limit it to plans with a 2024-12-31 plan-year end and a successfully received plan-financial row and Schedule SB row under the same filing. Define plan identity by sponsor EIN, the official three-digit plan number and plan-year end; if more than one successful filing for an identity is available by the cutoff, retain the latest receipt date, breaking a same-date tie by the lexicographically greatest filing ID. Require at least 10,000 Schedule SB participants, a positive funding target, reported actuarial-value assets and a positive target-minus-actuarial-assets shortfall. Rank by that dollar shortfall, breaking a tie by plan name and then filing ID in ascending order. Report the eligible underfunded-plan count and the leader's plan name, sponsor EIN, official three-digit plan number, selected filing ID, participant count, shortfall in USD billions and actuarial assets divided by funding target. Use four decimals for the amount and percentage. Explain the information-set limitation of the result.",
+          "validator": "validate_early_screen",
+          "stores": [
+            "early_underfunded_plan_count",
+            "early_shortfall_leader_plan_name",
+            "early_shortfall_leader_sponsor_ein",
+            "early_shortfall_leader_plan_number",
+            "early_shortfall_leader_filing_id",
+            "early_shortfall_leader_participant_count",
+            "early_shortfall_leader_gap_usd_billions",
+            "early_shortfall_leader_actuarial_funded_pct"
+          ]
+        },
+        {
+          "query": "Advance the filing-information cutoff through 2025-10-15 and rerun exactly the same identity, successful-filing, eligibility and ranking rules. Report the updated eligible count and updated leader's plan name, sponsor EIN, plan number, selected filing ID, participant count, shortfall and actuarial funded percentage. Then locate the first turn's leader inside this updated ranking and report its one-based rank and updated-cutoff shortfall. Use USD billions and percentages to four decimals. Explain what drives any difference between the two cutoff rankings and what can and cannot be inferred from comparing them.",
+          "validator": "validate_updated_screen",
+          "stores": [
+            "updated_underfunded_plan_count",
+            "updated_shortfall_leader_plan_name",
+            "updated_shortfall_leader_sponsor_ein",
+            "updated_shortfall_leader_plan_number",
+            "updated_shortfall_leader_filing_id",
+            "updated_shortfall_leader_participant_count",
+            "updated_shortfall_leader_gap_usd_billions",
+            "updated_shortfall_leader_actuarial_funded_pct",
+            "early_leader_rank_at_updated_cutoff",
+            "early_leader_gap_at_updated_cutoff_usd_billions"
+          ]
+        },
+        {
+          "query": "For the updated leader's selected filing, reconcile the plan-financial statement. Report beginning net assets, total income, total expenses, net income, transfers to the plan, transfers from the plan and ending net assets; treat a blank transfer field as zero for this arithmetic. Report both ending net assets minus beginning net assets minus net income minus transfers to plus transfers from, and total income minus total expenses minus net income. Also report the same filing's Schedule SB current-value assets and actuarial-value assets. Use USD billions to four decimals and residuals in USD millions to three decimals. Explain why the exact financial-statement roll-forward and the nonzero cross-schedule asset differences can coexist.",
+          "validator": "validate_filing_reconciliation",
+          "stores": [
+            "updated_leader_beginning_net_assets_usd_billions",
+            "updated_leader_total_income_usd_billions",
+            "updated_leader_total_expenses_usd_billions",
+            "updated_leader_net_income_usd_billions",
+            "updated_leader_transfers_to_plan_usd_billions",
+            "updated_leader_transfers_from_plan_usd_billions",
+            "updated_leader_ending_net_assets_usd_billions",
+            "updated_leader_net_asset_rollforward_residual_usd_millions",
+            "updated_leader_income_expense_residual_usd_millions",
+            "updated_leader_sb_current_value_assets_usd_billions",
+            "updated_leader_sb_actuarial_value_assets_usd_billions"
+          ]
+        },
+        {
+          "query": "Add a transparent interest-rate sensitivity for that updated leader. The Schedule SB valuation date is 2024-01-01, when the Treasury table has no observation, so use the most recent prior Treasury curve date and compare its 30-year par yield with 2024-12-31. Report the selected starting date, both yields and the ending-minus-starting change in basis points. Then use the funding target as a liability proxy, hold actuarial-value assets fixed, assume a 12-year modified duration and apply the first-order percentage change minus duration times the decimal yield change. Report the implied target change, stressed funding target and stressed actuarial funded ratio. Use yields to two decimals, basis points to one decimal, target change to two decimals, USD billions to four decimals and ratios or percentage-point changes to four decimals. Explain the limits of this Treasury-proxy and stylized-duration calculation.",
+          "validator": "validate_curve_scenario",
+          "stores": [
+            "treasury_curve_start_observation_date",
+            "treasury_curve_start_thirty_year_yield_pct",
+            "treasury_curve_end_thirty_year_yield_pct",
+            "treasury_thirty_year_yield_change_basis_points",
+            "first_order_funding_target_change_pct",
+            "hypothetical_stressed_funding_target_usd_billions",
+            "hypothetical_stressed_actuarial_funded_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

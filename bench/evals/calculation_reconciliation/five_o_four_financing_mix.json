@@ -1,0 +1,39 @@
+{
+  "name": "five_o_four_financing_mix",
+  "module": "evals.calculation_reconciliation.five_o_four_financing_mix",
+  "task_family": "calculation_reconciliation",
+  "data_sources": [
+    "sba_504",
+    "census_geo_crosswalk",
+    "bls_qcew"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Across the 50 states and the District of Columbia, analyze reported rows in the frozen 2026-06-30 SBA 504 public snapshot whose approval date falls in calendar 2025, whose first disbursement is recorded on or before 2025-12-31, and whose reported SBA gross approval plus third-party financing is positive. Use the Census Gazetteer's USPS-to-state-FIPS correspondence and the preliminary 2025 BLS QCEW private all-industry annual-average establishment counts. Retain state-level entities with zero eligible SBA rows in the matched population. Report the matched state-level entity count, the national eligible row count, aggregate SBA gross approvals, third-party dollars and combined financing, the SBA share of aggregate financing, and the unweighted mean reported-row SBA share. Calculate eligible reported rows per 10,000 private establishments and identify the highest-intensity entity, breaking any tie alphabetically by USPS abbreviation. For that entity, report its USPS abbreviation, eligible row count, private establishment count, intensity, combined financing, aggregate SBA share and unweighted mean row share. Explain the weighting and denominator implications and the limits of interpreting the normalized comparison.",
+          "validator": "validate",
+          "stores": [
+            "matched_state_entity_count",
+            "eligible_reported_row_count",
+            "aggregate_sba_gross_approval_usd_billions",
+            "aggregate_third_party_dollars_usd_billions",
+            "aggregate_total_financing_usd_billions",
+            "aggregate_sba_financing_share_pct",
+            "unweighted_mean_row_sba_share_pct",
+            "highest_intensity_state_usps",
+            "highest_intensity_reported_row_count",
+            "highest_intensity_private_establishment_count",
+            "highest_rows_per_10000_establishments",
+            "highest_intensity_total_financing_usd_millions",
+            "highest_intensity_aggregate_sba_share_pct",
+            "highest_intensity_unweighted_mean_row_share_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

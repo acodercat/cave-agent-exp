@@ -1,0 +1,37 @@
+{
+  "name": "ofr_stress_jump_industry_dispersion",
+  "module": "evals.temporal_path.ofr_stress_jump_industry_dispersion",
+  "task_family": "temporal_path",
+  "data_sources": [
+    "ofr_market_stress",
+    "ken_french_10_industry_portfolios"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Across calendar-2020 dates common to the daily OFR Financial Stress Index and the Ken French value-weighted 10-industry portfolios, find the largest increase in the OFR FSI between two consecutive common dates, resolving an exact tie by the earlier ending date. Report the common-date count, window dates, and starting and ending FSI index values. Among the five OFR market-category contributions—credit, equity valuation, safe assets, funding and volatility—identify the largest contribution increase over that window, breaking an exact tie alphabetically, and report its name and increase in FSI index points. On the ending date, identify the worst- and best-return Ken French industry portfolios, breaking an exact return tie alphabetically by the official portfolio label; report their labels and returns, the number of negative-return portfolios, and the equal-weighted arithmetic mean of all ten portfolio returns. Report the FSI values, contribution changes, industry returns and the industry mean, and explain what the stress decomposition and same-day industry dispersion do and do not establish.",
+          "validator": "validate",
+          "stores": [
+            "common_2020_observation_date_count",
+            "stress_window_start_date",
+            "stress_window_end_date",
+            "start_ofr_fsi",
+            "end_ofr_fsi",
+            "largest_category_contribution_increase_name",
+            "largest_category_contribution_increase",
+            "worst_event_date_industry_label",
+            "worst_event_date_industry_return_pct",
+            "best_event_date_industry_label",
+            "best_event_date_industry_return_pct",
+            "event_date_negative_industry_count",
+            "event_date_equal_weighted_industry_mean_return_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "name": "pension_plan_returns_1k",
+  "module": "cases.table_delivery.pension_plan_returns_1k",
+  "task_family": "table_delivery",
+  "data_sources": [
+    "dol_form5500_financials"
+  ],
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Among the Form 5500 plan financials for form year 2023, take the plans that began the year with at least 25,000 participants and set their net income against their opening net assets. A plan may have filed more than once, so work filing by filing: the filing identifier, the sponsor's EIN, the plan name, participants at the beginning of the year, beginning net assets, net income (a loss is negative), and net income divided by beginning net assets. Leave the ratio missing where either figure is missing or the plan began with no assets.",
+          "validator": "validate",
+          "stores": [
+            "plan_table"
+          ]
+        }
+      ]
+    }
+  ]
+}

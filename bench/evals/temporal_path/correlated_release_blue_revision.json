@@ -1,0 +1,87 @@
+{
+  "name": "correlated_release_blue_revision",
+  "module": "evals.temporal_path.correlated_release_blue_revision",
+  "task_family": "temporal_path",
+  "data_sources": [
+    "philadelphia_fed_rtdsm",
+    "fed_z1_vintages"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "In the Philadelphia Fed real-time data, take the real-GDP annualized-percent series through 2020:Q4 and keep quarters that have first, second, third, and most-recent values. Treat the first three releases as three correlated additive measurements of one latent terminal value. Estimate each release's measurement-error bias as its release value minus most recent, and estimate the 3-by-3 sample error covariance with the usual n-minus-one denominator. Report the complete-quarter count, three error means, three error correlations, and covariance-matrix 2-norm condition number. Explain how estimated dependence affects the information gained from combining releases, discuss the evidentiary status of the most-recent value as the calibration target, and carry the fitted error model forward.",
+          "validator": "validate_gdp_error_model",
+          "stores": [
+            "gdp_training_quarter_count",
+            "gdp_first_release_error_mean_pp",
+            "gdp_second_release_error_mean_pp",
+            "gdp_third_release_error_mean_pp",
+            "gdp_first_second_error_correlation",
+            "gdp_first_third_error_correlation",
+            "gdp_second_third_error_correlation",
+            "gdp_error_covariance_condition_number"
+          ]
+        },
+        {
+          "query": "Using the carried bias vector, fit two minimum-variance linear unbiased estimators: one with the full covariance matrix and one with only its diagonal. Do not impose nonnegative weights. Evaluate both against most-recent values over the 12 complete quarters from 2021:Q1 through 2023:Q4, select the architecture with lower RMSE, and choose full covariance on an exact tie. Report validation count, both RMSEs, and the selected architecture. Using that selected architecture, for 2024:Q2 report the three GLS/BLUE weights, absolute weight-sum residual, estimate, correlated-measurement standard error, most-recent value, and third-release-minus-most-recent error. Interpret the fitted weighting pattern and the fitted standard error relative to the frozen most-recent realization, then carry the selected covariance architecture forward as the governed model choice.",
+          "validator": "validate_gdp_blue",
+          "stores": [
+            "gdp_validation_quarter_count",
+            "gdp_full_covariance_validation_rmse_pp",
+            "gdp_diagonal_covariance_validation_rmse_pp",
+            "gdp_selected_covariance_model",
+            "gdp_blue_first_weight",
+            "gdp_blue_second_weight",
+            "gdp_blue_third_weight",
+            "gdp_blue_weight_sum_residual",
+            "gdp_blue_estimate_pct",
+            "gdp_blue_standard_error_pp",
+            "gdp_most_recent_pct",
+            "gdp_third_release_error_pp"
+          ]
+        },
+        {
+          "query": "Test whether the covariance architecture selected in turn 2 transfers to a multiplicative correlated-measurement model for Financial Accounts household and nonprofit net worth, series FL152090005.Q in table b101. The seven vintage dates in ascending order are the release stages. Use the 31 complete positive quarters from 2015-Q1 through 2022-Q3 to fit log measurement errors for the first three vintages relative to the seventh-vintage value. Evaluate both the transferred architecture and its full-versus-diagonal alternative on the four complete quarters from 2022-Q4 through 2023-Q3, using terminal-log-error RMSE in basis points; select the lower-RMSE Z.1 architecture and choose the transferred architecture on an exact tie. Report training and validation counts, transferred architecture, its RMSE, alternative RMSE, Z.1-selected architecture, and whether it agrees with the GDP selection. Then report the training mean log errors in basis points, three error correlations, selected-architecture unconstrained log-BLUE weights, and log-estimator standard error in basis points. Explain the role of the log specification for this positive level and interpret the fitted weights and the cross-system model-selection evidence.",
+          "validator": "validate_z1_error_model",
+          "stores": [
+            "z1_training_quarter_count",
+            "z1_validation_quarter_count",
+            "z1_transferred_covariance_model",
+            "z1_transferred_model_validation_rmse_bp",
+            "z1_alternative_model_validation_rmse_bp",
+            "z1_selected_covariance_model",
+            "z1_selection_agrees_with_gdp",
+            "z1_first_vintage_log_error_mean_bp",
+            "z1_second_vintage_log_error_mean_bp",
+            "z1_third_vintage_log_error_mean_bp",
+            "z1_first_second_error_correlation",
+            "z1_first_third_error_correlation",
+            "z1_second_third_error_correlation",
+            "z1_blue_first_weight",
+            "z1_blue_second_weight",
+            "z1_blue_third_weight",
+            "z1_blue_log_standard_error_bp"
+          ]
+        },
+        {
+          "query": "Apply the carried log-error model to the 2023-Q4 net-worth readings. Report its first-, second-, and third-vintage levels; the exponentiated bias-corrected log-BLUE terminal estimate; and the endpoints obtained by adding and subtracting 1.96 fitted log standard errors before exponentiation. Then report the seventh-vintage level and third-minus-seventh error, all levels in millions of USD. Interpret the retrospective comparison and discuss the evidentiary limits of both the seventh-vintage calibration target and the fitted interval.",
+          "validator": "validate_z1_blue",
+          "stores": [
+            "z1_target_first_vintage_usd_millions",
+            "z1_target_second_vintage_usd_millions",
+            "z1_target_third_vintage_usd_millions",
+            "z1_blue_terminal_estimate_usd_millions",
+            "z1_blue_lower_95_usd_millions",
+            "z1_blue_upper_95_usd_millions",
+            "z1_newest_vintage_usd_millions",
+            "z1_third_vintage_error_usd_millions"
+          ]
+        }
+      ]
+    }
+  ]
+}

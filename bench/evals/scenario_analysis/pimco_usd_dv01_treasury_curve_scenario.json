@@ -1,0 +1,34 @@
+{
+  "name": "pimco_usd_dv01_treasury_curve_scenario",
+  "module": "evals.scenario_analysis.pimco_usd_dv01_treasury_curve_scenario",
+  "task_family": "scenario_analysis",
+  "data_sources": [
+    "sec_nport",
+    "treasury_yield_curve"
+  ],
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Using N-PORT accession 0001099263-25-004485, take the PIMCO Income Fund's reported USD DV01 maturity buckets as of 2025-09-30 and align them to the same-maturity U.S. Treasury par yields at 3 months, 1 year, 5 years, 10 years and 30 years on 2025-09-30 and 2025-12-31. Report ending minus starting yield changes for all five maturities. For a retrospective first-order scenario, treat a positive reported DV01 as a gain for a one-basis-point decline in its matched yield, hold the reported exposures static, and calculate the signed tenor-summed value change, the gross absolute tenor contribution, the maturity with the largest absolute contribution and its signed contribution, plus the signed total as a percentage of reported net assets. Explain the offset between tenor contributions and the limits of interpreting this proxy as fund performance.",
+          "validator": "validate",
+          "stores": [
+            "three_month_yield_change_basis_points",
+            "one_year_yield_change_basis_points",
+            "five_year_yield_change_basis_points",
+            "ten_year_yield_change_basis_points",
+            "thirty_year_yield_change_basis_points",
+            "linear_value_change_usd_millions",
+            "gross_absolute_tenor_contribution_usd_millions",
+            "largest_absolute_contribution_tenor",
+            "largest_tenor_signed_contribution_usd_millions",
+            "linear_value_change_pct_net_assets"
+          ]
+        }
+      ]
+    }
+  ]
+}

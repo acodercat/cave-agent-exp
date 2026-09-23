@@ -1,0 +1,20 @@
+[project]
+name = "cave-bench"
+version = "0.1.0"
+description = "A comprehensive benchmarking framework for evaluating CaveAgent's tool-calling and code-generation capabilities."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pandas>=2.2.3",
+    "cave-agent[all]>=0.8.0",
+    "litellm>=1.80.7",
+    "pytest>=9.0.2",
+    "openai-agents>=0.6.4",
+    "json-repair>=0.59.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Keep recovered snapshots and generated experiments out of collection/import paths;
+# duplicate test module basenames under recovered/ otherwise crash collection.
+norecursedirs = ["recovered", "experiments", ".venv", "*.egg-info"]

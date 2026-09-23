@@ -1,0 +1,76 @@
+{
+  "name": "bdc_portfolio_markdown_pik_concentration",
+  "module": "evals.comparison_ranking.bdc_portfolio_markdown_pik_concentration",
+  "task_family": "comparison_ranking",
+  "data_sources": [
+    "sec_bdc",
+    "nyfed_reference_rates"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "turns": [
+        {
+          "query": "Build a business-development-company portfolio cross-section at the 2024-12-31 report date. Keep for each filer only the rows from its latest filed accession that covers that date, then keep only investments reporting both cost and fair value, and retain filers holding at least fifty such priced investments. Define each filer's signed net markdown as summed cost minus summed fair value: a positive value is an unrealized net markdown in this schedule, while a negative value is net appreciation, not a realized gain or loss. Report the number of filers, number of investments, total cost and total fair value in USD billions, and cohort fair value as a percent of cohort cost. Then identify two leaders, breaking ties by central index key ascending. First, report the filer with the largest signed net markdown, its name, markdown in USD millions, fair value as a percent of cost, and dollar margin over the next filer. Second, report the filer with the lowest fair-value-to-cost percentage, its name, percentage, signed net markdown in USD millions, percentage-point margin to the next filer, and rank in the dollar ordering. Explain what the two rankings each measure, how the treatment of rows reporting only one of the two amounts affects them, and what the signed mark does and does not represent.",
+          "validator": "validate_markdown_leadership",
+          "stores": [
+            "cohort_filer_count",
+            "cohort_investment_count",
+            "cohort_cost_usd_billions",
+            "cohort_fair_value_usd_billions",
+            "cohort_marked_pct",
+            "largest_depreciation_filer",
+            "largest_depreciation_usd_millions",
+            "largest_depreciation_marked_pct",
+            "largest_depreciation_margin_usd_millions",
+            "lowest_marked_filer",
+            "lowest_marked_pct",
+            "lowest_marked_depreciation_usd_millions",
+            "lowest_marked_margin_pct",
+            "lowest_marked_depreciation_rank"
+          ]
+        },
+        {
+          "query": "Stay with the same cohort and define a PIK-tagged investment as one whose reported paid-in-kind rate is strictly positive; treat a missing or zero rate as outside that set. Report how many cohort filers hold at least one tagged investment and tagged fair value as a percent of cohort fair value. Then identify the filer with the highest tagged share of its own fair value, breaking ties by central index key ascending, and report its name, share and percentage-point margin over the next filer. Finally report the tagged share of the turn-1 lowest-marked filer. Describe the contrast between those two filers without inferring a population-wide relationship, and explain what this share measures and how it relates, if at all, to interest income received in kind during a period.",
+          "validator": "validate_pik_concentration",
+          "stores": [
+            "pik_reporting_filer_count",
+            "cohort_pik_fair_value_share_pct",
+            "highest_pik_share_filer",
+            "highest_pik_share_pct",
+            "highest_pik_share_margin_pct",
+            "lowest_marked_filer_pik_share_pct"
+          ]
+        },
+        {
+          "query": "Stay with the same cohort and analyze investments reporting both a total interest rate and a basis spread. The frozen schedule mixes decimal fractions with percentage-point values: normalize each field independently by dividing a raw value above 1 by 100 and leaving a value at or below 1 unchanged. Report the raw paired-row count and how many paired rows require normalization because either raw field exceeds 1. After normalization, exclude a row if either component is negative or the all-in rate is below its spread; report the excluded and retained counts. On retained rows, report the median normalized all-in rate and spread in percent and the median implied base rate in percent, defined row by row as all-in minus spread. Report the Secured Overnight Financing Rate published for 2024-12-31 in percent and the median implied base minus SOFR in basis points. Interpret the aggregate proximity descriptively, while stating that an arithmetic residual and a cohort median cannot identify the contractual reference rate of an individual investment.",
+          "validator": "validate_rate_structure",
+          "stores": [
+            "rate_pair_row_count",
+            "rate_unit_normalized_row_count",
+            "rate_invalid_row_count",
+            "floating_rate_investment_count",
+            "median_all_in_rate_pct",
+            "median_spread_pct",
+            "median_implied_base_rate_pct",
+            "reference_rate_pct",
+            "implied_base_minus_reference_bp"
+          ]
+        },
+        {
+          "query": "Test the turn-1 percentage leaderboard's sensitivity to the population floor. Rebuild the cohort at the same report date and with the same filing and paired-pricing rules but retain filers holding at least twenty-five investments instead of fifty. Report the number of filers, name and fair-value-to-cost percentage of the lowest-marked filer, its percentage-point margin to the next filer, and the rank under this floor of the turn-1 percentage leader. Separately report how many rows at the report date, after the latest-filing rule, report exactly one of cost and fair value. Compare the two floors and margins, and state what the comparison establishes about the population rule and what it does not establish about the filers.",
+          "validator": "validate_floor_sensitivity",
+          "stores": [
+            "sensitivity_filer_count",
+            "sensitivity_lowest_marked_filer",
+            "sensitivity_lowest_marked_pct",
+            "sensitivity_margin_pct",
+            "sensitivity_rank_of_pinned_leader",
+            "excluded_single_sided_row_count"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "name": "state_hpi_level_growth_leaders",
+  "module": "evals.comparison_ranking.state_hpi_level_growth_leaders",
+  "task_family": "comparison_ranking",
+  "data_sources": [
+    "fhfa_hpi",
+    "census_geo_crosswalk",
+    "bls_qcew"
+  ],
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Across the 50 states and the District of Columbia, use the FHFA traditional purchase-only quarterly state HPI and BLS QCEW annual state totals to compare unadjusted 2024 Q4 and 2025 Q4 HPI with 2024-to-2025 total-covered annual-average employment. Use the Census Gazetteer's USPS-to-state-FIPS correspondence as the geographic bridge. Report the matched population. Identify the state-level entity with the highest 2025-Q4 HPI index, the one with the fastest one-year HPI growth, and the one with the fastest employment growth, breaking any tie alphabetically by name. For the HPI level and HPI growth leaders, report both HPI endpoints, HPI growth and employment growth; for the employment leader, report employment growth and HPI growth. Use two decimals for index levels and four decimals for growth percentages. Explain what the differing leaders show and the limits of comparing these measures.",
+          "validator": "validate",
+          "stores": [
+            "matched_state_count",
+            "highest_2025q4_index_state",
+            "highest_state_2024q4_index",
+            "highest_state_2025q4_index",
+            "highest_state_hpi_growth_pct",
+            "highest_state_employment_growth_pct",
+            "fastest_hpi_growth_state",
+            "fastest_hpi_state_2024q4_index",
+            "fastest_hpi_state_2025q4_index",
+            "fastest_hpi_growth_pct",
+            "fastest_hpi_state_employment_growth_pct",
+            "fastest_employment_growth_state",
+            "fastest_employment_growth_pct",
+            "fastest_employment_state_hpi_growth_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

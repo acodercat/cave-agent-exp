@@ -1,0 +1,49 @@
+{
+  "name": "bank_y9c_asset_scope_lineage",
+  "module": "evals.calculation_reconciliation.bank_y9c_asset_scope_lineage",
+  "task_family": "calculation_reconciliation",
+  "data_sources": [
+    "ffiec_call_reports_balance",
+    "ffiec_nic_structure",
+    "ffiec_y9c"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Perform a retrospective 2025-09-30 legal-entity scope comparison for JPMorgan Chase Bank, National Association (RSSD 852218), Bank of America, National Association (RSSD 480228), Citibank, N.A. (RSSD 476810), and Wells Fargo Bank, National Association (RSSD 451965). For each bank, use the current FFIEC NIC direct regulatory-control lineage to identify and report the source-recorded legal name of the nearest controlling ancestor that reports a 2025-09-30 Y-9C consolidated balance sheet, together with the relationship-edge count. Compare each bank's Call Report consolidated total assets with that matched ancestor's Y-9C consolidated total assets. Report the matched-pair count, total lineage-edge count, aggregate bank assets, aggregate parent assets, and the ratio of those two aggregate asset amounts. Identify the banks with the highest and lowest individual bank-to-parent asset shares, breaking an exact tie alphabetically by bank legal name; for each, report the bank and parent legal names, lineage-edge count and share. From the four selected Call Report rows, also report how many source-recorded last-submission dates are after 2025-12-31 and identify the bank with the latest such date and that date, breaking an exact date tie alphabetically by bank legal name. Report the assets and shares, and explain what the lineage, consolidated-scope comparison and submission-update metadata do and do not represent.",
+          "validator": "validate",
+          "stores": [
+            "matched_bank_parent_pair_count",
+            "jpmorgan_matched_parent_legal_name",
+            "jpmorgan_lineage_edge_count",
+            "bank_of_america_matched_parent_legal_name",
+            "bank_of_america_lineage_edge_count",
+            "citibank_matched_parent_legal_name",
+            "citibank_lineage_edge_count",
+            "wells_fargo_matched_parent_legal_name",
+            "wells_fargo_lineage_edge_count",
+            "total_nic_relationship_edge_count",
+            "cohort_bank_total_assets_usd_billions",
+            "cohort_parent_total_assets_usd_billions",
+            "cohort_bank_to_parent_asset_ratio_pct",
+            "highest_asset_share_bank_legal_name",
+            "highest_asset_share_parent_legal_name",
+            "highest_asset_share_lineage_edge_count",
+            "highest_bank_to_parent_asset_share_pct",
+            "lowest_asset_share_bank_legal_name",
+            "lowest_asset_share_parent_legal_name",
+            "lowest_asset_share_lineage_edge_count",
+            "lowest_bank_to_parent_asset_share_pct",
+            "post_2025_cutoff_call_report_update_count",
+            "latest_updated_call_report_bank_legal_name",
+            "latest_call_report_submission_update_date"
+          ]
+        }
+      ]
+    }
+  ]
+}

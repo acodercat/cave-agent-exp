@@ -1,0 +1,762 @@
+[
+  {
+    "name": "inventory_management",
+    "module": "evals.token_efficiency.inventory_management_tools",
+    "requirements": "You are an inventory management system. Check stock levels across warehouses and create reorders for products below their minimum threshold.",
+    "conversations": [
+      {
+        "id": "full_inventory_check",
+        "description": "Check all warehouses and reorder all low-stock items",
+        "turns": [
+          {
+            "query": "Check stock levels in all warehouses. For any product below its minimum threshold, create a reorder.",
+            "expected_function_calls": [
+              {
+                "name": "get_warehouses",
+                "required": true,
+                "arguments": []
+              },
+              {
+                "name": "get_stock_levels",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_east",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "get_stock_levels",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_west",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "get_stock_levels",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_central",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "create_reorder",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_east",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sku",
+                    "value": "SKU001",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "create_reorder",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_east",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sku",
+                    "value": "SKU003",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "create_reorder",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_west",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sku",
+                    "value": "SKU002",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "create_reorder",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_west",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sku",
+                    "value": "SKU004",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "create_reorder",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_central",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sku",
+                    "value": "SKU005",
+                    "type": "str"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "single_warehouse_check",
+        "description": "Check and reorder for a specific warehouse",
+        "turns": [
+          {
+            "query": "Check warehouse_east stock levels and create reorders for any items that need restocking.",
+            "expected_function_calls": [
+              {
+                "name": "get_stock_levels",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_east",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "create_reorder",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_east",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sku",
+                    "value": "SKU001",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "create_reorder",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_east",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sku",
+                    "value": "SKU003",
+                    "type": "str"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "summary_then_action",
+        "description": "Get low stock summary then create reorders",
+        "turns": [
+          {
+            "query": "Get a summary of all low stock items across the system, then create reorders for each one.",
+            "expected_function_calls": [
+              {
+                "name": "get_low_stock_summary",
+                "required": true,
+                "arguments": []
+              },
+              {
+                "name": "create_reorder",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_east",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sku",
+                    "value": "SKU001",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "create_reorder",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_east",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sku",
+                    "value": "SKU003",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "create_reorder",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_west",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sku",
+                    "value": "SKU002",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "create_reorder",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_west",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sku",
+                    "value": "SKU004",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "create_reorder",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_central",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sku",
+                    "value": "SKU005",
+                    "type": "str"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "progressive_warehouse_discovery",
+        "description": "Discover warehouses then drill down based on results",
+        "turns": [
+          {
+            "query": "List all available warehouses and check stock levels for the first two warehouses returned.",
+            "expected_function_calls": [
+              {
+                "name": "get_warehouses",
+                "required": true,
+                "arguments": []
+              },
+              {
+                "name": "get_stock_levels",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_east",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "get_stock_levels",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_west",
+                    "type": "str"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "query": "Based on the stock levels you just retrieved, create reorders for all items that need restocking in those two warehouses.",
+            "expected_function_calls": [
+              {
+                "name": "create_reorder",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_east",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sku",
+                    "value": "SKU001",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "create_reorder",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_east",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sku",
+                    "value": "SKU003",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "create_reorder",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_west",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sku",
+                    "value": "SKU002",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "create_reorder",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_west",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sku",
+                    "value": "SKU004",
+                    "type": "str"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "critical_stock_priority",
+        "description": "Identify and prioritize critically low stock items",
+        "turns": [
+          {
+            "query": "Get a summary of all low stock items. Tell me which items are at less than 50% of their minimum threshold - those are critical.",
+            "expected_function_calls": [
+              {
+                "name": "get_low_stock_summary",
+                "required": true,
+                "arguments": []
+              }
+            ]
+          },
+          {
+            "query": "Create reorders only for the critical items you identified (those below 50% of threshold). Use double the normal reorder quantity for these urgent items.",
+            "expected_function_calls": [
+              {
+                "name": "create_reorder",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_east",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sku",
+                    "value": "SKU003",
+                    "type": "str"
+                  },
+                  {
+                    "name": "quantity",
+                    "value": 200,
+                    "type": "int"
+                  }
+                ]
+              },
+              {
+                "name": "create_reorder",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_west",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sku",
+                    "value": "SKU002",
+                    "type": "str"
+                  },
+                  {
+                    "name": "quantity",
+                    "value": 400,
+                    "type": "int"
+                  }
+                ]
+              },
+              {
+                "name": "create_reorder",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_west",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sku",
+                    "value": "SKU004",
+                    "type": "str"
+                  },
+                  {
+                    "name": "quantity",
+                    "value": 80,
+                    "type": "int"
+                  }
+                ]
+              },
+              {
+                "name": "create_reorder",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_central",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sku",
+                    "value": "SKU005",
+                    "type": "str"
+                  },
+                  {
+                    "name": "quantity",
+                    "value": 150,
+                    "type": "int"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sku_tracking_across_warehouses",
+        "description": "Track specific SKU across all locations",
+        "turns": [
+          {
+            "query": "I need to track SKU001 (Laptop) inventory. Check stock levels in all warehouses and tell me which ones have this SKU below threshold.",
+            "expected_function_calls": [
+              {
+                "name": "get_warehouses",
+                "required": true,
+                "arguments": []
+              },
+              {
+                "name": "get_stock_levels",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_east",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "get_stock_levels",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_west",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "get_stock_levels",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_central",
+                    "type": "str"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "query": "Create reorders for SKU001 only in the warehouses where it's below threshold.",
+            "expected_function_calls": [
+              {
+                "name": "create_reorder",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_east",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sku",
+                    "value": "SKU001",
+                    "type": "str"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "west_coast_emergency",
+        "description": "Handle urgent restocking for specific warehouse",
+        "turns": [
+          {
+            "query": "We have an urgent situation at warehouse_west in Los Angeles. Check their current stock levels immediately.",
+            "expected_function_calls": [
+              {
+                "name": "get_stock_levels",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_west",
+                    "type": "str"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "query": "This is urgent - create reorders for ALL products in warehouse_west that need restocking, and triple the reorder quantities since shipping takes longer to the west coast.",
+            "expected_function_calls": [
+              {
+                "name": "create_reorder",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_west",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sku",
+                    "value": "SKU002",
+                    "type": "str"
+                  },
+                  {
+                    "name": "quantity",
+                    "value": 600,
+                    "type": "int"
+                  }
+                ]
+              },
+              {
+                "name": "create_reorder",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_west",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sku",
+                    "value": "SKU004",
+                    "type": "str"
+                  },
+                  {
+                    "name": "quantity",
+                    "value": 120,
+                    "type": "int"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "comparative_analysis",
+        "description": "Compare warehouses and take action on worst performer",
+        "turns": [
+          {
+            "query": "Check stock levels for warehouse_east and warehouse_central. I want to compare which one has more items needing reorder.",
+            "expected_function_calls": [
+              {
+                "name": "get_stock_levels",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_east",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "get_stock_levels",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_central",
+                    "type": "str"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "query": "Create reorders for all low-stock items in the warehouse that has more items needing reorder.",
+            "expected_function_calls": [
+              {
+                "name": "create_reorder",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_east",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sku",
+                    "value": "SKU001",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "create_reorder",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_east",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sku",
+                    "value": "SKU003",
+                    "type": "str"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "incremental_restocking",
+        "description": "Build up restocking plan step by step",
+        "turns": [
+          {
+            "query": "Get the low stock summary. I want to see all items that need attention before we start ordering.",
+            "expected_function_calls": [
+              {
+                "name": "get_low_stock_summary",
+                "required": true,
+                "arguments": []
+              }
+            ]
+          },
+          {
+            "query": "Start with the east coast - create reorders for all low stock items in warehouse_east. We'll handle other warehouses next week.",
+            "expected_function_calls": [
+              {
+                "name": "create_reorder",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_east",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sku",
+                    "value": "SKU001",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "create_reorder",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "warehouse_id",
+                    "value": "warehouse_east",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sku",
+                    "value": "SKU003",
+                    "type": "str"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

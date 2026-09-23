@@ -1,0 +1,213 @@
+[
+  {
+    "name": "object_types",
+    "module": "evals.stateful.object_types",
+    "requirements": "Manage the state of a system with custom objects. IMPORTANT: Only perform the exact operations requested. Do NOT call extra methods, do NOT set unrequested attributes, do NOT demonstrate or test functionality beyond what is asked. State persists across turns, so any extra operations will corrupt future results.",
+    "conversations": [
+      {
+        "id": "person_basic",
+        "turns": [
+          {
+            "query": "I'm setting up a new employee record in person. Her name is Alice and she's 25 years old.",
+            "validator": "validate_person_init"
+          },
+          {
+            "query": "Update person: Alice just turned 26 and moved to Boston.",
+            "validator": "validate_person_update"
+          },
+          {
+            "query": "I need Alice's introduction for the newsletter. Get it from person and store in result_str.",
+            "validator": "validate_person_method"
+          }
+        ]
+      },
+      {
+        "id": "person_birthday",
+        "turns": [
+          {
+            "query": "Update person for a new employee: Bob, 30 years old.",
+            "validator": "validate_person_birthday_init"
+          },
+          {
+            "query": "It's Bob's birthday today! Use person to celebrate his birthday.",
+            "validator": "validate_person_birthday"
+          },
+          {
+            "query": "Oops, I miscounted - give person another birthday celebration.",
+            "validator": "validate_person_birthday2"
+          }
+        ]
+      },
+      {
+        "id": "account_basic",
+        "turns": [
+          {
+            "query": "A customer just made a $500 deposit. Add it to account.",
+            "validator": "validate_account_deposit"
+          },
+          {
+            "query": "The customer needs to withdraw $200 for rent from account.",
+            "validator": "validate_account_withdraw"
+          },
+          {
+            "query": "Month-end: apply 10% interest to account.",
+            "validator": "validate_account_interest"
+          }
+        ]
+      },
+      {
+        "id": "account_transactions",
+        "turns": [
+          {
+            "query": "Processing deposits to account: $100 refund, then $200 paycheck.",
+            "validator": "validate_account_multi_deposit"
+          },
+          {
+            "query": "Customer paying bills from account: $150 for utilities, then $100 for subscriptions.",
+            "validator": "validate_account_multi_withdraw"
+          },
+          {
+            "query": "Record account's current balance in result_num.",
+            "validator": "validate_account_balance"
+          }
+        ]
+      },
+      {
+        "id": "cart_basic",
+        "turns": [
+          {
+            "query": "Customer wants to add a Book priced at $15.99 to cart.",
+            "validator": "validate_cart_add"
+          },
+          {
+            "query": "Add a Pen for $2.50 to cart as well.",
+            "validator": "validate_cart_add2"
+          },
+          {
+            "query": "Checkout time. Get cart's total and store in result_num.",
+            "validator": "validate_cart_total"
+          }
+        ]
+      },
+      {
+        "id": "cart_quantity",
+        "turns": [
+          {
+            "query": "Customer buying 3 Apples at $10.00 each. Add to cart with quantity.",
+            "validator": "validate_cart_qty_add"
+          },
+          {
+            "query": "Also add 2 Oranges at $5.00 each to cart with quantity.",
+            "validator": "validate_cart_qty_add2"
+          },
+          {
+            "query": "Calculate cart's total (price * quantity for each item) and store in result_num.",
+            "validator": "validate_cart_qty_total"
+          }
+        ]
+      },
+      {
+        "id": "counter_basic",
+        "turns": [
+          {
+            "query": "Three visitors arrived. Increment counter three times.",
+            "validator": "validate_counter_inc"
+          },
+          {
+            "query": "One visitor left, two more arrived. Update counter accordingly.",
+            "validator": "validate_counter_mixed"
+          },
+          {
+            "query": "End of day. Reset counter to zero.",
+            "validator": "validate_counter_reset"
+          }
+        ]
+      },
+      {
+        "id": "counter_add",
+        "turns": [
+          {
+            "query": "A tour group of 10 arrived. Add 10 to counter.",
+            "validator": "validate_counter_add10"
+          },
+          {
+            "query": "Another group of 5 came in. Add 5 to counter.",
+            "validator": "validate_counter_add5"
+          },
+          {
+            "query": "Get counter's current value and store in result_num.",
+            "validator": "validate_counter_store"
+          }
+        ]
+      },
+      {
+        "id": "stack_ops",
+        "turns": [
+          {
+            "query": "Managing undo history with stack. Push 'A', 'B', 'C' in that order.",
+            "validator": "validate_stack_push"
+          },
+          {
+            "query": "User hit undo. Pop from stack and store the popped value in result_str.",
+            "validator": "validate_stack_pop"
+          },
+          {
+            "query": "Preview what would be undone next. Peek at stack's top and store in result_str.",
+            "validator": "validate_stack_peek"
+          }
+        ]
+      },
+      {
+        "id": "stack_numeric",
+        "turns": [
+          {
+            "query": "Building a calculation with stack. Push numbers 1, 2, 3, 4, 5.",
+            "validator": "validate_stack_push_nums"
+          },
+          {
+            "query": "Pop two values from stack and store their sum in result_num.",
+            "validator": "validate_stack_pop_sum"
+          },
+          {
+            "query": "How many items remain in stack? Store the count in result_num.",
+            "validator": "validate_stack_size"
+          }
+        ]
+      },
+      {
+        "id": "cart_removal",
+        "turns": [
+          {
+            "query": "New shopping session. Add a Laptop ($999.99) and a Mouse ($29.99) to cart.",
+            "validator": "validate_cart_add_items"
+          },
+          {
+            "query": "Customer changed their mind about the Mouse. Remove it from cart.",
+            "validator": "validate_cart_remove"
+          },
+          {
+            "query": "Customer wants to start over. Clear the entire cart.",
+            "validator": "validate_cart_clear"
+          }
+        ]
+      },
+      {
+        "id": "stack_advanced",
+        "turns": [
+          {
+            "query": "Building navigation history with stack. Push 'A', 'B', 'C', 'D' in order.",
+            "validator": "validate_stack_multi_push"
+          },
+          {
+            "query": "User wants to go back to first page. Pop from stack until only 1 item remains, store count of popped items in result_num.",
+            "validator": "validate_stack_pop_until"
+          },
+          {
+            "query": "Verify we're at the right page. Peek at stack's top and store in result_str.",
+            "validator": "validate_stack_peek_after"
+          }
+        ]
+      }
+    ]
+  }
+]

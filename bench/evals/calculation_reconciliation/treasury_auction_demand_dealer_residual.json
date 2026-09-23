@@ -1,0 +1,68 @@
+{
+  "name": "treasury_auction_demand_dealer_residual",
+  "module": "evals.calculation_reconciliation.treasury_auction_demand_dealer_residual",
+  "task_family": "calculation_reconciliation",
+  "data_sources": [
+    "treasury_auctions",
+    "treasury_yield_curve"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "turns": [
+        {
+          "query": "Auction results report the amount accepted from primary dealers, direct bidders and indirect bidders, alongside SOMA accepted and noncompetitive accepted. Select auctions of security type Note with an auction date in 2024 or 2025 whose security term is either 10-Year or 9-Year 10-Month and whose inflation-indexed flag reads No. Report how many auctions qualify, how many are new issues and how many are reopenings. Report total accepted, the sum of the three bidder groups, SOMA accepted and noncompetitive accepted, all in USD billions. Then report the largest absolute difference in any single auction between total accepted and the five components added together, in USD. Explain what that reconciliation does and does not establish, and why the inflation-indexed flag had to be applied.",
+          "validator": "validate_award_identity",
+          "stores": [
+            "auction_count",
+            "new_issue_count",
+            "reopening_count",
+            "total_accepted_usd_billions",
+            "competitive_award_usd_billions",
+            "soma_accepted_usd_billions",
+            "noncompetitive_usd_billions",
+            "identity_residual_usd"
+          ]
+        },
+        {
+          "query": "Bidder-category shares depend on what you divide by. For each auction compute the indirect, dealer and direct accepted amounts as a percent of the three groups added together, and report the median of each across the auctions. Then compute the indirect and dealer amounts as a percent of total accepted instead, and report those two medians. Explain which base isolates the three competitive bidder categories and how SOMA and noncompetitive accepted amounts affect the other denominator.",
+          "validator": "validate_demand_base",
+          "stores": [
+            "median_indirect_share_competitive_pct",
+            "median_dealer_share_competitive_pct",
+            "median_direct_share_competitive_pct",
+            "median_indirect_share_total_pct",
+            "median_dealer_share_total_pct"
+          ]
+        },
+        {
+          "query": "Examine primary-dealer participation. Using the dealer share of the three bidder groups, report the auction date with the highest such share, that share and that auction's bid-to-cover ratio, then the same three figures for the auction with the lowest share, breaking any tie by auction date ascending. Report the correlation between dealer share and bid-to-cover across the qualifying auctions and the median bid-to-cover. Explain what the New York Fed's expectation that primary dealers bid pro rata at reasonably competitive prices does and does not establish about awards, and state the sample and causal limits on interpreting the correlation.",
+          "validator": "validate_dealer_residual",
+          "stores": [
+            "highest_dealer_share_date",
+            "highest_dealer_share_pct",
+            "highest_dealer_share_bid_to_cover",
+            "lowest_dealer_share_date",
+            "lowest_dealer_share_pct",
+            "lowest_dealer_share_bid_to_cover",
+            "dealer_share_bid_to_cover_correlation",
+            "median_bid_to_cover"
+          ]
+        },
+        {
+          "query": "Place the clearing yields against the curve. For each auction take the high yield less the ten-year par yield published for the same day, in basis points. Report how many auctions clear above the curve reading, the median difference, the date and value of the widest positive difference and that auction's dealer share of the three bidder groups. Then report how many of the qualifying auctions carry a positive open market account amount. Explain what this comparison can and cannot say about whether an auction was well received.",
+          "validator": "validate_clearing_yield_context",
+          "stores": [
+            "auctions_clearing_above_curve",
+            "median_yield_gap_bp",
+            "widest_yield_gap_date",
+            "widest_yield_gap_bp",
+            "widest_gap_dealer_share_pct",
+            "positive_soma_auction_count"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "name": "wti_inventory_hedge_state_preservation",
+  "module": "evals.scenario_analysis.wti_inventory_hedge_state_preservation",
+  "task_family": "scenario_analysis",
+  "data_sources": [
+    "eia_steo_vintages",
+    "eia_bulk_wti",
+    "nyfed_reference_rates"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Establish a hypothetical WTI inventory-acquisition program from the EIA Short-Term Energy Outlook published on 2024-01-04. Use its forecast monthly WTI spot averages for May through December 2024. Allocate USD10 million of planned purchases to each month and fix that month’s barrel quantity using its forecast price; fractional barrels are allowed. Purchases occur at each calendar month-end and all inventory is retained through 2024-12-31. Report total planned inventory and the share scheduled for May and June together. Interpret the monthly volume distribution. Use unrounded inputs and state throughout.",
+          "validator": "validate_turn_1",
+          "stores": [
+            "original_inventory_thousand_barrels",
+            "may_june_volume_pct"
+          ]
+        },
+        {
+          "query": "Protect the original program’s monthly purchase cash requirements with hypothetical cash-settled swaps: receive that month’s PET.RWTC.M spot average and pay a common fixed price equal to the frozen December 2023 PET.RWTC.M observation plus USD2 per barrel. Each swap settles at its purchase month-end, covers a common fraction of that month’s fixed purchase quantity, and has no premium, fees or collateral cash flows. Choose the smallest common continuous hedge fraction between zero and 80 percent such that no month’s net purchase cash outlay exceeds USD11 million when every price is 25 percent above its original forecast. Report the fraction and the earliest target month whose cash limit binds. Commit the resulting monthly swap notionals for the original program and interpret the achieved protection.",
+          "validator": "validate_turn_2",
+          "stores": [
+            "original_hedge_pct",
+            "original_binding_month"
+          ]
+        },
+        {
+          "query": "Prepare an independent proposal using the EIA forecast published on 2024-04-04 for the same purchase months. Give it the same monthly planned budget, determine its own quantities, and choose its own minimum common hedge fraction under the same swap strike, participation bounds and monthly cash ceiling, with the 25-percent upside scenario relative to its own forecasts. Report proposal inventory and hedge fraction. Assess the volume and hedge comparison.",
+          "validator": "validate_turn_3",
+          "stores": [
+            "proposal_inventory_thousand_barrels",
+            "proposal_hedge_pct"
+          ]
+        },
+        {
+          "query": "For that proposal, settle its purchases and swaps using the frozen PET.RWTC.M observations for the purchase months. Report total purchase spending net of swap settlements, and gross swap settlement payments, counting receipts separately rather than offsetting them in the gross payment amount. Assess these execution costs in relation to the proposal’s delivery scale.",
+          "validator": "validate_turn_4",
+          "stores": [
+            "proposal_net_purchase_million",
+            "proposal_gross_swap_payments_million"
+          ]
+        },
+        {
+          "query": "Finance execution of the original committed program at those observed monthly prices. Borrow each net purchase cash requirement at its calendar month-end; debt compounds until 2024-12-31 at a flat annual-effective rate equal to the New York Fed SOFR fixing effective 2024-01-04 plus 100 basis points, using actual elapsed calendar days over 365. There are no interim debt payments or other financing cash flows. Report terminal debt and the largest individual monthly net purchase cash requirement. Interpret the funding burden and its timing.",
+          "validator": "validate_turn_5",
+          "stores": [
+            "original_terminal_debt_million",
+            "original_peak_month_cash_million"
+          ]
+        },
+        {
+          "query": "For the original program, warehouse charges accrue at USD0.02 per barrel per calendar day after each acquisition through 2024-12-31 and are paid only on that terminal date. Report the minimum uniform liquidation price covering terminal debt and warehouse charges. Alternatively retain the inventory: a terminal lender advances at most 90 percent of its value at the December 2024 PET.RWTC.M observation. Report the minimum external cash needed to settle the existing debt and warehouse bill while replacing financing with that advance. Interpret the two terminal funding results in light of the cash-flow hedge.",
+          "validator": "validate_turn_6",
+          "stores": [
+            "original_break_even_sale_usd_barrel",
+            "original_collateral_cash_million"
+          ]
+        }
+      ]
+    }
+  ]
+}

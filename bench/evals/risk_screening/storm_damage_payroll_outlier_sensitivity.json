@@ -1,0 +1,80 @@
+{
+  "name": "storm_damage_payroll_outlier_sensitivity",
+  "module": "evals.risk_screening.storm_damage_payroll_outlier_sensitivity",
+  "task_family": "risk_screening",
+  "data_sources": [
+    "noaa_storm_events",
+    "bls_qcew"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "For 2024 NOAA Storm Events, retain source rows whose geography type is County (source value C) for the 50 states and District of Columbia, identified by nonmissing state USPS. For each row, reported damage is the sum of its nonmissing property- and crop-damage amounts; a missing component contributes no amount to the arithmetic but must not be described as a reported zero. Aggregate by state-level jurisdiction and rank by reported damage, breaking a tie by USPS alphabetically. Report the jurisdiction count, retained event-row count, rows with at least one reported damage component, cohort damage, absolute-damage leader, its event-row and reported-damage-row counts and damage, runner-up, and leader margin. Explain the coverage boundary of the screen.",
+          "validator": "validate_damage_screen",
+          "stores": [
+            "matched_state_jurisdiction_count",
+            "county_event_row_count",
+            "event_rows_with_any_reported_damage_count",
+            "cohort_reported_damage_usd_billions",
+            "absolute_damage_leader_state_usps",
+            "absolute_leader_event_row_count",
+            "absolute_leader_reported_damage_row_count",
+            "absolute_leader_damage_usd_billions",
+            "absolute_damage_runner_up_state_usps",
+            "absolute_damage_leader_margin_usd_billions"
+          ]
+        },
+        {
+          "query": "Drill into the turn-1 absolute leader. Aggregate its retained rows by the source event-type label and rank by reported damage, tie-breaking alphabetically. Report the distinct event-type count, top type, its row count, damage and share of state damage, plus the HHI of event-type damage shares on a 0-to-10,000 scale. Also identify the single largest-damage event row, tie-breaking by smaller source event identifier, and report that identifier, county/zone name, begin datetime, damage and share of state damage. Explain the two different concentration measures.",
+          "validator": "validate_leader_concentration",
+          "stores": [
+            "absolute_leader_event_type_count",
+            "absolute_leader_top_damage_event_type",
+            "top_event_type_row_count",
+            "top_event_type_damage_usd_billions",
+            "top_event_type_damage_share_pct",
+            "absolute_leader_event_type_damage_hhi",
+            "largest_damage_event_id",
+            "largest_damage_event_county_name",
+            "largest_damage_event_begin_datetime",
+            "largest_damage_event_usd_billions",
+            "largest_event_share_of_state_damage_pct"
+          ]
+        },
+        {
+          "query": "Join the turn-1 state panel to 2024 BLS QCEW total-covered all-industry state totals by state FIPS. For each matched state calculate NOAA reported damage per annual-average covered employee and as a percentage of total annual wages. Rank by damage per employee, tie-breaking by USPS. Report the matched count; normalized leader; its employment, annual wages, damage per employee and damage-to-wages ratio; the turn-1 absolute leader's two normalized measures and rank; and the normalized leader's margin over the runner-up in USD per employee. Explain why normalization changes the risk screen.",
+          "validator": "validate_payroll_normalization",
+          "stores": [
+            "damage_qcew_matched_state_count",
+            "damage_per_employee_leader_state_usps",
+            "normalized_leader_total_covered_employment",
+            "normalized_leader_total_annual_wages_usd_billions",
+            "normalized_leader_damage_per_employee_usd",
+            "normalized_leader_damage_to_annual_wages_pct",
+            "absolute_leader_damage_per_employee_usd",
+            "absolute_leader_damage_to_annual_wages_pct",
+            "absolute_leader_damage_per_employee_rank",
+            "normalized_leader_margin_usd_per_employee"
+          ]
+        },
+        {
+          "query": "Test whether the turn-2 top event-type concentration is driven only by its single largest event row. Exclude that row from the top event type and report the remaining row count and damage, the share of top-type damage retained, adjusted state damage, and the remaining top type's share of adjusted state damage. Also report state damage outside the top type and whether the remaining top-type damage still exceeds all other event types combined. Explain what this decomposition does and does not establish about the excluded row and the concentration result.",
+          "validator": "validate_outlier_sensitivity",
+          "stores": [
+            "top_event_type_rows_excluding_largest_event_count",
+            "top_event_type_damage_excluding_largest_event_usd_billions",
+            "top_event_type_damage_retained_pct",
+            "state_damage_excluding_largest_event_usd_billions",
+            "top_type_remainder_share_of_adjusted_state_damage_pct",
+            "state_damage_outside_top_event_type_usd_billions",
+            "top_type_remainder_exceeds_all_other_types"
+          ]
+        }
+      ]
+    }
+  ]
+}

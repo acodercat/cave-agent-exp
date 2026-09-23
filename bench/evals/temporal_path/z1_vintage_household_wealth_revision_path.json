@@ -1,0 +1,63 @@
+{
+  "name": "z1_vintage_household_wealth_revision_path",
+  "module": "evals.temporal_path.z1_vintage_household_wealth_revision_path",
+  "task_family": "temporal_path",
+  "data_sources": [
+    "fed_z1_vintages",
+    "philadelphia_fed_rtdsm"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "turns": [
+        {
+          "query": "The Financial Accounts of the United States are republished as complete vintages: every release restates all earlier quarters, and the vintage table holds one row per vintage, statement table, series and quarter, so a series printed in several statements repeats with the same value. Work only with rows whose frequency field is Q. Take a decision date of 2024-10-01 and treat as available only those vintages whose release date falls on or before it. Report how many vintages qualify, the release date of the newest qualifying vintage, the latest quarter end that vintage covers, and the number of calendar days from that quarter end to that release date. Then report the level of household and nonprofit organization net worth, Financial Accounts series FL152090005.Q, for that quarter exactly as that vintage published it, in millions of USD. Explain what the gap between the quarter end and the release date means for anyone using this statistic in real time.",
+          "validator": "validate_decision_date_reading",
+          "stores": [
+            "available_vintage_date",
+            "vintage_count_at_decision_date",
+            "latest_covered_quarter",
+            "publication_lag_days",
+            "as_published_net_worth_usd_millions"
+          ]
+        },
+        {
+          "query": "Carry the same series and the same quarter forward. Report the release date of the newest vintage in the table and its value for that series and quarter, the revision, newest value minus the value you reported in turn 1, as a percent of the turn-1 value, and how many vintages in the table report that series for that quarter. Explain what the revision establishes about the statistic and what it would take to call the earlier release wrong.",
+          "validator": "validate_observation_revision",
+          "stores": [
+            "newest_vintage_date",
+            "revised_net_worth_usd_millions",
+            "net_worth_revision_pct",
+            "covering_vintage_count"
+          ]
+        },
+        {
+          "query": "Rank revisions across the household and nonprofit balance sheet, Financial Accounts table b101. Restrict to rows of that table whose frequency field is Q and whose series code begins with FL or LM, with quarter ends from 2015-03-31 through 2023-12-31, and keep only those series-quarter pairs that every one of the seven vintages reports. Define each pair's revision as its value in the newest vintage minus its value in the earliest vintage. Report the number of distinct series and the number of series-quarter pairs in that population. Rank the pairs by absolute revision, breaking ties by series code ascending and then quarter ascending, and for the leading pair report its series code, its quarter end, its earliest-vintage value, its newest-vintage value and its signed revision, all levels in millions of USD, together with its absolute revision minus the runner-up pair's absolute revision. Finally rank the series by their own largest absolute revision, again breaking ties by series code ascending, and report the position held by series FL152090005.Q. Explain what the leading pair indicates about which parts of the household balance sheet are restated most and why the restriction to pairs every vintage reports matters.",
+          "validator": "validate_revision_ranking",
+          "stores": [
+            "revision_series_count",
+            "revision_pair_count",
+            "largest_revision_series",
+            "largest_revision_quarter",
+            "largest_revision_first_value_usd_millions",
+            "largest_revision_latest_value_usd_millions",
+            "largest_revision_usd_millions",
+            "largest_revision_margin_usd_millions",
+            "household_net_worth_largest_revision_rank"
+          ]
+        },
+        {
+          "query": "Turn to the Philadelphia Fed real-time data set, which records a separate estimate for each successive release of a macroeconomic statistic rather than a full restatement of every period. For the quarterly real gross domestic product annualized growth rate in the second quarter of 2024, the reference quarter from turn 1, report the first release, the third release and the most recent value in percent. Then, over every quarter of that series where both a first release and a most recent value exist, report how many quarters carry a larger absolute first-to-latest revision than that reference quarter. Explain how the release-indexed revisions in this file and the vintage-indexed restatements in turn 3 differ as evidence, and what each of the two files can support on its own.",
+          "validator": "validate_release_sequence_contrast",
+          "stores": [
+            "rtdsm_first_release_pct",
+            "rtdsm_third_release_pct",
+            "rtdsm_most_recent_pct",
+            "rtdsm_quarters_with_larger_absolute_revision"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "name": "xbrl_dimensional_revenue_double_count",
+  "module": "evals.calculation_reconciliation.xbrl_dimensional_revenue_double_count",
+  "task_family": "calculation_reconciliation",
+  "data_sources": [
+    "sec_notes",
+    "sec_notes_dimensional"
+  ],
+  "case_type": "baseline",
+  "difficulty": "hard",
+  "conversations": [
+    {
+      "turns": [
+        {
+          "query": "Using the SEC notes data sets, take the Revenue from Contract with Customer, Excluding Assessed Tax concept on Form 10-K with a duration of 4 quarters, reported in USD, and with no co-registrant. From the dimensioned facts report how many rows qualify and how many distinct filings they come from. From the undimensioned facts keep rows with zero dimensions, and, using only the primary presentation (presentation index 0), report how many distinct filing-and-period observations carry a consolidated figure. Now pair the two on filing accession and period, keeping observations whose consolidated figure is positive, and report how many pair. For each paired observation divide the sum of all its dimensioned rows by its consolidated figure, and report the median, the seventy-fifth percentile and the maximum of that ratio to 4 decimals, and the percentage of observations above 2, to 4 decimals. Explain whether that row sum is a valid revenue aggregate and what the ratio diagnoses.",
+          "validator": "validate_naive_aggregation",
+          "stores": [
+            "dimensioned_rows",
+            "dimensioned_filings",
+            "consolidated_observations",
+            "paired_observations",
+            "median_ratio",
+            "seventy_fifth_ratio",
+            "maximum_ratio",
+            "share_above_double_pct"
+          ]
+        },
+        {
+          "query": "Separate presentation repetition from axis structure. Return to all zero-dimension rows before the primary-presentation filter and report how many filing-and-period observations carry more than one presentation row, and how many observations carry more than one distinct value. Then recompute the prior ratio using only dimensioned rows at presentation index 0, and report its median and maximum to 4 decimals. On those same primary-presentation rows report the median number of distinct axes per paired observation to 4 decimals. Finally, group the paired observations by how many distinct axes they carry, and for the groups carrying exactly one, exactly two and exactly three axes report how many observations each holds and the median ratio within each, the ratios to 4 decimals. Explain what the band pattern suggests without assuming every axis is a complete partition.",
+          "validator": "validate_presentation_repeats",
+          "stores": [
+            "multirow_consolidated_observations",
+            "multivalue_consolidated_observations",
+            "primary_median_ratio",
+            "primary_maximum_ratio",
+            "median_axes",
+            "one_axis_observations",
+            "one_axis_median_ratio",
+            "two_axis_observations",
+            "two_axis_median_ratio",
+            "three_axis_observations",
+            "three_axis_median_ratio"
+          ]
+        },
+        {
+          "query": "Take the paired observation with the highest ratio from the first turn, breaking any tie by filing accession and period ascending. Report the filer's name, its consolidated figure in USD billions to 4 decimals, how many dimensioned rows the observation carries, their sum in USD billions to 4 decimals, and the ratio to 4 decimals. Then break that observation down by axis and report the total in USD billions on the Business Segments axis and the total on the Equity Method Investee Name axis from the Schedule of Equity Method Investments, each to 4 decimals, and the second as a ratio of the consolidated figure to 4 decimals. Explain the consolidation boundary of the equity-method-investee axis.",
+          "validator": "validate_anchor_decomposition",
+          "stores": [
+            "anchor_name",
+            "anchor_consolidated_usd_billions",
+            "anchor_rows",
+            "anchor_sum_usd_billions",
+            "anchor_ratio",
+            "anchor_segment_axis_usd_billions",
+            "anchor_investee_axis_usd_billions",
+            "anchor_investee_axis_ratio"
+          ]
+        },
+        {
+          "query": "Finally test single-axis reconciliation. On the primary-presentation dimensioned rows, group by filing, period and axis and sum, then pair each group with its consolidated figure. Report how many such groups there are. Report the percentage summing to more than 1.05 times the consolidated figure and the percentage above 1.5 times, each to 4 decimals. Then, for each paired observation, take the axis whose total is closest to the consolidated figure in relative terms, and report the percentage of observations where that closest axis lands within 1 percent, and the percentage where it lands within a tenth of a percent, each to 4 decimals. Explain why one axis can exceed the consolidated figure and what proximity within a tolerance can and cannot prove.",
+          "validator": "validate_axis_reconciliation",
+          "stores": [
+            "axis_group_count",
+            "axis_groups_above_1_05_pct",
+            "axis_groups_above_1_5_pct",
+            "reconciling_observation_share_pct",
+            "tightly_reconciling_share_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "name": "cblr_election_leverage_capital_comparability",
+  "module": "evals.comparison_ranking.cblr_election_leverage_capital_comparability",
+  "task_family": "comparison_ranking",
+  "data_sources": [
+    "ffiec_call_reports_capital",
+    "ffiec_nic_institutions",
+    "fdic_bankfind"
+  ],
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Build the 2025-09-30 mid-size bank population. Take every 2025-09-30 FFIEC Call Report capital row, map its RSSD ID to an FDIC certificate through the current NIC institution identifiers, and keep only banks that also have a 2025-09-30 BankFind row (one-to-one on certificate). Band by BankFind total assets (ASSET, thousand USD): keep banks with ASSET at least 1,000,000 and strictly below 10,000,000. Split the band by the Call Report community bank leverage ratio (CBLR) election flag, treating a missing flag as no election. Report the linked bank count, the band count, the elector and non-elector counts, and electors as a percent of the band. Explain what the election means for comparing capital across the band.",
+          "validator": "validate_band_population",
+          "stores": [
+            "linked_bank_count",
+            "band_bank_count",
+            "cblr_elector_count",
+            "non_elector_count",
+            "cblr_elector_share_pct"
+          ]
+        },
+        {
+          "query": "Compare the two groups on the Call Report tier-1 leverage ratio in percent. Report the median for electors and for non-electors. Report how many electors have a ratio strictly below 9 percent; identify the elector with the lowest ratio (ties by certificate ascending) by FDIC certificate, BankFind name, NIC primary federal regulator and ratio; and report how many non-electors are strictly below 9 percent. Explain what a below-9-percent elector can and cannot establish under the framework from a single snapshot.",
+          "validator": "validate_leverage_comparison",
+          "stores": [
+            "cblr_median_tier1_leverage_pct",
+            "non_elector_median_tier1_leverage_pct",
+            "cblr_below_threshold_count",
+            "cblr_below_threshold_certificate",
+            "cblr_below_threshold_name",
+            "cblr_below_threshold_primary_regulator",
+            "cblr_below_threshold_leverage_pct",
+            "non_elector_below_threshold_count"
+          ]
+        },
+        {
+          "query": "Turn to the standardized-approach CET1 ratio. Report how many non-electors and how many electors report a CET1 ratio. For non-electors with a ratio, report the median in percent and identify the bank with the lowest ratio (ties by certificate ascending): certificate, BankFind name, reported ratio, its capital reporting basis (domestic or consolidated schedule), its standardized risk-weighted assets in USD billions and CET1 capital in USD millions, and CET1 capital divided by RWA in percent. Explain what the CET1 comparison does and does not establish across the two groups.",
+          "validator": "validate_cet1_scope",
+          "stores": [
+            "non_elector_cet1_reported_count",
+            "cblr_cet1_reported_count",
+            "non_elector_median_cet1_ratio_pct",
+            "lowest_cet1_certificate",
+            "lowest_cet1_name",
+            "lowest_cet1_ratio_pct",
+            "lowest_cet1_reporting_basis",
+            "lowest_cet1_standardized_rwa_usd_billions",
+            "lowest_cet1_capital_usd_millions",
+            "lowest_cet1_recomputed_ratio_pct"
+          ]
+        },
+        {
+          "query": "Contrast the regulatory ratio with book equity. For every band bank compute BankFind book equity (EQ) divided by BankFind total assets (ASSET) in percent. Report the median for electors and for non-electors and compare each with its group's median tier-1 leverage ratio from turn 2. Report how many band banks have a book-equity ratio below their tier-1 leverage ratio. Identify the bank with the most negative book-minus-leverage divergence (ties by certificate ascending): certificate, BankFind name, book-equity ratio and tier-1 leverage ratio. Explain what the gap between book equity and regulatory tier-1 capital does and does not establish.",
+          "validator": "validate_book_equity_divergence",
+          "stores": [
+            "cblr_median_book_equity_to_assets_pct",
+            "non_elector_median_book_equity_to_assets_pct",
+            "book_below_leverage_bank_count",
+            "largest_negative_divergence_certificate",
+            "largest_negative_divergence_name",
+            "largest_negative_divergence_book_equity_to_assets_pct",
+            "largest_negative_divergence_tier1_leverage_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

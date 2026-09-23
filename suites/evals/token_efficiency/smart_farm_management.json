@@ -1,0 +1,870 @@
+[
+  {
+    "module": "evals.token_efficiency.smart_farm_tools",
+    "conversations": [
+      {
+        "id": "daily_farm_management_crisis",
+        "description": "A comprehensive test covering daily operations, emergency response, and resource optimization in a smart farm",
+        "turns": [
+          {
+            "query": "Good morning! Today is 2024-01-15. I need to check the current soil moisture levels in greenhouse A and greenhouse B. It's 8 AM and I want to see data from the last 4 hours.",
+            "expected_function_calls": [
+              {
+                "name": "get_sensor_data",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_a",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sensor_type",
+                    "value": "soil_moisture",
+                    "type": "str"
+                  },
+                  {
+                    "name": "start_time",
+                    "value": "2024-01-15 04:00",
+                    "type": "str"
+                  },
+                  {
+                    "name": "end_time",
+                    "value": "2024-01-15 08:00",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "get_sensor_data",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_b",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sensor_type",
+                    "value": "soil_moisture",
+                    "type": "str"
+                  },
+                  {
+                    "name": "start_time",
+                    "value": "2024-01-15 04:00",
+                    "type": "str"
+                  },
+                  {
+                    "name": "end_time",
+                    "value": "2024-01-15 08:00",
+                    "type": "str"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "query": "The soil in greenhouse A looks quite dry! Please start irrigation immediately for 30 minutes with 400 liters of water. Also, I want to know the current status of our tomato crops in that greenhouse.",
+            "expected_function_calls": [
+              {
+                "name": "control_irrigation_system",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_a",
+                    "type": "str"
+                  },
+                  {
+                    "name": "action",
+                    "value": "start",
+                    "type": "str"
+                  },
+                  {
+                    "name": "duration_minutes",
+                    "value": 30,
+                    "type": "int"
+                  },
+                  {
+                    "name": "water_amount_liters",
+                    "value": 400,
+                    "type": "int"
+                  }
+                ]
+              },
+              {
+                "name": "get_crop_status",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_a",
+                    "type": "str"
+                  },
+                  {
+                    "name": "crop_type",
+                    "value": "tomato",
+                    "type": "str"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "query": "Today is 2024-01-15.I notice the temperature is getting high in greenhouse A. Can you check the air temperature data from 8 AM to 12 PM, and then turn on the ventilation fan at maximum intensity?",
+            "expected_function_calls": [
+              {
+                "name": "get_sensor_data",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_a",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sensor_type",
+                    "value": "air_temp",
+                    "type": "str"
+                  },
+                  {
+                    "name": "start_time",
+                    "value": "2024-01-15 08:00",
+                    "type": "str"
+                  },
+                  {
+                    "name": "end_time",
+                    "value": "2024-01-15 12:00",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "control_climate_system",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_a",
+                    "type": "str"
+                  },
+                  {
+                    "name": "device_type",
+                    "value": "ventilation_fan",
+                    "type": "str"
+                  },
+                  {
+                    "name": "action",
+                    "value": "adjust",
+                    "type": "str"
+                  },
+                  {
+                    "name": "intensity",
+                    "value": 10,
+                    "type": "int"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "query": "Today is 2024-01-15. Now I'm worried about greenhouse B. Please check the humidity levels there from 8 AM to 12 PM, and get the status of our cucumber crops. If humidity is too high, we might need to take action.",
+            "expected_function_calls": [
+              {
+                "name": "get_sensor_data",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_b",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sensor_type",
+                    "value": "air_humidity",
+                    "type": "str"
+                  },
+                  {
+                    "name": "start_time",
+                    "value": "2024-01-15 08:00",
+                    "type": "str"
+                  },
+                  {
+                    "name": "end_time",
+                    "value": "2024-01-15 12:00",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "get_crop_status",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_b",
+                    "type": "str"
+                  },
+                  {
+                    "name": "crop_type",
+                    "value": "cucumber",
+                    "type": "str"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "query": "The humidity in greenhouse B is indeed too high! Turn on the ventilation fan there at intensity level 7 to reduce humidity. Also turn on the LED lights at intensity 6 to compensate for any light reduction from increased air circulation.",
+            "expected_function_calls": [
+              {
+                "name": "control_climate_system",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_b",
+                    "type": "str"
+                  },
+                  {
+                    "name": "device_type",
+                    "value": "ventilation_fan",
+                    "type": "str"
+                  },
+                  {
+                    "name": "action",
+                    "value": "adjust",
+                    "type": "str"
+                  },
+                  {
+                    "name": "intensity",
+                    "value": 7,
+                    "type": "int"
+                  }
+                ]
+              },
+              {
+                "name": "control_climate_system",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_b",
+                    "type": "str"
+                  },
+                  {
+                    "name": "device_type",
+                    "value": "led_light",
+                    "type": "str"
+                  },
+                  {
+                    "name": "action",
+                    "value": "adjust",
+                    "type": "str"
+                  },
+                  {
+                    "name": "intensity",
+                    "value": 6,
+                    "type": "int"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "query": "Perfect! Now I need a comprehensive daily summary report for today covering greenhouse A and greenhouse B. I want to see our resource usage of greenhouse A before last 7 days.",
+            "expected_function_calls": [
+              {
+                "name": "generate_farm_report",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "report_type",
+                    "value": "resource_usage",
+                    "type": "str"
+                  },
+                  {
+                    "name": "time_period",
+                    "value": "last_7_days",
+                    "type": "str"
+                  },
+                  {
+                    "name": "zones",
+                    "value": [
+                      "greenhouse_a"
+                    ],
+                    "type": "list"
+                  }
+                ]
+              },
+              {
+                "name": "generate_farm_report",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "report_type",
+                    "value": "daily_summary",
+                    "type": "str"
+                  },
+                  {
+                    "name": "time_period",
+                    "value": "today",
+                    "type": "str"
+                  },
+                  {
+                    "name": "zones",
+                    "value": [
+                      "greenhouse_a",
+                      "greenhouse_b"
+                    ],
+                    "type": "list"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "query": "Based on the data. Start greenhouse A irrigation for 40 minutes duration, and greenhouse B for 35 minutes duration.",
+            "expected_function_calls": [
+              {
+                "name": "control_irrigation_system",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_a",
+                    "type": "str"
+                  },
+                  {
+                    "name": "action",
+                    "value": "start",
+                    "type": "str"
+                  },
+                  {
+                    "name": "duration_minutes",
+                    "value": 40,
+                    "type": "int"
+                  }
+                ]
+              },
+              {
+                "name": "control_irrigation_system",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_b",
+                    "type": "str"
+                  },
+                  {
+                    "name": "action",
+                    "value": "start",
+                    "type": "str"
+                  },
+                  {
+                    "name": "duration_minutes",
+                    "value": 35,
+                    "type": "int"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "multi_zone_coordination",
+        "description": "Testing coordination across multiple zones with conflicting requirements",
+        "turns": [
+          {
+            "query": "Current time is 2024-01-15 14:00. Check current air temperature in greenhouse A and B from 12:00 to 14:00 today, and soil moisture in both zones from 12:00 to 14:00.",
+            "expected_function_calls": [
+              {
+                "name": "get_sensor_data",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_a",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sensor_type",
+                    "value": "air_temp",
+                    "type": "str"
+                  },
+                  {
+                    "name": "start_time",
+                    "value": "2024-01-15 12:00",
+                    "type": "str"
+                  },
+                  {
+                    "name": "end_time",
+                    "value": "2024-01-15 14:00",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "get_sensor_data",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_b",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sensor_type",
+                    "value": "air_temp",
+                    "type": "str"
+                  },
+                  {
+                    "name": "start_time",
+                    "value": "2024-01-15 12:00",
+                    "type": "str"
+                  },
+                  {
+                    "name": "end_time",
+                    "value": "2024-01-15 14:00",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "get_sensor_data",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_a",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sensor_type",
+                    "value": "soil_moisture",
+                    "type": "str"
+                  },
+                  {
+                    "name": "start_time",
+                    "value": "2024-01-15 12:00",
+                    "type": "str"
+                  },
+                  {
+                    "name": "end_time",
+                    "value": "2024-01-15 14:00",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "get_sensor_data",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_b",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sensor_type",
+                    "value": "soil_moisture",
+                    "type": "str"
+                  },
+                  {
+                    "name": "start_time",
+                    "value": "2024-01-15 12:00",
+                    "type": "str"
+                  },
+                  {
+                    "name": "end_time",
+                    "value": "2024-01-15 14:00",
+                    "type": "str"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "query": "Current time is 2024-01-15 12:00. Now I need to balance the climate. Greenhouse A needs cooling (turn on ventilation fan at level 8), but greenhouse B needs to maintain warmth for the cucumbers (turn on heater and set target temperature to 26.5°C). Also, adjust humidifier in greenhouse A at level 4.",
+            "expected_function_calls": [
+              {
+                "name": "control_climate_system",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_a",
+                    "type": "str"
+                  },
+                  {
+                    "name": "device_type",
+                    "value": "ventilation_fan",
+                    "type": "str"
+                  },
+                  {
+                    "name": "action",
+                    "value": "adjust",
+                    "type": "str"
+                  },
+                  {
+                    "name": "intensity",
+                    "type": "int",
+                    "value": 8
+                  }
+                ]
+              },
+              {
+                "name": "control_climate_system",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_b",
+                    "type": "str"
+                  },
+                  {
+                    "name": "device_type",
+                    "value": "heater",
+                    "type": "str"
+                  },
+                  {
+                    "name": "action",
+                    "value": "on",
+                    "type": "str"
+                  },
+                  {
+                    "name": "intensity",
+                    "type": "int"
+                  },
+                  {
+                    "name": "temperature",
+                    "value": 26.5,
+                    "type": "float"
+                  }
+                ]
+              },
+              {
+                "name": "control_climate_system",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_a",
+                    "type": "str"
+                  },
+                  {
+                    "name": "device_type",
+                    "value": "humidifier",
+                    "type": "str"
+                  },
+                  {
+                    "name": "action",
+                    "value": "adjust",
+                    "type": "str"
+                  },
+                  {
+                    "name": "intensity",
+                    "type": "int",
+                    "value": 4
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "query": "Current time is 2024-01-15 12:00. Finally, I want to get a comprehensive overview. Generate a 30-day crop performance report for all zones, and give me the current status of both tomato and cucumber crops to see if our management strategies are working.",
+            "expected_function_calls": [
+              {
+                "name": "generate_farm_report",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "report_type",
+                    "value": "crop_performance",
+                    "type": "str"
+                  },
+                  {
+                    "name": "time_period",
+                    "value": "last_30_days",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "get_crop_status",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_a",
+                    "type": "str"
+                  },
+                  {
+                    "name": "crop_type",
+                    "value": "tomato",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "get_crop_status",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_b",
+                    "type": "str"
+                  },
+                  {
+                    "name": "crop_type",
+                    "value": "cucumber",
+                    "type": "str"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sensor_based_irrigation_decision",
+        "description": "Test function dependency: sensor data → irrigation decision → crop status check",
+        "turns": [
+          {
+            "query": "It's January 15th, 2024, 2:00 PM. Check the soil moisture in greenhouse A from 10 AM to 2 PM today, and if it's below 50%, start irrigation for 25 minutes, then check how our tomato crops are doing.",
+            "expected_function_calls": [
+              {
+                "name": "get_sensor_data",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_a",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sensor_type",
+                    "value": "soil_moisture",
+                    "type": "str"
+                  },
+                  {
+                    "name": "start_time",
+                    "value": "2024-01-15 10:00",
+                    "type": "str"
+                  },
+                  {
+                    "name": "end_time",
+                    "value": "2024-01-15 14:00",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "control_irrigation_system",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_a",
+                    "type": "str"
+                  },
+                  {
+                    "name": "action",
+                    "value": "start",
+                    "type": "str"
+                  },
+                  {
+                    "name": "duration_minutes",
+                    "value": 25,
+                    "type": "int"
+                  }
+                ]
+              },
+              {
+                "name": "get_crop_status",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_a",
+                    "type": "str"
+                  },
+                  {
+                    "name": "crop_type",
+                    "value": "tomato",
+                    "type": "str"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "temperature_based_climate_control",
+        "description": "Test dependency: temperature monitoring → ventilation control → lighting compensation",
+        "turns": [
+          {
+            "query": "On January 15th, 2024 at 3 PM, check the air temperature in greenhouse B from 12 PM to 3 PM. If temperature is above 30°C, turn on ventilation fan at level 9, and then adjust LED lights to level 7 to compensate for any light reduction.",
+            "expected_function_calls": [
+              {
+                "name": "get_sensor_data",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_b",
+                    "type": "str"
+                  },
+                  {
+                    "name": "sensor_type",
+                    "value": "air_temp",
+                    "type": "str"
+                  },
+                  {
+                    "name": "start_time",
+                    "value": "2024-01-15 12:00",
+                    "type": "str"
+                  },
+                  {
+                    "name": "end_time",
+                    "value": "2024-01-15 15:00",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "control_climate_system",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_b",
+                    "type": "str"
+                  },
+                  {
+                    "name": "device_type",
+                    "value": "ventilation_fan",
+                    "type": "str"
+                  },
+                  {
+                    "name": "action",
+                    "value": "adjust",
+                    "type": "str"
+                  },
+                  {
+                    "name": "intensity",
+                    "value": 9,
+                    "type": "int"
+                  }
+                ]
+              },
+              {
+                "name": "control_climate_system",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_b",
+                    "type": "str"
+                  },
+                  {
+                    "name": "device_type",
+                    "value": "led_light",
+                    "type": "str"
+                  },
+                  {
+                    "name": "action",
+                    "value": "adjust",
+                    "type": "str"
+                  },
+                  {
+                    "name": "intensity",
+                    "value": 7,
+                    "type": "int"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "crop_status_driven_optimization",
+        "description": "Test dependency: crop status → targeted irrigation → environmental adjustment",
+        "turns": [
+          {
+            "query": "Today is January 15th, 2024, 4 PM. First check the status of cucumber crops in greenhouse B, then based on their growth stage, start appropriate irrigation (30 minutes if flowering, 20 minutes if fruiting), and finally turn on the humidifier at level 8 to support their growth.",
+            "expected_function_calls": [
+              {
+                "name": "get_crop_status",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_b",
+                    "type": "str"
+                  },
+                  {
+                    "name": "crop_type",
+                    "value": "cucumber",
+                    "type": "str"
+                  }
+                ]
+              },
+              {
+                "name": "control_irrigation_system",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_b",
+                    "type": "str"
+                  },
+                  {
+                    "name": "action",
+                    "value": "start",
+                    "type": "str"
+                  },
+                  {
+                    "name": "duration_minutes",
+                    "value": 20,
+                    "type": "int"
+                  }
+                ]
+              },
+              {
+                "name": "control_climate_system",
+                "required": true,
+                "arguments": [
+                  {
+                    "name": "farm_zone",
+                    "value": "greenhouse_b",
+                    "type": "str"
+                  },
+                  {
+                    "name": "device_type",
+                    "value": "humidifier",
+                    "type": "str"
+                  },
+                  {
+                    "name": "action",
+                    "value": "adjust",
+                    "type": "str"
+                  },
+                  {
+                    "name": "intensity",
+                    "value": 8,
+                    "type": "int"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "name": "smart_farm_management"
+  }
+]

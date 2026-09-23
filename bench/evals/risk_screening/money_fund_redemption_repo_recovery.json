@@ -1,0 +1,74 @@
+{
+  "name": "money_fund_redemption_repo_recovery",
+  "module": "evals.risk_screening.money_fund_redemption_repo_recovery",
+  "task_family": "risk_screening",
+  "data_sources": [
+    "sec_nmfp",
+    "nyfed_reference_rates"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Across original Form N-MFP3 series-report observations dated from 2025-01-01 through 2025-12-31, retain dates on which the New York Fed table reports TGCR, BGCR and SOFR. Require at least USD 1 billion of series net assets, at least one reported same-date share-class flow row, positive reported same-date daily liquid assets, and original N-MFP3 filings for that series at both the last day of the immediately preceding calendar month and the last day of the immediately following calendar month. Within each accession, aggregate all share-class flow rows whose flow date equals that series report date, define net redemption as gross redemptions minus gross subscriptions, and select the highest net-redemption-to-daily-liquid-assets ratio, breaking a tie by earlier report date, then series name and series ID ascending. Report the eligible series-report-observation count; selected report date, series name, series ID and accession; contributing class count; both gross flows; daily liquid assets; the ratio; and its margin over the runner-up. Explain what the selected ratio does and does not establish about liquidity capacity.",
+          "validator": "validate_pressure_screen",
+          "stores": [
+            "eligible_large_fund_report_observation_count",
+            "redemption_pressure_event_date",
+            "redemption_pressure_leader_series_name",
+            "redemption_pressure_leader_series_id",
+            "redemption_pressure_leader_accession",
+            "leader_flow_share_class_count",
+            "leader_gross_subscriptions_usd_billions",
+            "leader_gross_redemptions_usd_billions",
+            "leader_daily_liquid_assets_usd_billions",
+            "leader_redemption_liquidity_ratio_pct",
+            "redemption_liquidity_ratio_leader_margin_pp"
+          ]
+        },
+        {
+          "query": "Trace that selected SEC series across the original N-MFP3 filing for the last day of the immediately preceding calendar month, the selected report date and the last day of the immediately following calendar month. Report the preceding and following accessions, and for all three positions report net assets, weighted-average maturity and weighted-average life. Describe what the three reported states establish about the observed balance and maturity path.",
+          "validator": "validate_monthly_path",
+          "stores": [
+            "previous_month_end_selected_accession",
+            "previous_month_end_net_assets_usd_billions",
+            "previous_month_end_wam_days",
+            "previous_month_end_wal_days",
+            "event_net_assets_usd_billions",
+            "event_wam_days",
+            "event_wal_days",
+            "following_month_end_selected_accession",
+            "following_month_end_net_assets_usd_billions",
+            "following_month_end_wam_days",
+            "following_month_end_wal_days"
+          ]
+        },
+        {
+          "query": "For the report date selected in the first turn, report the New York Fed TGCR, BGCR and overnight SOFR, and SOFR's first and ninety-ninth percentiles. Explain what the three benchmarks and the percentile range contribute to the selected fund event's same-date funding-market context, while respecting their transaction-coverage differences.",
+          "validator": "validate_repo_snapshot",
+          "stores": [
+            "event_day_tgcr_pct",
+            "event_day_bgcr_pct",
+            "event_day_sofr_pct",
+            "event_day_sofr_first_percentile_pct",
+            "event_day_sofr_ninety_ninth_percentile_pct"
+          ]
+        },
+        {
+          "query": "Using the three selected filings, report the preceding-to-event decline in net assets as a percentage of the preceding balance; the event-to-following rebound as a percentage of the event balance; the rebound as a percentage of the prior decline; and following-minus-event changes in WAM and WAL. Assess whether the one-month evidence is a full, partial or absent balance recovery, and keep any explanation of the fund path separate from causal claims about the repo snapshot.",
+          "validator": "validate_recovery",
+          "stores": [
+            "previous_to_event_net_asset_decline_pct",
+            "event_to_following_net_asset_rebound_pct",
+            "one_month_decline_recovered_pct",
+            "event_to_following_wam_change_days",
+            "event_to_following_wal_change_days"
+          ]
+        }
+      ]
+    }
+  ]
+}

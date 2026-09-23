@@ -1,0 +1,80 @@
+{
+  "name": "county_flood_loss_deposit_leadership_shift",
+  "module": "evals.temporal_path.county_flood_loss_deposit_leadership_shift",
+  "task_family": "temporal_path",
+  "data_sources": [
+    "fema_nfip",
+    "fdic_sod",
+    "fema_disasters"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Screen NFIP claim records with a date of loss from 2019 through 2024 at county-year grain. Keep records whose reported county code is a five-digit string that does not end in 000. For each loss year and county, sum the signed net building, contents and ICC payments (missing components contribute nothing), count claim records, and sum the represented policy count. Rank county-years by net payment descending, breaking ties by county code then year ascending. Report the county-year count; the leader's county FIPS, state, loss year, net payment, record count and represented policy count; the runner-up's county FIPS and loss year; and the leader margin. Explain what a claim-record aggregate does and does not measure about the county.",
+          "validator": "validate_county_year_screen",
+          "stores": [
+            "county_year_count",
+            "leader_county_fips",
+            "leader_state_usps",
+            "leader_loss_year",
+            "leader_net_payment_usd_millions",
+            "leader_claim_record_count",
+            "leader_represented_policy_count",
+            "runner_up_county_fips",
+            "runner_up_loss_year",
+            "leader_margin_usd_millions"
+          ]
+        },
+        {
+          "query": "For the leading county, take the Summary of Deposits snapshots dated June 30 of the loss year (pre-event) and June 30 of the following year (post-event). Aggregate branch deposits by FDIC certificate at each snapshot, ranking descending with certificate ascending as tie-break. Report both snapshot dates; the bank count and total county branch deposits at each; the leader's certificate, SOD bank name and share of county deposits at each; the pre-event leader's county deposits at the post-event snapshot minus its pre-event county deposits; and the change in total county deposits. Explain what the snapshot timing does and does not establish about the event.",
+          "validator": "validate_deposit_leadership_shift",
+          "stores": [
+            "pre_event_snapshot_date",
+            "post_event_snapshot_date",
+            "pre_event_bank_count",
+            "post_event_bank_count",
+            "pre_event_county_deposits_usd_billions",
+            "post_event_county_deposits_usd_billions",
+            "pre_event_leader_certificate",
+            "pre_event_leader_name",
+            "pre_event_leader_share_pct",
+            "post_event_leader_certificate",
+            "post_event_leader_name",
+            "post_event_leader_share_pct",
+            "pre_event_leader_deposit_change_usd_millions",
+            "county_deposit_change_usd_millions"
+          ]
+        },
+        {
+          "query": "Using FEMA declared-area rows for the leading county whose incident began in the loss year, report the row count, the counts with declaration type DR and EM, and for the earliest-declared DR row (ties by disaster number ascending) the disaster number, declaration date, incident begin date, incident type, and calendar days from incident begin to declaration. Explain how these declaration records relate to the NFIP claims.",
+          "validator": "validate_declaration_lineage",
+          "stores": [
+            "declaration_count",
+            "major_disaster_declaration_count",
+            "emergency_declaration_count",
+            "earliest_major_disaster_number",
+            "earliest_major_disaster_declaration_date",
+            "earliest_major_disaster_incident_begin_date",
+            "earliest_major_disaster_incident_type",
+            "days_from_incident_begin_to_declaration"
+          ]
+        },
+        {
+          "query": "Test the turn-1 ranking. Re-rank county-years by gross building payments instead of signed net payments and report the leading county FIPS, its loss year and its margin over the runner-up. Report the turn-1 leader's rank when county-years are ranked by claim record count. Finally report the turn-1 leader's net payment divided by the pre-event total county branch deposits from turn 2, in percent. Explain what this ratio is and is not.",
+          "validator": "validate_ranking_sensitivity",
+          "stores": [
+            "gross_building_leader_county_fips",
+            "gross_building_leader_loss_year",
+            "gross_building_leader_margin_usd_millions",
+            "claim_record_rank_of_leader",
+            "net_payment_to_pre_event_deposits_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

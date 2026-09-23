@@ -1,0 +1,75 @@
+{
+  "name": "nmfp_hmm_liquidity_regime",
+  "module": "evals.temporal_path.nmfp_hmm_liquidity_regime",
+  "task_family": "temporal_path",
+  "data_sources": [
+    "sec_nmfp",
+    "nyfed_reference_rates"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Use the governed N-MFP projections from 2024-06-03 through 2025-11-28 inclusive. Include every filing accession in the projection once at accession level, without collapsing original/amended accessions; preserve every physical daily-flow row, including repeated business keys. First aggregate class subscriptions minus redemptions within accession and date. Inner-join that accession-day flow with the accession-day liquidity row, attach exactly one series-filings row per accession, and compute both daily measures only from those matched accession-day rows: divide their summed net flow by their summed net assets and asset-weight their weekly-liquid-asset fractions with the same denominator. Align the resulting common-population measures with SOFR. Report aligned date count/boundaries and maximum matched-accession count. Select the minimum net-flow date, breaking a tie by earlier date, and report its net-flow percentage, weighted weekly-liquidity percentage and SOFR. Carry the panel forward and interpret the selected outflow's contemporaneous relationship with SOFR and its aggregation scope.",
+          "validator": "validate_panel",
+          "stores": [
+            "aligned_day_count",
+            "aligned_start_date",
+            "aligned_end_date",
+            "matched_accession_count",
+            "minimum_net_flow_date",
+            "minimum_net_flow_pct",
+            "minimum_flow_weekly_liquidity_pct",
+            "minimum_flow_sofr_pct"
+          ]
+        },
+        {
+          "query": "Use the first 300 carried dates to fit a two-state diagonal-covariance Gaussian hidden Markov model by forward-backward EM. Standardize aggregate net-flow and weekly-liquidity percentages using training sample means and n-1 standard deviations. Put observations with feature-sum at or below the median in the lower group, assigned pre-label state 1; assign the upper group pre-label state 0. Initialize state probabilities at (0.5,0.5), group means at their sample means, group variances at their population variances plus 0.1, and transitions with P00=0.95 and P11=0.92 and off-diagonals as row complements. After every M-step floor transition probabilities at 0.0000000001 and diagonal variances at 0.000001 before row normalization; fail on an empty state or non-finite value. After each M-step, run a synchronized E-step under the updated parameters; count that completed M/E pair as one update, compare its likelihood with the preceding updated-parameter likelihood, and stop when improvement is below 0.0000000001. Accept the synchronized finite state at the 500-update cap. Report the same updated parameters, likelihood and posterior together. Label as stress the fitted state with the lower sum of standardized means, breaking an exact tie by its pre-label numeric state index. Report training count, updates, log likelihood, cross-state transition probabilities, both states' original-unit means, maximum posterior-mass residual, and absolute difference between the log-domain likelihood and an independently scaled probability-domain forward likelihood. Carry parameters and final posterior forward and interpret persistence, the fitted-state labeling convention, and the status and economic meaning of inferred regimes.",
+          "validator": "validate_hmm",
+          "stores": [
+            "hmm_training_day_count",
+            "hmm_em_iteration_count",
+            "hmm_log_likelihood",
+            "calm_to_stress_probability",
+            "stress_to_calm_probability",
+            "stress_state_mean_net_flow_pct",
+            "stress_state_mean_weekly_liquidity_pct",
+            "calm_state_mean_net_flow_pct",
+            "calm_state_mean_weekly_liquidity_pct",
+            "hmm_maximum_posterior_mass_residual",
+            "hmm_scaled_forward_log_likelihood_residual"
+          ]
+        },
+        {
+          "query": "With parameters frozen, recursively filter the remaining carried dates from the final training posterior. Report test boundaries/count and the date with maximum filtered stress-state probability, breaking an exact tie by earlier date, together with that probability, aggregate net flow, weighted weekly liquidity and SOFR. Interpret the selected posterior and its measurement limits.",
+          "validator": "validate_filter",
+          "stores": [
+            "hmm_test_start_date",
+            "hmm_test_end_date",
+            "hmm_test_day_count",
+            "maximum_filtered_stress_date",
+            "maximum_filtered_stress_probability",
+            "maximum_stress_date_net_flow_pct",
+            "maximum_stress_date_weekly_liquidity_pct",
+            "maximum_stress_date_sofr_pct"
+          ]
+        },
+        {
+          "query": "For the held-out dates, compute the average one-step predictive log score of the frozen HMM mixture and of a single diagonal Gaussian using training means and population diagonal variances. Report both averages and whether the HMM average is higher. Classify a test date as stress when its filtered stress probability is at least 0.5; excluding the final date, report the stress-classified count and next-day mean aggregate net flow after stress versus calm classifications. Interpret the relationship, if any, between predictive-density performance and the next-day-flow comparison.",
+          "validator": "validate_scores",
+          "stores": [
+            "hmm_average_predictive_log_score",
+            "single_gaussian_average_log_score",
+            "stress_classified_test_day_count",
+            "stress_classified_next_day_mean_net_flow_pct",
+            "calm_classified_next_day_mean_net_flow_pct",
+            "hmm_beats_single_gaussian"
+          ]
+        }
+      ]
+    }
+  ]
+}

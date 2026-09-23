@@ -1,0 +1,24 @@
+{
+  "name": "credit_union_delinquency_250",
+  "module": "cases.table_delivery.credit_union_delinquency_250",
+  "task_family": "table_delivery",
+  "data_sources": [
+    "ncua_call_reports"
+  ],
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "How delinquent are the loan books of the credit unions in California? From the NCUA call reports dated 2024-12-31, list every credit union there with its charter number, its name, total loans and leases, loans two or more months delinquent, and the delinquent amount as a fraction of total loans. A credit union with no loans has no ratio; leave it missing.",
+          "validator": "validate",
+          "stores": [
+            "credit_union_table"
+          ]
+        }
+      ]
+    }
+  ]
+}

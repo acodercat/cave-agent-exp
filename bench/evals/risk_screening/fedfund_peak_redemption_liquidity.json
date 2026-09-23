@@ -1,0 +1,37 @@
+{
+  "name": "fedfund_peak_redemption_liquidity",
+  "module": "evals.risk_screening.fedfund_peak_redemption_liquidity",
+  "task_family": "risk_screening",
+  "data_sources": [
+    "sec_nmfp",
+    "ofr_market_stress"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "For FEDFUND accession 0001752724-25-098429, identify the April 2025 date with the largest series-level net redemption, defined as gross redemptions minus gross subscriptions, breaking any tie by the earlier date. Report the date, contributing share-class count, both aggregated gross flows, same-calendar-date daily liquid assets, and net redemption, redemptions minus subscriptions, as a percentage of those assets. Using the frozen daily OFR Financial Stress Index, report the same-calendar-date composite FSI, its Volatility category contribution, and the sum of its Credit, Equity valuation, Safe assets and Funding contributions. Across all April 2025 OFR observations, report the observation count, maximum-FSI date and value, and the event day's descending FSI rank with earlier dates breaking any tie. Explain how the category contributions relate to the composite, the timing relationship between the fund event and broad stress, and the limits of the comparison.",
+          "validator": "validate",
+          "stores": [
+            "peak_net_redemption_date",
+            "share_class_count",
+            "gross_redemptions_usd_billions",
+            "gross_subscriptions_usd_billions",
+            "same_day_daily_liquid_assets_usd_billions",
+            "net_redemption_to_daily_liquid_assets_pct",
+            "event_day_ofr_fsi",
+            "event_day_volatility_contribution",
+            "event_day_other_market_categories_sum",
+            "april_ofr_observation_count",
+            "april_peak_ofr_fsi_date",
+            "april_peak_ofr_fsi",
+            "event_day_fsi_descending_rank"
+          ]
+        }
+      ]
+    }
+  ]
+}

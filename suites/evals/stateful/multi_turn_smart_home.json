@@ -1,0 +1,179 @@
+[
+  {
+    "name": "smart_home",
+    "module": "evals.stateful.multi_turn_smart_home",
+    "requirements": "Control smart home devices. Rules: 1) Use EXACT values from variable descriptions (e.g., 'gentle'=30, 'dim'=40, 'bright'=80). 2) If no specific level mentioned (e.g., just 'turn on light'), use default_on value from description. 3) Only change devices explicitly mentioned - don't adjust other devices. 4) For relative terms like 'more' or 'a bit', make ONE step change from current value in the description's scale.",
+    "conversations": [
+      {
+        "id": "day_cycle",
+        "turns": [
+          {
+            "query": "Good morning! It's 6:00 AM. Check the outdoor temperature and adjust the thermostat accordingly - if it's cold outside (below 10 degrees), warm up the house to 22, otherwise 20 is fine. Turn on my bedroom light gently for waking up.",
+            "validator": "validate_turn_1"
+          },
+          {
+            "query": "It's 6:30 AM now. Open the living room blinds fully to let in the morning light, and turn on the living room light at medium brightness.",
+            "validator": "validate_turn_2"
+          },
+          {
+            "query": "Breakfast time at 7:00 AM. I'm done in the bedroom so turn off that light. I need bright light in the living room for breakfast.",
+            "validator": "validate_turn_3"
+          },
+          {
+            "query": "I'm leaving for work at 8:00 AM. Turn off all lights, close the blinds mostly for privacy, make sure the door is locked, and set the thermostat to eco mode at 18 degrees.",
+            "validator": "validate_turn_4"
+          },
+          {
+            "query": "It's noon - do a midday check. Make sure the security camera is still recording.",
+            "validator": "validate_turn_5"
+          },
+          {
+            "query": "I'm back home at 5:00 PM! Unlock the door, turn on the living room light, open the blinds partially, and set the thermostat to auto mode at 21 degrees.",
+            "validator": "validate_turn_6"
+          },
+          {
+            "query": "Time to relax at 6:00 PM. Play some music on the speaker at medium volume, dim the living room light, and close the blinds more since it's getting dark.",
+            "validator": "validate_turn_7"
+          },
+          {
+            "query": "Dinner at 7:00 PM. I need bright lights to eat. Stop the music for now and close the blinds completely.",
+            "validator": "validate_turn_8"
+          },
+          {
+            "query": "After dinner at 8:00 PM. Dim the lights again and put on some quiet music.",
+            "validator": "validate_turn_9"
+          },
+          {
+            "query": "Security check at 9:00 PM. Lock the front door and verify the camera is recording.",
+            "validator": "validate_turn_10"
+          },
+          {
+            "query": "Getting ready for bed at 9:30 PM. Stop the music, dim the living room light way down, and turn on the bedroom light.",
+            "validator": "validate_turn_11"
+          },
+          {
+            "query": "Bedtime prep at 10:00 PM. Turn off the living room light, dim the bedroom light for reading, and lower the thermostat for sleeping.",
+            "validator": "validate_turn_12"
+          },
+          {
+            "query": "Sleep mode at 10:30 PM. Turn off the bedroom light.",
+            "validator": "validate_turn_13"
+          },
+          {
+            "query": "It's 2:00 AM and motion was detected outside! Check that the camera is recording. Also check if it's gotten very cold outside - if below 5 degrees, adjust heating.",
+            "validator": "validate_turn_14"
+          },
+          {
+            "query": "Early morning at 5:00 AM. Pre-warm the house by setting the thermostat to 21 degrees. Verify all lights are still off and the door is still locked.",
+            "validator": "validate_turn_15"
+          },
+          {
+            "query": "Day 2 wake-up at 6:00 AM. Turn on the bedroom light gently, open the blinds partially.",
+            "validator": "validate_turn_16"
+          },
+          {
+            "query": "Day 2 morning at 6:30 AM. Turn on living room light, open blinds fully, turn off bedroom light.",
+            "validator": "validate_turn_17"
+          },
+          {
+            "query": "Day 2 breakfast at 7:00 AM. Make the living room bright and play some morning music.",
+            "validator": "validate_turn_18"
+          },
+          {
+            "query": "Day 2 leaving for work at 8:00 AM. Turn off lights, stop music, close blinds for privacy, lock door, set thermostat to eco mode at 18 degrees.",
+            "validator": "validate_turn_19"
+          },
+          {
+            "query": "Final summary at noon. Verify everything is in away mode: lights off, speaker off, door locked, camera recording, blinds mostly closed, thermostat in eco.",
+            "validator": "validate_turn_20"
+          }
+        ]
+      },
+      {
+        "id": "weekend_party",
+        "turns": [
+          {
+            "query": "It's Saturday 10:00 AM - sleeping in! Check the outdoor temperature. If it's warm (15 degrees or above), set thermostat to 20, otherwise 22. Open blinds to let in light and turn on the living room light low.",
+            "validator": "validate_party_turn_1"
+          },
+          {
+            "query": "Brunch at 11:00 AM. Brighten the living room and put on some background music.",
+            "validator": "validate_party_turn_2"
+          },
+          {
+            "query": "Party prep at 1:00 PM! Guests arriving soon. Adjust thermostat for guest comfort, set music to medium volume, open blinds fully, and make lights bright.",
+            "validator": "validate_party_turn_3"
+          },
+          {
+            "query": "Guests arriving at 3:00 PM! Unlock the door for them, turn up the music more.",
+            "validator": "validate_party_turn_4"
+          },
+          {
+            "query": "Party mode at 4:00 PM! Full swing now. Turn up the music and make the lights very bright. Verify camera is recording.",
+            "validator": "validate_party_turn_5"
+          },
+          {
+            "query": "Sunset at 6:00 PM. Close blinds partially as the sun sets. Turn on bedroom light gently for guests using that room.",
+            "validator": "validate_party_turn_6"
+          },
+          {
+            "query": "Evening party at 7:00 PM! Close blinds completely, set mood lighting in living room, and turn up the music more.",
+            "validator": "validate_party_turn_7"
+          },
+          {
+            "query": "Party peak at 8:00 PM! Music at maximum, set ambiance lighting for dance floor.",
+            "validator": "validate_party_turn_8"
+          },
+          {
+            "query": "Winding down at 9:00 PM. Lower the music, brighten the lights a bit.",
+            "validator": "validate_party_turn_9"
+          },
+          {
+            "query": "Guests leaving at 10:00 PM. Lower music more, lock the door after everyone leaves, turn off bedroom light.",
+            "validator": "validate_party_turn_10"
+          },
+          {
+            "query": "Cleanup time at 10:30 PM. Turn lights to full brightness for cleaning, stop the music.",
+            "validator": "validate_party_turn_11"
+          },
+          {
+            "query": "Cleanup done at 11:00 PM. Dim the lights, lower thermostat for night.",
+            "validator": "validate_party_turn_12"
+          },
+          {
+            "query": "Relax at 11:30 PM. Dim lights more, play soft relaxation music.",
+            "validator": "validate_party_turn_13"
+          },
+          {
+            "query": "Bedtime at midnight. Turn off living room light, stop music, turn on bedroom light gently.",
+            "validator": "validate_party_turn_14"
+          },
+          {
+            "query": "Sleep at 12:30 AM. Turn off bedroom light. Verify door is locked and camera recording.",
+            "validator": "validate_party_turn_15"
+          },
+          {
+            "query": "It's 8:00 AM Sunday - sleeping in after the party! Keep everything off.",
+            "validator": "validate_party_turn_16"
+          },
+          {
+            "query": "Lazy morning at 10:00 AM. Finally getting up. Turn on bedroom light, open blinds, raise thermostat for comfort.",
+            "validator": "validate_party_turn_17"
+          },
+          {
+            "query": "Recovery brunch at 11:00 AM. Move to living room - turn on that light, turn off bedroom, open blinds fully, play gentle music.",
+            "validator": "validate_party_turn_18"
+          },
+          {
+            "query": "Afternoon rest at 2:00 PM. Dim lights, stop music, close blinds partially.",
+            "validator": "validate_party_turn_19"
+          },
+          {
+            "query": "Weekend complete at 6:00 PM! Set thermostat to eco mode, turn off lights, close blinds more. Verify everything is off and secure.",
+            "validator": "validate_party_turn_20"
+          }
+        ]
+      }
+    ]
+  }
+]

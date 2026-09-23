@@ -1,0 +1,17 @@
+{
+  "imported_at": "2026-09-17T08:07:57.323302+00:00",
+  "source_commit": "1c924e515ef1abd8db728b06e264d5e38bda4d36",
+  "selection_rule": "case_type == 'baseline' and difficulty != 'easy'",
+  "admitted_cases": 117,
+  "excluded_cases": {
+    "chevron_q1_2022_amendment_no_numeric_change": "case_type=trap",
+    "fy2025_net_cost_budget_deficit_bridge": "case_type=trap",
+    "microsoft_current_ratio": "difficulty=easy",
+    "tga_drawdown_debt_transaction_bridge": "case_type=trap",
+    "walmart_fy2025_revenue": "difficulty=easy"
+  },
+  "dataset_release": "2026-08-13-layered-v1",
+  "catalog_sha256": "5e53425851251935f07f88eaf076306798547ea31e2e1cc9f5564081eb57187d",
+  "tables": 76,
+  "tables_copied": 0
+}

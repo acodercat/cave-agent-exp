@@ -1,0 +1,36 @@
+{
+  "name": "tech_point_in_time_revenue_growth_ranking",
+  "module": "evals.temporal_path.tech_point_in_time_revenue_growth_ranking",
+  "task_family": "temporal_path",
+  "data_sources": [
+    "sec_companyfacts",
+    "sec_submissions"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Standing at 2025-08-15 23:59:59, use SEC submissions metadata to select the latest original, non-amended Form 10-K accepted by EDGAR for each of AAPL, MSFT, NVDA, AMZN and GOOGL. Rank availability by acceptance timestamp descending; if timestamps tie, choose the lexicographically smallest accession. Report a ticker-to-accession mapping and a ticker-to-acceptance-timestamp mapping. Explain why acceptance time, report date and fiscal period are different notions.",
+          "validator": "validate_filing_cutoff",
+          "stores": [
+            "selected_accession_by_ticker",
+            "acceptance_datetime_by_ticker"
+          ]
+        },
+        {
+          "query": "Using those five accessions, compare each filing's current annual total revenue with the immediately preceding annual comparative in that same filing. Use revenue from contracts with customers excluding assessed tax for AAPL, MSFT, AMZN and GOOGL, and total revenues for NVDA. Report each ticker's latest annual period end and year-over-year revenue growth, then identify the highest-growth ticker and rate. Rank unrounded rates and break an exact tie alphabetically by ticker. Explain the issuer-specific fiscal-period alignment and state what the ranking does not establish.",
+          "validator": "validate_growth_ranking",
+          "stores": [
+            "revenue_growth_by_ticker_pct",
+            "latest_annual_period_end_by_ticker",
+            "highest_growth_ticker",
+            "highest_growth_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

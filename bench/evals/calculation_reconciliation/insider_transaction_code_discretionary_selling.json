@@ -1,0 +1,68 @@
+{
+  "name": "insider_transaction_code_discretionary_selling",
+  "module": "evals.calculation_reconciliation.insider_transaction_code_discretionary_selling",
+  "task_family": "calculation_reconciliation",
+  "data_sources": [
+    "sec_insider",
+    "ken_french_daily_factors"
+  ],
+  "case_type": "baseline",
+  "difficulty": "hard",
+  "conversations": [
+    {
+      "turns": [
+        {
+          "query": "Using the SEC insider tables, restrict the submissions to those whose document type is exactly \"4\", so Forms 3 and 5 and every amended form are excluded, and keep those with a filing date in 2019 through 2025. Join the non-derivative transaction rows to that set of filings on the accession number and report how many transaction rows result. Then report how many of those rows carry each of these transaction codes: S, A, F, M and P. Finally, using the acquired-or-disposed indicator, report code F rows as a percentage of all rows marked as dispositions, and code P rows as a percentage of all rows marked as acquisitions, each to 4 decimals. Explain why the acquired-or-disposed marker and these transaction codes answer different questions about activity.",
+          "validator": "validate_code_composition",
+          "stores": [
+            "transaction_rows",
+            "sale_rows",
+            "award_rows",
+            "code_f_rows",
+            "code_m_rows",
+            "purchase_rows",
+            "code_f_share_of_dispositions_pct",
+            "purchase_share_of_acquisitions_pct"
+          ]
+        },
+        {
+          "query": "Measure the sale-purchase imbalance of the same population three ways. First, report how many rows the acquired-or-disposed indicator marks as dispositions and how many as acquisitions, and their ratio to 4 decimals. Second, report the ratio of code S rows to code P rows to 4 decimals. Third, for code S and P rows with both numeric share count and reported price per share, value each as shares times price, excluding rows missing either input; report the two totals in USD billions to 4 decimals and their ratio to 4 decimals. Explain why the three measures differ and state what the reported-price totals exclude or do not represent.",
+          "validator": "validate_measure_divergence",
+          "stores": [
+            "disposition_rows",
+            "acquisition_rows",
+            "indicator_ratio",
+            "coded_sale_purchase_count_ratio",
+            "sale_value_usd_billions",
+            "purchase_value_usd_billions",
+            "coded_sale_purchase_value_ratio"
+          ]
+        },
+        {
+          "query": "Turn to the Rule 10b5-1 indicator carried on the submission record. First, report how many Form 4 filings from each of 2022, 2023 and 2024 carry any value at all in that field. Then take code S transaction rows on Form 4 filings filed in 2024 and classify a row as belonging to an affirmative-plan filing when its filing-level indicator reads either the digit 1 or the word true in any letter case. Report the percentage of sale rows in affirmative-plan filings to 4 decimals and the percentage of 2024 sale value those rows represent to 4 decimals. Finally report how many of those sale rows carry the word rather than the digit. Explain the availability, encoding and filing-level grain limits of this proxy.",
+          "validator": "validate_plan_flag_availability",
+          "stores": [
+            "flagged_filings_2022",
+            "flagged_filings_2023",
+            "flagged_filings_2024",
+            "sale_rows_in_affirmative_plan_filings_pct",
+            "sale_value_in_affirmative_plan_filings_pct",
+            "word_affirmative_sale_rows"
+          ]
+        },
+        {
+          "query": "Finally compare transaction-date market conditions across the filing-level groups. Take the Fama-French daily factor table, keep 2024, and report how many trading days it carries and what percentage of them have a negative market excess return, to 4 decimals. Then match each 2024 Form 4 transaction to its own transaction date in that table, keeping only transactions that fall on a trading day. Report the percentage of code P transactions falling on a negative day to 4 decimals, and the transaction-row-weighted mean market excess return on the transaction date, in percent to 4 decimals, for three groups separately: code P rows, code S rows in affirmative-plan filings, and code S rows in non-affirmative filings. Explain what this descriptive comparison can and cannot establish about transaction timing or discretion.",
+          "validator": "validate_market_timing",
+          "stores": [
+            "trading_days",
+            "baseline_down_day_share_pct",
+            "purchase_down_day_share_pct",
+            "purchase_mean_market_return_pct",
+            "sale_in_affirmative_plan_filing_mean_market_return_pct",
+            "sale_in_nonaffirmative_filing_mean_market_return_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

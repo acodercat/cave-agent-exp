@@ -1,0 +1,55 @@
+{
+  "name": "mortgage_denial_support_institution_influence",
+  "module": "evals.comparison_ranking.mortgage_denial_support_institution_influence",
+  "task_family": "comparison_ranking",
+  "data_sources": [
+    "hmda",
+    "ffiec_nic_institutions"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Use the frozen current NIC institution identifiers to link HMDA lenders to FDIC certificates. Retain LEIs with exactly one distinct nonmissing certificate among their nonmissing mappings. In the 2024 HMDA data, study California owner-occupied, first-lien home-purchase applications with outcomes originated, approved but not accepted, or denied; count each supplied application row once. Report the number of distinct linked LEIs represented in this application population before restricting race. Then compare the derived-race categories Black or African American and White, excluding other categories: report each group's application count and denial rate. Explain the outcome population and temporal scope of this linked sample.",
+          "stores": [
+            "linked_bank_count",
+            "black_application_count",
+            "white_application_count",
+            "black_denial_pct",
+            "white_denial_pct"
+          ],
+          "validator": "validate_linked_decision_population"
+        },
+        {
+          "query": "Within that two-group sample, define cells by county and loan type. Retain cells with at least thirty applications from each group; records missing either cell identifier cannot enter the retained cells. Report the retained cell count, each group's retained application count, and the pooled unweighted denial-rate gap within the retained population. Throughout this analysis, a gap means Black or African American minus White. Discuss how this restriction affects the comparison population.",
+          "stores": [
+            "support_cell_count",
+            "black_support_count",
+            "white_support_count",
+            "support_gap_pp"
+          ],
+          "validator": "validate_common_support"
+        },
+        {
+          "query": "For that retained support, directly standardize both groups' denial rates to the same county-by-loan-type distribution, using each retained cell's share of the two groups' combined applications as its weight. Report the standardized denial-rate gap. Compare its interpretation with the preceding unweighted comparison. Retain full input precision in this and subsequent calculations.",
+          "stores": [
+            "standardized_gap_pp"
+          ],
+          "validator": "validate_direct_standardization"
+        },
+        {
+          "query": "Assess institutional influence on that standardized gap. Omit each LEI represented in the original two-group sample one at a time, keeping the established cells and their original weights fixed. An omission is valid if both groups retain a positive application count in every fixed cell; do not reapply the thirty-application threshold. Select the valid omission with the largest absolute change from the original standardized gap, breaking exact ties by LEI ascending. Report the omitted LEI, the resulting standardized gap and the number of valid omissions. Interpret the institutional influence and the explanatory scope of this comparison.",
+          "stores": [
+            "influential_lei",
+            "leave_out_gap_pp",
+            "valid_leave_out_count"
+          ],
+          "validator": "validate_lender_influence"
+        }
+      ]
+    }
+  ]
+}

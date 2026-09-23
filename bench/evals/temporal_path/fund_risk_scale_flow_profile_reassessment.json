@@ -1,0 +1,56 @@
+{
+  "name": "fund_risk_scale_flow_profile_reassessment",
+  "module": "evals.temporal_path.fund_risk_scale_flow_profile_reassessment",
+  "task_family": "temporal_path",
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "data_sources": [
+    "sec_nport",
+    "treasury_yield_curve"
+  ],
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Compare SEC N-PORT series at June 30 and September 30, 2025. For each series and report date, select the latest original NPORT-P filing filed by December 31, 2025, breaking same-filing-date ties by accession descending. Do not substitute an earlier filing if the selected one is ineligible. Require a reported series ID, exactly one USD interest-rate-risk record per selected filing, all five finite reported maturity-bucket DV01 values, positive total USD DV01 at both dates, at least USD 1 billion of June net assets and positive finite September net assets; June net assets must also be finite. Rank positive declines in total USD DV01 from June to September descending, breaking ties by series ID ascending, and retain the first five series. Report the eligible paired-series count before restricting to declines, the ordered five-series list and their aggregate DV01 decline. Interpret the measure used for this ranking.",
+          "stores": [
+            "eligible_pairs",
+            "decliner_series",
+            "cohort_dv01_decline"
+          ],
+          "validator": "validate_cohort"
+        },
+        {
+          "query": "Within that five-series cohort, compare June and September total USD DV01 per unit of net assets. Select the series with the largest September-minus-June change in this normalized sensitivity, breaking ties by series ID ascending. Report its series ID, both normalized sensitivities per USD 1 million of net assets, and its September-minus-June percentage change in total USD DV01 relative to June. Interpret how the normalized comparison relates to the original decline screen.",
+          "stores": [
+            "selected_series",
+            "june_unit_dv01",
+            "september_unit_dv01",
+            "selected_dv01_change_pct"
+          ],
+          "validator": "validate_intensity"
+        },
+        {
+          "query": "For the selected series and those same filings, examine the change in net assets alongside the three monthly share-transaction disclosures in the September report. Include shares issued through reinvested distributions in net reported share transactions. Report September net assets, the quarter's net reported share-transaction amount and the portion of net-asset change not accounted for by those transactions. Interpret this balance bridge and its explanatory scope.",
+          "stores": [
+            "september_nav_usd",
+            "net_share_transactions_usd",
+            "nav_bridge_remainder_usd"
+          ],
+          "validator": "validate_share_bridge"
+        },
+        {
+          "query": "Use that fund's September net assets as a common capital base for a fixed-exposure scenario. Compare its September USD maturity-bucket DV01 profile with its June profile scaled proportionally to that capital base, preserving the June bucket composition. Apply the June 30 to September 30, 2025 changes in Treasury par yields at 3 months, 1 year, 5 years, 10 years and 30 years to the matching buckets. Use a first-order scenario convention in which positive DV01 earns a positive value change for a one-basis-point decline in the matched yield. Report each profile's signed scenario value change at the common capital base. Also identify the tenor with the largest absolute contribution to the September-profile-minus-June-profile value-change difference and report its signed contribution; break ties by the stated tenor order. Interpret how this comparison relates to the earlier total-dollar and normalized sensitivity comparisons, and discuss the scope of using the reported endpoint profiles.",
+          "stores": [
+            "june_profile_value_change_usd",
+            "september_profile_value_change_usd",
+            "largest_profile_difference_tenor",
+            "largest_profile_difference_usd"
+          ],
+          "validator": "validate_profile_scenario"
+        }
+      ]
+    }
+  ]
+}

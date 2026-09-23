@@ -1,0 +1,68 @@
+{
+  "name": "bank_holding_structure_transitive_control",
+  "module": "evals.comparison_ranking.bank_holding_structure_transitive_control",
+  "task_family": "comparison_ranking",
+  "data_sources": [
+    "ffiec_nic_ownership",
+    "ffiec_nic_institutions"
+  ],
+  "case_type": "baseline",
+  "difficulty": "hard",
+  "conversations": [
+    {
+      "turns": [
+        {
+          "query": "Using the FFIEC NIC ownership relationship file, first report how many rows the full file carries and how many repeat a parent-and-offspring pair already present. Build a directed graph from parent RSSD identifier to offspring RSSD identifier using distinct pairs only where the relationship level equals 1 and the control indicator equals 1. Report how many distinct entities appear as either endpoint in that graph and how many appear as a parent but never as an offspring. Then determine whether the graph contains cycles: report how many groups of two or more entities are mutually reachable from one another and how many entities those groups hold in total. Briefly explain the traversal implication of any cycles and the scope of calling a parent-only entity top-level.",
+          "validator": "validate_graph_shape",
+          "stores": [
+            "edge_rows",
+            "duplicate_pairs",
+            "entity_count",
+            "top_level_count",
+            "cyclic_groups",
+            "entities_on_cycles"
+          ]
+        },
+        {
+          "query": "For every entity that appears as a parent but never as an offspring in that filtered graph, follow the relationships transitively to find every entity reachable from it, counting each reachable entity once however many paths lead to it and excluding the starting entity itself. Rank them by total entities reached, breaking ties on the lower RSSD identifier. Using the institution identifier file for names, report the leader's legal name, how many direct offspring it reports, how many entities it reaches in total, the second divided by the first to 4 decimals, and how many levels deep its structure runs, where an entity's level is the fewest relationships separating it from the top-level entity, so that a direct offspring sits at level 1. Then across all those top-level entities report the median direct offspring count and the median total reached, each to 4 decimals, and the percentage that reach more entities than they have direct offspring, to 4 decimals. Interpret what the direct and transitive counts reveal and what legal-entity reach does not measure.",
+          "validator": "validate_transitive_reach",
+          "stores": [
+            "leader_name",
+            "leader_direct_offspring",
+            "leader_descendants",
+            "leader_ratio",
+            "leader_depth",
+            "median_direct_offspring",
+            "median_descendants",
+            "deeper_structure_share_pct"
+          ]
+        },
+        {
+          "query": "Now compare legal-entity reach with an identifier-table linkage. For the top-level entity found in the previous turn, report how many of the entities it reaches have a nonmissing FDIC certificate in the institution record. Then take the second and third ranked top-level entities by total reached and, for each, report its legal name, how many entities it reaches, and how many have a nonmissing FDIC certificate. Explain what certificate presence does and does not establish from this current identifier snapshot.",
+          "validator": "validate_fdic_linkage",
+          "stores": [
+            "leader_fdic_linked",
+            "second_name",
+            "second_descendants",
+            "second_fdic_linked",
+            "third_name",
+            "third_descendants",
+            "third_fdic_linked"
+          ]
+        },
+        {
+          "query": "Finally examine the relationship level column in the full source file. Report how many rows carry the value 1 and how many carry any other value. Explain how the source relationship level differs from a root-relative graph depth. Then, using the shortest-distance depths derived from the direct controlled graph for the top-level entity identified earlier, report which derived level holds the most of the entities it reaches and how many sit there, and how many sit at its deepest level. Last, report how many of the entities it reaches have no record in the institution identifier file, and interpret the scope of that identifier gap.",
+          "validator": "validate_derived_depth",
+          "stores": [
+            "base_level_rows",
+            "other_level_rows",
+            "widest_level",
+            "widest_level_count",
+            "deepest_level_count",
+            "unlisted_descendants"
+          ]
+        }
+      ]
+    }
+  ]
+}

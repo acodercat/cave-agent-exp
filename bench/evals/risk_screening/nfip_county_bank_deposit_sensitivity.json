@@ -1,0 +1,79 @@
+{
+  "name": "nfip_county_bank_deposit_sensitivity",
+  "module": "evals.risk_screening.nfip_county_bank_deposit_sensitivity",
+  "task_family": "risk_screening",
+  "data_sources": [
+    "fema_nfip",
+    "fdic_sod",
+    "fdic_bankfind"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Create a retrospective county screen from physical NFIP claim rows whose date of loss is in 2024. Aggregate signed net building, contents and ICC payments and building plus contents coverage by reported county code that forms five digits after zero-padding. Separately form the BankFind cohort as the 12 largest FDIC-insured institutions by total assets in the 2025-06-30 BankFind snapshot and count their 2025 SOD representation in each county. Retain counties with at least 500 physical claim rows, at least USD 100 million of aggregate coverage and at least three distinct BankFind-cohort banks with SOD rows. Rank aggregate net payment divided by aggregate coverage descending, breaking a tie by county FIPS ascending. Report the BankFind cohort size; eligible count; selected FIPS and state; claim-row and represented-policy counts; net payment, coverage and rate; represented cohort-bank count; and the rate margin over the runner-up. Explain the insurance-claim screen represented by the selected county.",
+          "validator": "validate_nfip_county_screen",
+          "stores": [
+            "bankfind_snapshot_bank_count",
+            "eligible_nfip_bank_county_count",
+            "selected_county_fips",
+            "selected_county_state",
+            "selected_county_claim_row_count",
+            "selected_county_represented_policy_count",
+            "selected_county_net_payment_usd_millions",
+            "selected_county_coverage_usd_millions",
+            "selected_county_net_payment_to_coverage_pct",
+            "selected_county_bankfind_cohort_bank_count",
+            "selected_county_loss_share_margin_pp"
+          ]
+        },
+        {
+          "query": "Within the selected county, retain all 2025 SOD branch rows belonging to banks in the fixed BankFind cohort. Aggregate branch deposits by FDIC certificate and rank descending with certificate ascending as tie-break. Report represented bank count; deposit leader certificate and SOD legal name; its branch-row count and deposits; all cohort-bank deposits in the county; leader share; and leader-minus-runner-up deposits. Explain the concentration represented by the deposit-dollar ranking.",
+          "validator": "validate_county_bank_concentration",
+          "stores": [
+            "selected_county_deposit_bank_count",
+            "selected_county_deposit_leader_certificate",
+            "selected_county_deposit_leader_name",
+            "selected_county_deposit_leader_branch_count",
+            "selected_county_deposit_leader_usd_billions",
+            "selected_county_cohort_deposits_usd_billions",
+            "selected_county_deposit_leader_share_pct",
+            "selected_county_deposit_leader_margin_usd_millions"
+          ]
+        },
+        {
+          "query": "For that bank's 2025-06-30 BankFind row, report total deposits, domestic deposits and their foreign-office residual; the prior turn's selected-county deposits divided separately by total and domestic deposits; total assets; net loans and leases; noncurrent loans; and noncurrent loans divided by net loans and leases. Explain how the institution-level stock measures bound the county branch-deposit result.",
+          "validator": "validate_bank_balance_context",
+          "stores": [
+            "deposit_leader_total_deposits_usd_billions",
+            "deposit_leader_domestic_deposits_usd_billions",
+            "deposit_leader_foreign_office_residual_usd_billions",
+            "selected_county_share_of_total_deposits_pct",
+            "selected_county_share_of_domestic_deposits_pct",
+            "deposit_leader_total_assets_usd_billions",
+            "deposit_leader_net_loans_usd_billions",
+            "deposit_leader_noncurrent_loans_usd_billions",
+            "deposit_leader_noncurrent_loan_ratio_pct"
+          ]
+        },
+        {
+          "query": "Run a branch-concentration sensitivity in the selected county: remove the single cohort branch row with the greatest reported deposits, breaking a tie by branch identifier ascending, and rerank bank deposit totals with the prior certificate tie-break. Report the removed branch identifier, name and deposits; adjusted leader certificate, name and deposits; and the original leader's adjusted deposits and rank. Explain what the leadership change says about branch-row concentration.",
+          "validator": "validate_branch_removal_sensitivity",
+          "stores": [
+            "removed_largest_branch_id",
+            "removed_largest_branch_name",
+            "removed_largest_branch_deposits_usd_millions",
+            "adjusted_selected_county_leader_certificate",
+            "adjusted_selected_county_leader_name",
+            "adjusted_selected_county_leader_deposits_usd_billions",
+            "original_leader_adjusted_deposits_usd_billions",
+            "original_leader_adjusted_rank"
+          ]
+        }
+      ]
+    }
+  ]
+}

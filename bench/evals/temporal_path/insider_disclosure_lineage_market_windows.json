@@ -1,0 +1,59 @@
+{
+  "name": "insider_disclosure_lineage_market_windows",
+  "module": "evals.temporal_path.insider_disclosure_lineage_market_windows",
+  "task_family": "temporal_path",
+  "data_sources": [
+    "sec_insider",
+    "sec_midas_security_exchange"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Use the supplied SEC insider filings with document type exactly Form 4 filed during calendar 2024. Eligible entries are non-derivative sales coded S and disposed D, dated during calendar 2024, with positive reported shares and price per share. Among filings with a reported trading symbol and at least one eligible entry whose filing date is seven or more calendar days after its transaction date, select the filing with the largest aggregate reported value of all its eligible sale entries; break ties by accession ascending. Report its accession, aggregate sale value and largest calendar-day interval. Explain the financial meaning of the value and interval.",
+          "stores": [
+            "selected_accession",
+            "sale_amount_usd",
+            "maximum_lag_days"
+          ],
+          "validator": "validate_sale_filing_selection"
+        },
+        {
+          "query": "For that filing, take the eligible sale entries having the largest interval as a block. Search the supplied original Form 4 filings filed no later than 2024-12-31 for the earliest filing containing a matching block, breaking filing-date ties by accession ascending. A match requires the same issuer CIK, the same set of reporting-owner CIKs, and equality of transaction date, transaction code, acquisition/disposition indicator, security title, shares, price per share, post-transaction holdings and direct/indirect ownership for every entry in the block; retain repeated-entry multiplicity. Additional entries in the matching filing are permitted. Report the matching accession and filing date. Discuss what this match establishes about the disclosure history.",
+          "stores": [
+            "matched_accession",
+            "matched_filing_date"
+          ],
+          "validator": "validate_disclosure_lineage"
+        },
+        {
+          "query": "Use the selected issuer's reported trading symbol and the MIDAS Stock observations available through 2024-12-31. For each of the matched filing and the originally selected filing, define the analysis availability date as the first observed trading date strictly after its filing date. A pre-window consists of the ten observed dates immediately before availability; a post-window starts on availability and includes the next nine observed dates. Report both availability dates, each window's available observation count capped at ten, and for each filing whether the full ten-before/ten-after pair is available. Assess the suitability of these windows for a complete before/after comparison.",
+          "stores": [
+            "matched_usable_date",
+            "matched_pre_days",
+            "matched_post_days",
+            "matched_complete_window",
+            "selected_usable_date",
+            "selected_pre_days",
+            "selected_post_days",
+            "selected_complete_window"
+          ],
+          "validator": "validate_market_window_coverage"
+        },
+        {
+          "query": "For each of those two post-windows, report mean daily on-exchange share volume and the window-wide hidden-volume percentage under the MIDAS measure's applicable trading-volume denominator. Interpret the comparison of market activity and its evidentiary scope. Use every observed date in the established post-window and retain input precision until the final outputs.",
+          "stores": [
+            "matched_post_mean_shares",
+            "matched_post_hidden_pct",
+            "selected_post_mean_shares",
+            "selected_post_hidden_pct"
+          ],
+          "validator": "validate_post_window_activity"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Secrets: models.toml reads keys from the environment, but stays local
+models.toml
+.env
+.env.*
+
+# The governed runtime tables are imported from FinBench, never committed
+datasets/
+
+# Study output
+experiments/
+
+# Local tooling
+.claude/
+.DS_Store

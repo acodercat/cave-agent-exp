@@ -1,0 +1,37 @@
+{
+  "name": "fema_sod_disaster_deposit_exposure",
+  "module": "evals.risk_screening.fema_sod_disaster_deposit_exposure",
+  "task_family": "risk_screening",
+  "data_sources": [
+    "fema_disasters",
+    "fdic_sod"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Run a retrospective county-exposure screen using OpenFEMA declaration-area records and the FDIC 2025 Summary of Deposits snapshot. A county qualifies once if its state and county FIPS form a five-digit code whose county part is not 000, its incident began from 2025-01-01 through 2025-06-30, and FEMA issued a major-disaster declaration no later than 2025-06-30; multiple qualifying declarations for the same county do not create multiple county exposures. In SOD, aggregate all reported 2025-06-30 branch deposits by bank and take the 50 banks with the largest totals, resolving an exact cohort or leadership tie by legal bank name alphabetically. Within that cohort, identify separately the bank with the largest branch-deposit dollars in qualifying counties and the bank with the largest qualifying-county share of its own branch deposits. Report the number of qualifying disaster numbers and counties; for each leader report its legal name, FDIC certificate, exposed deposits, total branch deposits, and exposed-deposit share. Also report the share leader's qualifying-county share of branch rows. Explain what the two exposure rankings and the underlying source measures do and do not represent.",
+          "validator": "validate",
+          "stores": [
+            "qualifying_major_disaster_count",
+            "distinct_qualifying_county_count",
+            "largest_exposed_deposit_amount_bank_name",
+            "largest_exposed_deposit_amount_bank_certificate",
+            "amount_leader_exposed_deposits_usd_billions",
+            "amount_leader_total_deposits_usd_billions",
+            "amount_leader_exposed_deposit_share_pct",
+            "largest_exposed_deposit_share_bank_name",
+            "largest_exposed_deposit_share_bank_certificate",
+            "share_leader_exposed_deposits_usd_billions",
+            "share_leader_total_deposits_usd_billions",
+            "share_leader_exposed_deposit_share_pct",
+            "share_leader_exposed_branch_row_share_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

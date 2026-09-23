@@ -1,0 +1,70 @@
+{
+  "name": "insider_sale_plan_discretion_split",
+  "module": "evals.comparison_ranking.insider_sale_plan_discretion_split",
+  "task_family": "comparison_ranking",
+  "data_sources": [
+    "sec_insider",
+    "sec_companyfacts"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "turns": [
+        {
+          "query": "Insider transaction reports carry a transaction code and an acquired-or-disposed marker on every line. Restrict submissions to document type exactly 4, excluding amendments and other forms, then take their transactions dated in calendar 2024 whose code is S and whose marker is D. Keep rows that report both a share count and a price per share and value each at shares times price. Aggregate issuers by central index key; for display choose the issuer-name variant with the largest contributing value, breaking a name-variant tie alphabetically. Report how many transaction rows there are, how many issuer keys they cover, and their total value in USD billions. Then identify the issuer with the largest total, breaking an issuer-value tie by central index key ascending, and report its selected name, total in USD billions, and lead over the next issuer. Explain what this report-row ranking measures and its transaction-code boundary.",
+          "validator": "validate_gross_sale_leadership",
+          "stores": [
+            "sale_transaction_count",
+            "sale_issuer_count",
+            "sale_value_usd_billions",
+            "gross_leader_issuer",
+            "gross_leader_value_usd_billions",
+            "gross_leader_margin_usd_billions"
+          ]
+        },
+        {
+          "query": "The Rule 10b5-1 indicator is carried at submission level and arrives written as 1, 0, true, false or nothing. Read only 1 or true, in either case, as an affirmative-plan filing and treat every other value, including missing, as non-affirmative. Split the 2024 sale rows from turn 1 by the status of their filing and report the transaction-row count and value in USD billions on each side, affirmative-filing value as a percent of total sale value, and affirmative-filing rows as a percent of all sale rows. Explain what the relationship between those percentages says about row size, and state why filing-level status is not transaction-level plan identification.",
+          "validator": "validate_plan_decomposition",
+          "stores": [
+            "affirmative_plan_filing_sale_count",
+            "affirmative_plan_filing_sale_value_usd_billions",
+            "nonaffirmative_filing_sale_count",
+            "nonaffirmative_filing_sale_value_usd_billions",
+            "affirmative_plan_filing_share_of_value_pct",
+            "affirmative_plan_filing_share_of_transactions_pct"
+          ]
+        },
+        {
+          "query": "Now rerank issuers using only sale rows in the non-affirmative filing group from turn 2, retaining the same CIK aggregation and display-name rule. Report how many issuer keys have any such value. Identify the leader, breaking a value tie by CIK ascending, and report its selected name, value in USD billions and lead over the next issuer. Then report the value the turn-1 leader shows on this narrowed proxy and its rank, using 0 if it has no such value. Explain what the comparison between the two report-row rankings shows without calling the narrowed group discretionary activity.",
+          "validator": "validate_nonaffirmative_reranking",
+          "stores": [
+            "nonaffirmative_filing_issuer_count",
+            "nonaffirmative_filing_leader_issuer",
+            "nonaffirmative_filing_leader_value_usd_billions",
+            "nonaffirmative_filing_leader_margin_usd_billions",
+            "gross_leader_nonaffirmative_filing_value_usd_billions",
+            "gross_leader_nonaffirmative_filing_rank"
+          ]
+        },
+        {
+          "query": "Turn to the other side of the exact-Form-4 population. For the same 2024 transaction-date window take rows whose code is P and whose acquired-or-disposed marker is A, valued and aggregated by CIK under the same rules, and report how many rows there are, how many issuer keys they cover and their total in USD billions, then the leading issuer by value and its total. Report total sale value from turn 1 divided by total purchase value, and how many transaction rows in the exact-Form-4 window are marked as filed late. Finally, for the issuer identified in turn 3, report the shares summed across its non-affirmative-filing sale rows, its shares outstanding and that count's as-of date from the latest cover-page common-share fact filed on or before 2025-03-31 matched on CIK, and the sale-row shares as a percent of shares outstanding. Describe the sale-purchase gap without assigning a cause the tables cannot establish, and explain what the share percentage does and does not measure.",
+          "validator": "validate_purchase_asymmetry",
+          "stores": [
+            "purchase_transaction_count",
+            "purchase_issuer_count",
+            "purchase_value_usd_billions",
+            "purchase_leader_issuer",
+            "purchase_leader_value_usd_billions",
+            "sale_to_purchase_value_ratio",
+            "late_reported_transaction_count",
+            "nonaffirmative_filing_leader_sale_shares",
+            "nonaffirmative_filing_leader_shares_outstanding",
+            "nonaffirmative_filing_leader_shares_outstanding_end_date",
+            "nonaffirmative_filing_leader_sale_shares_to_outstanding_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

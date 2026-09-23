@@ -1,0 +1,94 @@
+[
+  {
+    "name": "multi_variable_20",
+    "module": "evals.stateful.multi_variable_20",
+    "requirements": "Manage the state of a system with 20 variables. Each variable has a specific type and initial value. The system should be able to perform operations on the variables and update their values. The system should be able to persist the variables across multiple turns.",
+    "conversations": [
+      {
+        "id": "startup_journey",
+        "turns": [
+          {
+            "query": "I'm documenting our startup TechStart. We're in the Software industry, led by CEO Alice Johnson, headquartered in San Francisco. We have 50 employees, founded in 2020, 1 office, 2 products. Revenue is $5M (5000000) with 10% profit margin (0.1), not public yet so no stock price or market cap. We're profitable and hiring but not international yet. Departments: ['Engineering', 'Sales', 'Marketing']. Locations: ['SF']. Financials: funding 10000000, round 'Series A'. Contacts: email 'info@techstart.com', phone '555-0100'.",
+            "validator": "validate_startup_init"
+          },
+          {
+            "query": "Big growth update! Set employees to 150, offices to 3, products to 5. Set revenue to $15M (15000000), profit_margin to 0.15. Set international to true. Append 'HR' and 'Finance' to departments. Append 'NYC' and 'London' to locations. Add 'valuation': 100000000 to financials while keeping existing entries. Add 'support': '555-0200' to contacts while keeping existing entries.",
+            "validator": "validate_startup_growth"
+          },
+          {
+            "query": "We're going public! Append ' Inc.' to company_name. Set industry to 'Enterprise Software'. Set employees to 500, offices to 10, products to 10. Set revenue to $50M (50000000), profit_margin to 0.2, stock_price to 25.0, market_cap to $500M (500000000). Set public to true. Append 'Legal' and 'IR' to departments. Append 'Tokyo' and 'Berlin' to locations. Add 'ipo': true to financials while keeping existing entries. Add 'ir': 'ir@techstart.com' to contacts while keeping existing entries.",
+            "validator": "validate_startup_ipo"
+          }
+        ]
+      },
+      {
+        "id": "enterprise_transformation",
+        "turns": [
+          {
+            "query": "Documenting MegaCorp for our records. They're a Conglomerate run by CEO Bob Williams, based in New York. 10,000 employees, founded in 1990, 50 offices worldwide, 100 products. Revenue $1B (1000000000), 12% profit margin. Stock at $150, market cap $50B (50000000000). They're public, profitable, not currently hiring, and very international. Departments: ['All']. Locations: ['Global']. Financials: debt 500000000, assets 2000000000. Contacts: ir 'ir@megacorp.com'.",
+            "validator": "validate_enterprise_init"
+          },
+          {
+            "query": "MegaCorp is undergoing major restructuring. Set industry to 'Technology', ceo to 'Carol Lee'. Set employees to 8000, offices to 30, products to 50. Set revenue to $800M (800000000), profit_margin to 0.18, stock_price to 180.0, market_cap to $60B (60000000000). Set hiring to true. Set departments to ['Tech', 'Cloud', 'AI'] (replacing old structure). Set locations to ['Americas', 'Europe', 'Asia']. Set financials to {'debt': 200000000, 'assets': 2500000000}. Add 'press': 'press@megacorp.com' to contacts while keeping ir.",
+            "validator": "validate_enterprise_restructure"
+          },
+          {
+            "query": "MegaCorp just completed a major acquisition! Append ' Global' to company_name. Set employees to 12000, offices to 45, products to 75. Set revenue to $1.2B (1200000000), profit_margin to 0.15, stock_price to 200.0, market_cap to $80B (80000000000). Append 'Acquired' to departments. Append 'Australia' to locations. Add 'acquisition': 500000000 to financials while keeping existing entries. Add 'ma': 'ma@megacorp.com' to contacts while keeping existing entries.",
+            "validator": "validate_enterprise_acquire"
+          }
+        ]
+      },
+      {
+        "id": "nonprofit_growth",
+        "turns": [
+          {
+            "query": "Recording our nonprofit GreenFuture Foundation. We're in the Environmental sector, led by Executive Director Emma Green, based in Portland. 25 employees, founded in 2018, 1 office, running 3 programs. Annual budget is $500K (500000), no profit margin since we're nonprofit, no stock or market cap. Not public, not profitable by design, but we are hiring! Not international yet. Departments: ['Programs', 'Fundraising', 'Outreach']. Locations: ['Portland']. Financials: grants 300000, donations 200000. Contacts: email 'info@greenfuture.org', donate 'donate@greenfuture.org'.",
+            "validator": "validate_nonprofit_launch"
+          },
+          {
+            "query": "Our foundation has grown! Set employees to 75, offices to 5, products to 8 (programs). Set revenue to $2M (2000000) (budget). Set international to true. Append 'Research' and 'Education' to departments. Append 'Seattle', 'Denver', 'Vancouver', 'Austin' to locations. Set financials to {'grants': 1200000, 'donations': 800000, 'endowment': 500000}. Add 'volunteer': 'volunteer@greenfuture.org' to contacts while keeping existing entries.",
+            "validator": "validate_nonprofit_expand"
+          },
+          {
+            "query": "We've become a global NGO! Set company_name to 'GreenFuture International', industry to 'Environmental NGO'. Set employees to 200, offices to 15, products to 20. Set revenue to $10M (10000000). Append 'Policy' and 'Global Ops' to departments. Append 'London', 'Berlin', 'Tokyo' to locations. Set financials to {'grants': 5000000, 'donations': 3000000, 'endowment': 2000000, 'un_funding': 1000000}. Add 'press': 'press@greenfuture.org' to contacts while keeping existing entries.",
+            "validator": "validate_nonprofit_global"
+          }
+        ]
+      },
+      {
+        "id": "retail_expansion",
+        "turns": [
+          {
+            "query": "Setting up our grocery chain FreshMart. Industry is Grocery Retail, CEO David Chen, headquarters in Chicago. 500 employees, founded 2015, 10 stores (offices), carrying 5000 products. Revenue $25M (25000000) with 3% margin (0.03). Not public, no stock price or market cap. We're profitable and hiring, but domestic only. Departments: ['Operations', 'Buying', 'Logistics', 'Marketing']. Locations: ['Chicago', 'Milwaukee', 'Indianapolis']. Financials: inventory 5000000, loans 2000000. Contacts: customer '1-800-FRESH', suppliers 'buying@freshmart.com'.",
+            "validator": "validate_retail_open"
+          },
+          {
+            "query": "We've launched our franchise model! Set employees to 2000, offices to 50 (stores), products to 8000. Set revenue to $150M (150000000), profit_margin to 0.05. Append 'Franchise' and 'Training' to departments. Set locations to ['Midwest', 'Great Lakes', 'Plains']. Set financials to {'inventory': 20000000, 'loans': 0, 'franchise_fees': 5000000}. Add 'franchise': 'franchise@freshmart.com' to contacts while keeping existing entries.",
+            "validator": "validate_retail_franchise"
+          },
+          {
+            "query": "FreshMart is going public! Set company_name to 'FreshMart Holdings'. Set employees to 8000, offices to 200, products to 15000. Set revenue to $800M (800000000), profit_margin to 0.06, stock_price to 35.0, market_cap to $2B (2000000000). Set public to true, international to true. Append 'IR' and 'E-commerce' to departments. Set locations to ['USA', 'Canada', 'Mexico']. Add 'ipo_raised': 500000000 to financials, set inventory to 80000000, while keeping loans and franchise_fees. Add 'ir': 'ir@freshmart.com' to contacts while keeping existing entries.",
+            "validator": "validate_retail_ipo"
+          }
+        ]
+      },
+      {
+        "id": "gaming_studio_rise",
+        "turns": [
+          {
+            "query": "Documenting our indie studio PixelDream Studios. Industry is Video Games, CEO Maya Rodriguez, based in Austin. Just 15 employees, founded 2019, 1 office, released 2 games. Revenue $1M (1000000) with 25% margin (0.25). Not public, no stock or market cap. We're profitable but not hiring right now, and domestic only. Departments: ['Development', 'Art', 'QA']. Locations: ['Austin']. Financials: steam_revenue 800000, console_revenue 200000. Contacts: press 'press@pixeldream.com', support 'support@pixeldream.com'.",
+            "validator": "validate_gaming_indie"
+          },
+          {
+            "query": "Our latest game was a massive hit! Set employees to 80, offices to 2, products to 5. Set revenue to $25M (25000000), profit_margin to 0.35. Set hiring to true, international to true. Append 'Marketing' and 'Community' to departments. Append 'Montreal' to locations. Set financials to {'steam_revenue': 15000000, 'console_revenue': 8000000, 'mobile_revenue': 2000000}. Add 'business': 'biz@pixeldream.com' to contacts while keeping existing entries.",
+            "validator": "validate_gaming_hit"
+          },
+          {
+            "query": "We're now a publisher! Set company_name to 'PixelDream Entertainment', industry to 'Video Games & Publishing'. Set employees to 300, offices to 5, products to 15. Set revenue to $150M (150000000), profit_margin to 0.3, stock_price to 45.0, market_cap to $800M (800000000). Set public to true. Append 'Publishing' and 'Esports' to departments. Set locations to ['Austin', 'Montreal', 'Tokyo', 'London', 'Seoul']. Set financials to {'steam_revenue': 50000000, 'console_revenue': 60000000, 'mobile_revenue': 30000000, 'publishing_revenue': 10000000}. Add 'ir': 'ir@pixeldream.com' to contacts while keeping existing entries.",
+            "validator": "validate_gaming_publisher"
+          }
+        ]
+      }
+    ]
+  }
+]

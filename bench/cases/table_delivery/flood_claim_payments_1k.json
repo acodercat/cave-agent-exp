@@ -1,0 +1,24 @@
+{
+  "name": "flood_claim_payments_1k",
+  "module": "cases.table_delivery.flood_claim_payments_1k",
+  "task_family": "table_delivery",
+  "data_sources": [
+    "fema_nfip"
+  ],
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Prepare a loss run of the NFIP flood claims in New York with a date of loss in 2024. Each claim's row needs the claim record identifier, the county code, the date of loss, the net payment on building and contents combined, and the gross building payment. Where no gross building payment is reported, keep the claim and leave that cell missing.",
+          "validator": "validate",
+          "stores": [
+            "claim_table"
+          ]
+        }
+      ]
+    }
+  ]
+}

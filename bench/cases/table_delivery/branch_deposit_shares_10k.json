@@ -1,0 +1,24 @@
+{
+  "name": "branch_deposit_shares_10k",
+  "module": "cases.table_delivery.branch_deposit_shares_10k",
+  "task_family": "table_delivery",
+  "data_sources": [
+    "fdic_sod"
+  ],
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Prepare a branch-level table for a local deposit-share review of California and Texas, using the FDIC Summary of Deposits as of 2024-06-30. Every branch located there gets a row with its branch identifier, the FIPS code of its county, its deposits, and its share of the deposits held by all the branches in that county.",
+          "validator": "validate",
+          "stores": [
+            "branch_table"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "name": "zcta_county_land_250",
+  "module": "cases.table_delivery.zcta_county_land_250",
+  "task_family": "table_delivery",
+  "data_sources": [
+    "census_zcta_county_relationships"
+  ],
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Apportion ZIP code tabulation areas to counties for Puerto Rico, using the 2020 Census ZCTA-to-county relationship file. Every ZCTA-county part lying in those counties gets a row: the ZCTA, the county FIPS code, the county name, the land area of the part, and that area as a fraction of the ZCTA's total land area. Take the total over every county the ZCTA touches, including counties outside the area asked for.",
+          "validator": "validate",
+          "stores": [
+            "part_table"
+          ]
+        }
+      ]
+    }
+  ]
+}

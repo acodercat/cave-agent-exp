@@ -1,0 +1,24 @@
+{
+  "name": "treasury_securities_outstanding_10",
+  "module": "cases.table_delivery.treasury_securities_outstanding_10",
+  "task_family": "table_delivery",
+  "data_sources": [
+    "treasury_marketable_securities"
+  ],
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Reconstruct from the Monthly Statement of the Public Debt detail of marketable securities what was outstanding, security by security, for the floating rate notes on 2024-12-31, and deliver no other securities. The statement prints one line per issue and reopening and states the amount outstanding on only one of them, so roll the lines up to the CUSIP within each record date, and ignore the subtotal and total lines. Per record date and CUSIP: the security class, the maturity date, the interest rate, the number of lines rolled up, the amount issued, the amount outstanding, and that outstanding amount as a share of all the delivered securities of the same class on that record date. Use the source's stated interest-rate field, leaving it missing where unstated; do not substitute the yield field, including the discount yield of a bill or the spread of a floating rate note.",
+          "validator": "validate",
+          "stores": [
+            "security_table"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "name": "zip_county_crosswalk_assignment_error",
+  "module": "evals.calculation_reconciliation.zip_county_crosswalk_assignment_error",
+  "task_family": "calculation_reconciliation",
+  "data_sources": [
+    "ffiec_nic_institutions",
+    "census_zcta_county_relationships",
+    "census_zcta_primary_counties",
+    "census_counties"
+  ],
+  "case_type": "baseline",
+  "difficulty": "hard",
+  "conversations": [
+    {
+      "turns": [
+        {
+          "query": "Using the Census ZIP code tabulation area to county relationship file, report how many rows it carries, how many distinct tabulation areas and how many distinct counties appear in it, and how many rows repeat an area-and-county pair that already appears. Then report how many areas reach into more than one county, that count as a percentage of all areas to 4 decimals, and the largest number of counties any single area reaches. Explain what the split-area result means for treating a tabulation area as if it were always contained in one county.",
+          "validator": "validate_crosswalk_shape",
+          "stores": [
+            "relationship_rows",
+            "area_count",
+            "county_count",
+            "duplicate_pairs",
+            "split_area_count",
+            "split_area_share_pct",
+            "maximum_counties"
+          ]
+        },
+        {
+          "query": "The Census also publishes a single primary county for each area, selected by the largest shared land area with shared water area as the tie-breaker. Rebuild that selection yourself from the relationship file: for each area rank its parts by shared land area descending, break ties on shared water area descending and then on the county identifier ascending, and take the first. Report how many areas your rule assigns a county to and how many of them disagree with the published primary county. Then, restricting to areas that reach more than one county, compute for each the share of its total land area held by its largest part, and report the median, the tenth percentile and the minimum of that share as percentages to 4 decimals, then how many such areas have a largest part below 60 percent and that count as a percentage of split areas to 4 decimals. Explain separately what matching the published rule establishes and what the concentration statistics say about using one county for every record in a split area.",
+          "validator": "validate_primary_rule",
+          "stores": [
+            "reproduced_areas",
+            "rule_disagreements",
+            "median_largest_share_pct",
+            "tenth_percentile_share_pct",
+            "minimum_share_pct",
+            "weak_primary_count",
+            "weak_primary_share_pct"
+          ]
+        },
+        {
+          "query": "Now measure the assignment against a source that records both. In the FFIEC institution identifier file, take the first five digits of the postal code and the county code, which is unique only within its state. Build the recorded county identifier by prefixing the county code, zero-padded to three digits, with the two-digit state code you can read from the first two characters of any county identifier in the county file for that state postal abbreviation. Keep institutions where both a five-digit postal code and a county code are present and the recorded identifier is five characters, and report how many qualify and what percentage of their recorded identifiers appear in the county file, to 4 decimals. Then join those postal codes to the published primary-county file, report how many match no tabulation area, and how many institutions remain. On the remainder, report the percentage where the primary county equals the recorded county, to 4 decimals. Explain what an unmatched postal code and the measured agreement rate do and do not establish about assignment quality.",
+          "validator": "validate_assignment_accuracy",
+          "stores": [
+            "eligible_institutions",
+            "recorded_county_present_pct",
+            "unmatched_postal_codes",
+            "tested_institutions",
+            "assignment_accuracy_pct"
+          ]
+        },
+        {
+          "query": "Finally test how assignment accuracy varies with geographic reach. Split the tested institutions by how many counties their tabulation area reaches, using the relationship file, into areas reaching exactly one county, exactly two, and three or more. For each group report how many tested institutions it holds and the percentage where the assigned county equals the recorded county, to 4 decimals. Explain what the comparison says about whether reach is useful as an advance reliability flag, note any residual error in the single-county group, and state the weighting boundary of the record-level rates.",
+          "validator": "validate_error_structure",
+          "stores": [
+            "single_county_tested",
+            "single_county_accuracy_pct",
+            "two_county_tested",
+            "two_county_accuracy_pct",
+            "many_county_tested",
+            "many_county_accuracy_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

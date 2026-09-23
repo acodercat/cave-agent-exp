@@ -1,0 +1,24 @@
+{
+  "name": "storm_event_damages_100",
+  "module": "cases.table_delivery.storm_event_damages_100",
+  "task_family": "table_delivery",
+  "data_sources": [
+    "noaa_storm_events"
+  ],
+  "difficulty": "medium",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Compile the 2024 storm record for Delaware from the NOAA storm events data, taking events by the date they began. For each event: its identifier, the event type, the county or forecast zone name, the beginning timestamp as the source writes it, the duration in hours, and the reported property damage and crop damage. Damage is often not reported; leave those cells missing rather than zero.",
+          "validator": "validate",
+          "stores": [
+            "event_table"
+          ]
+        }
+      ]
+    }
+  ]
+}

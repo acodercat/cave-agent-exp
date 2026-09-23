@@ -1,0 +1,39 @@
+{
+  "name": "seven_a_negative_employment_chargeoff_screen",
+  "module": "evals.comparison_ranking.seven_a_negative_employment_chargeoff_screen",
+  "task_family": "comparison_ranking",
+  "data_sources": [
+    "sba_7a",
+    "census_geo_crosswalk",
+    "bls_qcew"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Retrospectively combine SBA 7(a) approval-fiscal-year 2022 public loan rows with the frozen 2024 and 2025 BLS QCEW state annual totals, using the Census Gazetteer's USPS-to-state-FIPS correspondence across the 50 states and the District of Columbia. Treat every reported SBA row as one observation without deduplicating exact-looking rows. Keep rows with a recorded first disbursement no later than 2025-12-31, and treat a charge-off as qualifying only when its event date is on or before the same calendar day 36 months after the approval date and no later than that cutoff. At state level, require at least 500 reported loan rows; calculate charge-off incidence and qualifying gross charge-off amount as a share of all cohort gross approvals. Derive 2024-to-2025 private annual-average employment growth from the two employment levels. Rank eligible states by charge-off incidence, breaking an exact tie alphabetically. Report the matched, minimum-population and negative-private-employment-growth state counts; report the overall incidence leader and its employment growth; then, within the negative-employment-growth subset, report the incidence leader, its loan and charge-off counts, incidence, charge-off-amount share, both employment levels and employment growth. Explain what the labor screen adds and what it cannot establish.",
+          "validator": "validate",
+          "stores": [
+            "matched_state_and_dc_count",
+            "minimum_500_loan_state_count",
+            "negative_private_employment_growth_state_count",
+            "overall_highest_chargeoff_incidence_state",
+            "overall_highest_chargeoff_incidence_pct",
+            "overall_leader_private_employment_growth_pct",
+            "negative_growth_highest_chargeoff_state",
+            "screen_leader_reported_loan_count",
+            "screen_leader_36_month_chargeoff_count",
+            "screen_leader_chargeoff_incidence_pct",
+            "screen_leader_chargeoff_amount_to_approval_pct",
+            "screen_leader_2024_private_annual_avg_employment",
+            "screen_leader_2025_private_annual_avg_employment",
+            "screen_leader_private_employment_growth_pct"
+          ]
+        }
+      ]
+    }
+  ]
+}

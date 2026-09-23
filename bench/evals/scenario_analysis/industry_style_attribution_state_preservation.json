@@ -1,0 +1,68 @@
+{
+  "name": "industry_style_attribution_state_preservation",
+  "module": "evals.scenario_analysis.industry_style_attribution_state_preservation",
+  "task_family": "scenario_analysis",
+  "data_sources": [
+    "ken_french_10_industry_portfolios",
+    "ken_french_daily_factors",
+    "ofr_market_stress"
+  ],
+  "difficulty": "hard",
+  "case_type": "baseline",
+  "conversations": [
+    {
+      "id": "main",
+      "turns": [
+        {
+          "query": "Calibrate an original Fama–French three-factor model for the value-weighted HiTec industry portfolio on complete common daily observations from 2015-01-01 through 2019-12-31 with nonpositive OFR Financial Stress Index. Use intercept-bearing homoskedastic OLS on industry excess returns with Mkt-RF, SMB and HML. Report the calibration count, market loading and value loading. Retain the complete fitted model and interpret its conditional exposures. This is a retrospective study using the supplied frozen histories; use unrounded state throughout.",
+          "validator": "validate_turn_1",
+          "stores": [
+            "original_calibration_count",
+            "original_market_beta",
+            "original_value_beta"
+          ]
+        },
+        {
+          "query": "Commit an original factor-neutral program based on that fitted model. At every daily reset it invests its entire prior-day NAV in HiTec and adds zero-initial-value contracts delivering the three factor returns, with signed exposure multiples that neutralize the fitted loadings. There are no transaction costs, collateral flows or other cash flows. Report fitted arithmetic annual alpha and annualized regression residual standard error, using 252 observations per year and a residual-variance denominator of the calibration count minus four. Assess this fitted return-risk profile.",
+          "validator": "validate_turn_2",
+          "stores": [
+            "original_arithmetic_alpha_pct",
+            "original_residual_volatility_pct"
+          ]
+        },
+        {
+          "query": "Prepare an independent program based instead on a fit to strictly positive OFR FSI dates in the same calibration years, retaining the model specification and factor-contract conventions. Report its market loading and gross factor-contract exposure as a multiple of NAV. Assess the exposure comparison.",
+          "validator": "validate_turn_3",
+          "stores": [
+            "comparison_market_beta",
+            "comparison_gross_factor_notional"
+          ]
+        },
+        {
+          "query": "Evaluate that comparison program on dates with complete HiTec returns, three-factor data and OFR FSI observations in common from 2020-01-01 through 2024-12-31, with its fitted exposure multiples fixed and daily resets as specified. Start NAV at USD100 million immediately before the first observation. Report compounded total return and maximum drawdown as a positive loss percentage. For a drawdown tie use the earliest trough and then the earliest preceding peak; the initial NAV is eligible as a peak. Interpret the performance and drawdown together.",
+          "validator": "validate_turn_4",
+          "stores": [
+            "comparison_holdout_return_pct",
+            "comparison_max_drawdown_pct"
+          ]
+        },
+        {
+          "query": "Complete the same held-out performance assessment for the original committed program, starting from the same initial capital and using the same drawdown convention. Report its compounded total return and maximum drawdown. Assess the original program relative to the comparison.",
+          "validator": "validate_turn_5",
+          "stores": [
+            "original_holdout_return_pct",
+            "original_max_drawdown_pct"
+          ]
+        },
+        {
+          "query": "Attribute the original program’s maximum-drawdown episode to its traded legs. Include returns after the selected peak through the selected trough, and value each daily leg’s profit or loss using that program’s prior-day NAV. Among the three factor-contract legs, report the factor with the lowest signed cumulative dollar contribution and that signed contribution; break a tie alphabetically by factor token. Interpret this attribution in relation to the episode’s overall loss.",
+          "validator": "validate_turn_6",
+          "stores": [
+            "original_worst_factor",
+            "original_worst_factor_pnl_million"
+          ]
+        }
+      ]
+    }
+  ]
+}
