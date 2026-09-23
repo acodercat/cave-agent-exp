@@ -1,5 +1,8 @@
 # CaveAgent: Experiment Code and Results
 
+> The CaveAgent framework itself lives at **[github.com/acodercat/cave-agent](https://github.com/acodercat/cave-agent)**.
+> This repository holds the experiments built on it.
+
 This repository contains the code, tasks and validators behind the experiments in *CaveAgent:
 Transforming LLMs into Stateful Runtime Operators*, together with links to the raw results of every
 run reported in the paper. With the results archive you can recompute the paper's tables without
