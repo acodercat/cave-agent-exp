@@ -6,11 +6,24 @@ averaged before resampling, and the interval is a 10,000-draw bootstrap seeded
 from a label so a report reproduces. McNemar's exact test accompanies it over
 the tasks the paradigms disagree on.
 
+On the name: what `mcnemar` computes is an exact two-sided sign test over the
+tasks whose run-averaged difference is non-zero (wins against losses), not
+McNemar's test on a 2x2 table of single-run outcomes; with one run per arm the
+two coincide. The key is kept so earlier reports still read the same.
+
+Counting rule. By default (the paper's Table 9) a task that raised in a run is
+left out of that run: its rate is solved over scored, and the task's average is
+over the runs that scored it. `--errors-as-failures` instead counts such a task
+as a failure in that run, so every rate is over the whole split of 200 and every
+task averages all its runs. The errored tasks and their error types are printed
+for each arm and run either way.
+
 Runs are refused rather than pooled when the two arms were not called the same
 way, because a difference in temperature or reasoning is not the difference under
 test.
 
     uv run python paired.py --model qwen3.8-flash
+    uv run python paired.py --model deepseek-v4-flash --results <dir> --errors-as-failures
 """
 
 from __future__ import annotations
@@ -63,16 +76,19 @@ def runs(arm: str, model: str, *, complete_only: bool = True) -> list[dict]:
     return kept
 
 
-def per_task(payloads: list[dict]) -> dict[str, float]:
+def per_task(payloads: list[dict], *, errors_as_failures: bool = False) -> dict[str, float]:
     """One value per task, its runs averaged, as the estimator expects.
 
     A task a run did not produce evidence for is left out of that run's average
-    rather than counted as a failure; :mod:`results` says which those are.
+    rather than counted as a failure; :mod:`results` says which those are. With
+    `errors_as_failures` it is kept and scored 0 in that run instead.
     """
     scores: dict[str, list[float]] = {}
     for payload in payloads:
-        for task in results.scored(payload):
-            scores.setdefault(task["id"], []).append(float(results.counts_as_solved(task)))
+        rows = payload["tasks"] if errors_as_failures else results.scored(payload)
+        for task in rows:
+            solved = results.is_evidence(task) and results.counts_as_solved(task)
+            scores.setdefault(task["id"], []).append(float(solved))
     return {task: fmean(values) for task, values in scores.items()}
 
 
@@ -103,7 +119,14 @@ def mcnemar(difference: dict) -> dict:
     return {"wins": wins, "losses": losses, "p_value": min(1.0, 2 * tail)}
 
 
-def report(model: str) -> dict:
+def errored(payload: dict) -> list[dict]:
+    """The tasks a run raised on, with the error's type (the text before the colon)."""
+    return [{"id": row["id"], "type": str(row["error"]).split(":", 1)[0],
+             "error": str(row["error"])}
+            for row in payload["tasks"] if row.get("error") is not None]
+
+
+def report(model: str, *, errors_as_failures: bool = False) -> dict:
     """The difference between the arms, refusing runs that are not comparable."""
     payloads = {arm: runs(arm, model) for arm in ARMS}
     for arm, found in payloads.items():
@@ -119,29 +142,56 @@ def report(model: str) -> dict:
         raise SystemExit("the arms were not called the same way:\n  "
                          + "\n  ".join(sorted(distinct)))
 
-    scores = {arm: per_task(payloads[arm]) for arm in ARMS}
+    scores = {arm: per_task(payloads[arm], errors_as_failures=errors_as_failures)
+              for arm in ARMS}
+    # The label, and so the bootstrap draws, are the same under either rule.
     difference = paired_difference(scores["cave"], scores["fc"], label=f"bfcl-mt:{model}")
-    rates = {arm: [100 * results.solved(payload) / len(results.scored(payload))
+    rates = {arm: [100 * results.solved(payload)
+                   / len(payload["tasks"] if errors_as_failures else results.scored(payload))
                    for payload in payloads[arm]] for arm in ARMS}
     aside = {arm: [results.set_aside(payload) for payload in payloads[arm]] for arm in ARMS}
-    return {"model": model, "rates": rates, "set_aside": aside,
+    errors = {arm: {payload.get("run", index + 1): errored(payload)
+                    for index, payload in enumerate(payloads[arm])} for arm in ARMS}
+    return {"model": model, "errors_as_failures": errors_as_failures,
+            "rates": rates, "set_aside": aside, "errors": errors,
             **{k: v for k, v in difference.items() if not k.startswith("_")},
             "mcnemar": mcnemar(difference)}
 
 
 def main() -> None:
+    global RESULTS  # `--results` points `runs` at another directory
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--model", required=True)
-    summary = report(parser.parse_args().model)
+    parser.add_argument("--model", required=True, nargs="+")
+    parser.add_argument("--results", type=Path, default=RESULTS,
+                        help="directory holding the run files (default: ./results)")
+    parser.add_argument("--errors-as-failures", action="store_true",
+                        help="count a task that raised as failed in that run, over all "
+                             f"{SPLIT_SIZE} tasks, instead of leaving it out")
+    parser.add_argument("--json", type=Path, help="also write the summaries here, as a list")
+    options = parser.parse_args()
+    RESULTS = options.results
+    summaries = []
+    for model in options.model:
+        summary = report(model, errors_as_failures=options.errors_as_failures)
+        show(summary)
+        summaries.append(summary)
+    if options.json:
+        options.json.parent.mkdir(parents=True, exist_ok=True)
+        options.json.write_text(json.dumps(summaries, indent=2) + "\n")
 
-    print(f"\n## {summary['model']}: {summary['tasks']} tasks, BFCL multi_turn_base")
+
+def show(summary: dict) -> None:
+    """One model's block of the report."""
+    rule = "errored = failed" if summary["errors_as_failures"] else "errored left out"
+    print(f"\n## {summary['model']}: {summary['tasks']} tasks, BFCL multi_turn_base ({rule})")
     for arm in ARMS:
         rates = summary["rates"][arm]
         spread = f" ± {stdev(rates):.1f}" if len(rates) > 1 else ""
         aside = summary["set_aside"][arm]
         errored = sum(len(run["errored"]) for run in aside)
         unaccounted = sum(len(run["unaccounted"]) for run in aside)
-        reasons = ([f"{errored} errored, left out"] if errored else []) + \
+        verb = "counted as failed" if summary["errors_as_failures"] else "left out"
+        reasons = ([f"{errored} errored, {verb}"] if errored else []) + \
                   ([f"{unaccounted} counted as failed, record incomplete"] if unaccounted else [])
         note = f"  ({'; '.join(reasons)})" if reasons else ""
         print(f"  {arm:5} runs {[f'{r:.1f}' for r in rates]} -> {fmean(rates):.1f}{spread}{note}")
@@ -151,7 +201,11 @@ def main() -> None:
           f" | excludes zero: {summary['differs_from_zero']}"
           f" | sign test p={test['p_value']:.3f} on {summary['tasks_differing']} differing"
           f" ({test['wins']} cave, {test['losses']} fc)")
-
+    print("  errored tasks per run:")
+    for arm in ARMS:
+        for run, rows in summary["errors"][arm].items():
+            listed = ", ".join(f"{row['id']} ({row['type']})" for row in rows) or "none"
+            print(f"    {arm:5} run{run}: {len(rows)}  {listed}")
 
 if __name__ == "__main__":
     main()

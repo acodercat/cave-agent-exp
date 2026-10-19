@@ -7,5 +7,6 @@
 | `adapters/` | CaveAgent, JSON function calling (LiteLLM) and the bash filesystem agent |
 | `scripts/stateful.py`, `scripts/token_efficiency.py` | runners |
 | `analysis/q3_final.py`, `analysis/q3_intervals.py` | Q3 table and paired intervals |
+| `analysis/q3_efficiency.py` | Q3 steps, tokens per completed turn and wall-clock: `python analysis/q3_efficiency.py --root <experiments/token_efficiency>` |
 
 Setup: `uv sync`, `cp models.toml.example models.toml`. Tests: `uv run --with pytest python -m pytest`.

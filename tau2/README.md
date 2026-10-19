@@ -8,6 +8,7 @@ Telecom (all three arms, four models) and Gemini 3.1 Pro on Airline and Retail.
 | `tau2_cave/`, `tau2_json_exec/` | the CaveAgent and JSON→code agents |
 | `campaign.sh`, `sweep.sh`, `gemini31_domains.sh` | the sweeps behind the paper's runs |
 | `paired.py` | task-paired intervals and sign tests |
+| `efficiency.py` | agent LLM calls, agent-only tokens and wall-clock per task: `uv run python efficiency.py --results <dir>` |
 | `bfcl_paired.py` | BFCL single-turn: per-run counts and paired differences, including the Gemini 3.1 Pro rows (reads `../bfcl/results`) |
 | `merge.py`, `missing.py`, `redact.py` | fold re-run tasks into a run; list missing tasks; remove API keys from results |
 

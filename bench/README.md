@@ -15,6 +15,12 @@ programmatically against a reference recomputed from the same tables.
 | `scripts/run_pipeline.py`, `scripts/drivers/` | Q5 runner, arm drivers and tables |
 | `scripts/measure_runtime_cost.py`, `scripts/measure_security_rules.py` | §5.2 runtime cost, §3.1.3 security checks |
 | `analysis/` | Q4 success by size and by answer size |
+| `analysis/efficiency.py` | LLM calls, estimated tokens and wall-clock per run for Q4/Q5: `uv run python analysis/efficiency.py <experiment dir>...` |
+| `analysis/run_accounting.py` | planned, recorded and scored runs per Q4/Q5 study, unscored runs by reason: `uv run python analysis/run_accounting.py <experiment dir>...` |
+| `analysis/q4_sensitivity.py` | Q4 paired differences, missing-as-failure beside scored-only: `uv run python analysis/q4_sensitivity.py <comparisons dir>` |
+| `analysis/x3_omitted_paths.py` | Q5 pipeline runs whose downstream instruction lacked the file path, or skipped a worker |
+| `analysis/x5_audit.py` | Q5 chain: runs intact, first attempts, re-runs, crossings by observer: `uv run python analysis/x5_audit.py --model NAME=PREFIX... ARM=SUFFIX...` |
+| `cave_parity`, `file_parity`, `text_parity`, `json_parity` | the chain study's metadata-parity arms (`--study rounds --channel <arm>`; `core/orchestration.py` `Arm.parity`) |
 
 Setup: `uv sync`, `cp models.toml.example models.toml`, data tables in `datasets/dataset_new/`
 (see the top-level README). Tests: `uv run --group dev python -m pytest`.

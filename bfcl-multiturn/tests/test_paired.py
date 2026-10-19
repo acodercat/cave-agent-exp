@@ -85,6 +85,18 @@ class TestTheDifference:
         assert out["tasks"] == 1                    # b dropped, not scored 0
         assert out["mean_difference"] == 0.0
 
+    def test_an_errored_task_can_be_counted_as_failed_instead(self, results):
+        """The sensitivity rule: every task, every run, over the whole split."""
+        write(results, "cave", 1, {"a": 1, "b": None})
+        write(results, "fc", 1, {"a": 1, "b": 1})
+
+        out = paired.report("m", errors_as_failures=True)
+
+        assert out["tasks"] == 2
+        assert out["mean_difference"] == -0.5
+        assert out["rates"]["cave"] == [50.0]
+        assert [row["type"] for row in out["errors"]["cave"][1]] == ["Timeout"]
+
     def test_no_difference_gives_an_interval_that_includes_zero(self, results):
         write(results, "cave", 1, {"a": 1, "b": 0})
         write(results, "fc", 1, {"a": 1, "b": 0})
