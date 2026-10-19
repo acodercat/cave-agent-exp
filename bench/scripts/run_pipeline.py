@@ -538,6 +538,8 @@ async def main() -> None:
     if args.channel not in arms:
         raise SystemExit(f"--channel must be one of {sorted(arms)} for --study {args.study}")
     channel = arms[args.channel]
+    if getattr(channel, "parity", False) and args.study != "rounds":
+        raise SystemExit(f"--channel {channel.name} is a rounds-study arm; pass --study rounds")
     settings = PipelineSettings(
         step_budget=args.step_budget,
         max_protocol_nudges=args.protocol_nudges,

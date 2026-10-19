@@ -77,6 +77,11 @@ class Arm:
     # the object is one artifact that each stage overwrites, so there is no
     # version for an orchestrator to name and none for it to name wrongly.
     shared_path: bool = False
+    # The rounds study's metadata-parity arms (core.rounds_evaluator): every
+    # worker is told the same host reading of what it received, every
+    # description says the instruction must carry the rest, and every
+    # orchestrator may look at what it passes on. Only the rounds study reads it.
+    parity: bool = False
 
     @property
     def reaches_runtime(self) -> bool:
@@ -86,6 +91,8 @@ class Arm:
 ARMS = {arm.name: arm for arm in (
     Arm("cave", Medium.CAVE), Arm("text", Medium.TEXT), Arm("json", Medium.JSON),
     Arm("file", Medium.FILE), Arm("file_shared", Medium.FILE, shared_path=True),
+    Arm("cave_parity", Medium.CAVE, parity=True), Arm("text_parity", Medium.TEXT, parity=True),
+    Arm("json_parity", Medium.JSON, parity=True), Arm("file_parity", Medium.FILE, parity=True),
 )}
 
 
@@ -226,10 +233,21 @@ def describe_worker(
             f"call, not awaited — to hand it its input {noun}, then "
             if spec.takes_input else ""
         )
-        return (
+        described = (
             f"{head} Use it from code: {give}await {spec.name}.run('instruction') to run it, "
             f"then {take} to get what it made."
         )
+        if not arm.parity:
+            return described
+        # The other arms' closing sentence, for the one thing this medium carries
+        # outside the instruction.
+        given = (
+            f"Apart from the {noun} you hand it that way, everything it needs must be in "
+            "the instruction you send."
+            if spec.takes_input else
+            "It reads the source data itself."
+        )
+        return f"{described} {given}"
     if arm.medium is Medium.FILE:
         made = (
             "result.content is its reply as text, and its answers are in that reply"

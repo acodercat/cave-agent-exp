@@ -29,7 +29,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 import itertools
+import json
 from pathlib import Path
+import re
 import time
 from typing import Any
 
@@ -41,7 +43,7 @@ from core.agents import FencedCodeAgent, ToolCallAgent
 from core.errors import InfrastructureError
 from core.evaluator import idle_timeout, raise_if_infrastructure
 from core.fidelity import (
-    HANDED_OBJECT_DESCRIPTION, INPUT_SLOT, RECEIVED, compare, from_jsonable,
+    HANDED_OBJECT_DESCRIPTION, INPUT_SLOT, RECEIVED, compare, from_jsonable, read_object,
 )
 from core.fidelity_evaluator import (
     _OBJECT_CHANNEL, PRODUCER, Budget, ObjectWorker, _frozen, _plain, retrieve, spent_over,
@@ -76,14 +78,75 @@ class RoundsWorker(ObjectWorker):
     observed: tuple[Variable, ...] = ()
     revision: Revision | None = None
     shared_output: str | None = None        # the one file every stage writes, in that arm
+    medium: Medium = Medium.CAVE
+    takes_input: bool = False
+    parity: bool = False                    # the arm's Arm.parity
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # One entry per call of ``run``, finished or not, so that a worker run
+        # twice can be judged on its first run as well as its last (``invocations``
+        # in the run record); ``bound``, ``handed`` and ``delivered`` alone hold
+        # only what each run got as far as leaving, and need not line up.
+        self.attempts: list[dict[str, Any]] = []
+        self.notes: list[str | None] = []
+
+    async def run(self, query):
+        attempt: dict[str, Any] = {}
+        self.attempts.append(attempt)
+        sizes = len(self.handed), len(self.bound), len(self.delivered), len(self.notes)
+        try:
+            return await super().run(query)
+        finally:
+            def new(items: list, before: int) -> Any:
+                return items[before] if len(items) > before else None
+            attempt.update(
+                stamp=self.started[-1] if self.started else None,
+                handed=new(self.handed, sizes[0]), bound=new(self.bound, sizes[1]),
+                delivered=new(self.delivered, sizes[2]), note=new(self.notes, sizes[3]),
+            )
+            attempt["completed"] = attempt["delivered"] is not None
 
     def output_path(self, name: str) -> Path:
         return super().output_path(self.shared_output or name)
 
     def _turn(self, query: str) -> str:
         if self.observed:
-            return reviser_turn(query, self.observed[0], self.contract)
-        return super()._turn(query)
+            turn = reviser_turn(query, self.observed[0], self.contract)
+        else:
+            turn = super()._turn(query)
+        if not (self.parity and self.takes_input):
+            return turn
+        note = self._host_reading(query)
+        self.notes.append(note)
+        return f"{turn}\n\n{note}"
+
+    def _host_reading(self, query: str) -> str:
+        """The parity arms' note: what the host reads off the input this worker received.
+
+        One function for every medium, and always what actually reached the
+        worker, never the object the agent before it left: the object in the
+        input slot, the file the instruction names, the JSON the instruction
+        holds. In the text arms that is the payload as written, so the note
+        cannot restore what the writing lost.
+        """
+        if self.medium is Medium.CAVE:
+            value = self.handed[-1] if self.handed else None
+            source = f"the object in your runtime as `{INPUT_SLOT}`"
+            found = value is not None
+        elif self.medium is Medium.FILE:
+            path, value = _named_file(query, self.kind)
+            source = f"the file {path} named in your instruction" if path else \
+                "no readable file named in your instruction"
+            found = path is not None
+        else:
+            found, value = _instruction_json(query)
+            source = "the JSON in your instruction" if found else \
+                "no JSON object the host could read in your instruction"
+        if not found:
+            return f"Host reading of what you were handed: {source}."
+        reading = describe_handed_object("", value).strip()
+        return f"Host reading of what you were handed — {source}: {reading}"
 
     async def _snapshot(self, response: AgentResponse) -> dict[str, Any]:
         outputs = await super()._snapshot(response)
@@ -105,7 +168,42 @@ class RoundsWorker(ObjectWorker):
         # crossed, and nothing the agent does afterwards can rewrite it.
         self.handed.append(_frozen(value))
         description = HANDED_OBJECT_DESCRIPTION if self.first_hop else HANDED_REVISED_DESCRIPTION
-        variable.description = describe_handed_object(description, value)
+        # In the parity arms the reading goes in the turn, worded the same in
+        # every arm (``_host_reading``), and the slot keeps only what it is.
+        variable.description = description if self.parity else \
+            describe_handed_object(description, value)
+
+
+def _named_file(query: str, kind) -> tuple[Path | None, Any]:
+    """The first file of the object's kind the instruction names that the host can read."""
+    for match in re.finditer(rf"[^\s'\"`(),]+\.{re.escape(kind.extension)}\b", query):
+        path = Path(match.group(0))
+        if path.is_file():
+            try:
+                return path, read_object(kind, path)
+            except Exception:                       # noqa: BLE001 - a half-written file, say
+                continue
+    return None, None
+
+
+def _instruction_json(query: str) -> tuple[bool, Any]:
+    """The JSON value an instruction carries: its last fenced block, else its longest one."""
+    for block in reversed(re.findall(r"```(?:json)?\s*\n(.*?)```", query, re.DOTALL)):
+        try:
+            return True, json.loads(block)
+        except ValueError:
+            continue
+    decoder, best = json.JSONDecoder(), None
+    for start, char in enumerate(query):
+        if char not in "{[":
+            continue
+        try:
+            value, end = decoder.raw_decode(query, start)
+        except ValueError:
+            continue
+        if best is None or end - start > best[0]:
+            best = (end - start, value)
+    return (True, best[1]) if best else (False, None)
 
 
 class FencedCodeRoundsWorker(RoundsWorker, FencedCodeAgent):
@@ -209,6 +307,7 @@ def _build_workers(
         agent.output_dir, agent.kind, agent.budget = output_dir, kind, budget
         agent.observed, agent.revision = observed, revision
         agent.shared_output = case.task.output if arm.shared_path else None
+        agent.medium, agent.takes_input, agent.parity = arm.medium, spec.takes_input, arm.parity
         agent.first_hop = revision.index == 1 if revision is not None else not case.revisions
         if is_consumer:
             agent.question = case.follow_up.query
@@ -289,8 +388,54 @@ class _Judge:
     def hop(self, worker: BuiltWorker, index: int) -> Hop:
         """One worker's crossing and edit; ``index`` is its place in the chain, 0 for the producer."""
         agent = worker.agent
-        bound = agent.bound[-1] if agent.bound else {}
-        delivered = agent.delivered[-1] if agent.delivered else {}
+        hop = self._judged(
+            worker, index,
+            bound=agent.bound[-1] if agent.bound else {},
+            delivered=agent.delivered[-1] if agent.delivered else {},
+            seen=agent.handed[-1] if getattr(agent, "handed", None) else None,
+            previous=self.produced[index - 1] if index else None,
+        )
+        self.produced.append(_output_of(worker, agent.bound[-1] if agent.bound else {}))
+        return hop
+
+    def invocations(self, workers: list[BuiltWorker]) -> list[list[dict[str, Any]]]:
+        """Every run of every worker, each judged on its own, after the chain is judged.
+
+        ``hop`` judges a worker's last run against the last output of the worker
+        before it, which is what the chain ended with. Here each run is judged
+        against the output the worker before it had last left when that run
+        began, so a worker run twice is read on its first run too: the first-run
+        reading is what crossed before anyone tried again. The host's count of
+        observations is the chain's, and is left as it was.
+        """
+        counted = self.observations
+        out = []
+        for index, worker in enumerate(workers):
+            before = workers[index - 1].agent.attempts if index else []
+            rows = []
+            for attempt in worker.agent.attempts:
+                record = {"stamp": attempt["stamp"], "completed": attempt["completed"]}
+                if attempt["note"] is not None:
+                    record["note"] = attempt["note"]
+                if attempt["completed"]:
+                    left = [a for a in before if a["completed"] and a["stamp"] < attempt["stamp"]]
+                    previous = _output_of(workers[index - 1], left[-1]["bound"]) if left else None
+                    record.update(self._judged(
+                        worker, index, bound=attempt["bound"] or {},
+                        delivered=attempt["delivered"] or {}, seen=attempt["handed"],
+                        previous=previous,
+                    ).as_dict())
+                rows.append(record)
+            out.append(rows)
+        self.observations = counted
+        return out
+
+    def _judged(
+        self, worker: BuiltWorker, index: int, *, bound: dict[str, Any],
+        delivered: dict[str, Any], seen: Any, previous: Any,
+    ) -> Hop:
+        """One run's crossing and edit, from what it bound and delivered and what came before it."""
+        agent = worker.agent
         name = worker.spec.name
         revision = getattr(agent, "revision", None)
         output_name = RECEIVED if worker.spec.role == "consumer" else agent.contract[0].name
@@ -299,12 +444,10 @@ class _Judge:
         if revision is not None or worker.spec.role == "consumer":
             # The host's own view of the input where it has one (the object was
             # in the worker's runtime before it ran), else what the agent bound.
-            seen = agent.handed[-1] if getattr(agent, "handed", None) else None
             handed = seen if seen is not None else (
                 bound.get(CARRIED) if revision is not None else output
             )
             hop.input_seen = None if handed is None else ("host" if seen is not None else "agent")
-            previous = self.produced[index - 1] if index else None
             if handed is not None:
                 hop.carried, _ = judged(self._compare(handed, previous))
                 hop.arrived = align(
@@ -337,8 +480,13 @@ class _Judge:
             hop.encoded, _ = judged(
                 self._compare(self._as_delivered(delivered.get(output_name), output), output),
             )
-        self.produced.append(output)
         return hop
+
+
+def _output_of(worker: BuiltWorker, bound: dict[str, Any]) -> Any:
+    """What a worker made, as one of its runs left it bound."""
+    name = RECEIVED if worker.spec.role == "consumer" else worker.agent.contract[0].name
+    return bound.get(name)
 
 
 async def run_rounds(
@@ -360,7 +508,7 @@ async def run_rounds(
     )
     orchestrator = FencedCodeAgent(
         model=model, runtime=orchestrator_runtime,
-        system_instructions=orchestrator_instructions(answerer="consumer"),
+        system_instructions=orchestrator_instructions(answerer="consumer", may_inspect=arm.parity),
         max_steps=settings.orchestrator_steps, max_exec_output=settings.max_exec_output,
         stream_idle_timeout=idle_timeout(model),
     )
@@ -390,8 +538,10 @@ async def run_rounds(
 
     judge = _Judge(case, arm, standards)
     order = sorted((stamp, worker.spec.name) for worker in workers for stamp in worker.agent.started)
+    hops = [judge.hop(worker, index) for index, worker in enumerate(workers)]
+    invocations = judge.invocations(workers)
     for index, worker in enumerate(workers):
-        hop = judge.hop(worker, index)
+        hop = hops[index]
         if worker.agent.started:
             last = max(worker.agent.started)
             before = [name for stamp, name in order if stamp < last]
@@ -399,7 +549,7 @@ async def run_rounds(
         record = {
             "name": worker.spec.name, "role": worker.spec.role, "runs": worker.agent.runs,
             **spent_over(worker.agent, worker.agent.responses), **hop.as_dict(),
-            "messages": worker.agent.transcript,
+            "invocations": invocations[index], "messages": worker.agent.transcript,
         }
         if worker.spec.role == "consumer":
             bound = worker.agent.delivered[-1] if worker.agent.delivered else {}
@@ -433,7 +583,13 @@ def _output_slots(workers: list[BuiltWorker], arm: Arm) -> list[Variable]:
     """One slot per worker output in the arm that retrieves objects; observations get none."""
     if not arm.reaches_runtime:
         return []
+    # The output's own description reaches the worker in its turn in every arm;
+    # the parity arm does not also give it to this orchestrator alone.
     return [
-        Variable(output.name, None, f"What the {worker.spec.role} agent produces. {output.description}")
+        Variable(
+            output.name, None,
+            f"What the {worker.spec.role} agent produces."
+            + ("" if arm.parity else f" {output.description}"),
+        )
         for worker in workers for output in worker.agent.contract
     ]

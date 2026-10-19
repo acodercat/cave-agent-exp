@@ -637,8 +637,20 @@ ORCHESTRATOR_DATA_RULE = (
     "  the {answerer} worker is who answers, and its answer is what counts."
 )
 
+# The rounds study's parity arms. Under the rule above an orchestrator in the
+# cave arm can look at the object it passes on (it retrieves it) and one in the
+# text arms reads it in the reply, but one in the file arm is told not to open
+# the file; this rule lets every arm look, and still not compute the answer.
+ORCHESTRATOR_INSPECTING_DATA_RULE = (
+    "- Work only through the workers. You may look at what a worker hands on — the\n"
+    "  object, the file it wrote or its reply — before you pass it on, but do not\n"
+    "  read any other file, the network, benchmark modules or validator code, and\n"
+    "  do not compute the task's answer yourself: the {answerer} worker is who\n"
+    "  answers, and its answer is what counts."
+)
 
-def orchestrator_instructions(answerer: str = "analyst") -> str:
+
+def orchestrator_instructions(answerer: str = "analyst", *, may_inspect: bool = False) -> str:
     """The orchestrator's system prompt, the same in every arm.
 
     The workers are not listed here: the runtime lists them, under the
@@ -646,15 +658,17 @@ def orchestrator_instructions(answerer: str = "analyst") -> str:
     :func:`core.orchestration.describe_worker` gives it. Every slot but the
     three named above is the text every fenced-code agent in the suite reads.
     ``answerer`` is the worker whose answer counts: the pipeline cases' analyst,
-    the fidelity cases' consumer.
+    the fidelity cases' consumer. ``may_inspect`` is the rounds study's parity
+    arms, all of which get the same rule.
     """
+    data_rule = ORCHESTRATOR_INSPECTING_DATA_RULE if may_inspect else ORCHESTRATOR_DATA_RULE
     return _SYSTEM_INSTRUCTIONS_TEMPLATE.format(
         data_access=ORCHESTRATOR_ACCESS,
         action_rules=_ACTION_RULES[Action.FENCED_CODE].format(
             outputs_ready=f"the {answerer} has answered",
         ),
         first_step=ORCHESTRATOR_FIRST_STEP,
-        data_rule=ORCHESTRATOR_DATA_RULE.format(answerer=answerer),
+        data_rule=data_rule.format(answerer=answerer),
         outputs_missing="the task undone",
         delivery=(
             f"- When the {answerer} has answered, give your final answer: say which workers\n"
